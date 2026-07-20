@@ -1,0 +1,27 @@
+character:
+  name: "冷旭帆"
+  code: "冰刃"
+  age: 17
+  academy: "潜龙学院"
+  room: "307室"
+
+api:
+  default_provider: "qwen-plus"
+  max_tokens: 120
+  temperature: 0.7
+  retries: 2
+  timeout: 60
+
+rules:
+  emotion:
+    baseline: 50
+    biorhythm_amplitude: 15
+    decay_rate: 0.2
+    hard_cap_min: 0
+    hard_cap_max: 85
+  memory:
+    max_episodes: 50
+    recent_count: 3
+  intent:
+    check_interval_seconds: 30
+    trigger_probability: 0.05

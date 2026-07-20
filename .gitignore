@@ -1,0 +1,8 @@
+﻿__pycache__/
+.env
+*.pem
+secrets.json
+credentials.json
+.cline/
+data/save.json
+data/*.log
