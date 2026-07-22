@@ -69,7 +69,7 @@ class DialogueEngine:
         for ms in self.memory.check_milestones(trust): info(f"里程碑: {ms}")
         for mem in self.memory.check_scheduled(): info(f"记忆解锁: {mem}")
 
-        sp = build_system_prompt(self.perception, self.identity, self.memory, text)
+        sp = build_system_prompt(self.perception, self.identity, self.memory, text, self.working_memory, self.social_network)
         if len(text) <= 4 and (text.strip().endswith("?") or text.strip().endswith("？")):
             context_hint = "\n\n【注意】对方在追问他上一句话的意思。"
         elif "什么意思" in text or "怎么了" in text or "为啥" in text:
@@ -91,7 +91,7 @@ class DialogueEngine:
             if "陆华望" in text or "望仔" in text: entities.append("陆华望")
             if "妈妈" in text or "母亲" in text: entities.append("母亲")
             if "阿冷" in text: entities.append("阿冷")
-            speaker_label = "队友" if speaker_label else "陌生人"
+            speaker_label = "用户"
             self.working_memory.add_turn(speaker_label, text, entities)
         
         if self.social_network:
