@@ -1,7 +1,7 @@
 MEMORY_RULES = [
     (["讨厌","恨"], "user_said_hate", -20),
     (["花","送你","礼物"], "user_gave_flower", 5),
-    (["妈妈","母亲"], "user_asked_about_mom", -10),
+    (["妈","母亲"], "user_asked_about_mom", -25),
     (["陆华望","华望","望仔"], "user_asked_about_wang", 15),
 ]
 IDENTITY_EVIDENCE_RULES = [

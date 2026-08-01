@@ -3,6 +3,8 @@ import os, sys, re, argparse
 from flask import Flask, request, jsonify, make_response
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from lengxufan_core.working_memory import WorkingMemory
+from lengxufan_core.social_network import SocialNetwork
 from lengxufan_core import Perception, Memory, IdentityState, BehaviorEngine, DialogueEngine, get_biorhythm
 from api.router import router as model_router
 from infra.persistence import load_full_state
@@ -12,14 +14,18 @@ perception = Perception()
 memory = Memory()
 identity = IdentityState()
 behavior = BehaviorEngine()
-engine = DialogueEngine(perception, memory, identity, behavior, model_router)
+wm = WorkingMemory()
+sn = SocialNetwork()
+engine = DialogueEngine(perception, memory, identity, behavior, model_router, wm, sn)
 
 saved = load_full_state()
 if saved:
     perception = Perception.from_dict(saved)
     memory = Memory.from_dict(saved, saved.get("simulated_day",1))
     identity = IdentityState.from_dict(saved.get("identity_state",{}))
-    engine = DialogueEngine(perception, memory, identity, behavior, model_router)
+    wm = WorkingMemory()
+sn = SocialNetwork()
+engine = DialogueEngine(perception, memory, identity, behavior, model_router, wm, sn)
     info("存档已加载。")
 else:
     perception.emotion = get_biorhythm()
@@ -34,7 +40,8 @@ def chat():
     user_input = data.get('message','')
     if not user_input: return jsonify({"reply":"……（他沉默着，没有回答）"}), 400
     raw = engine.process(user_input)
-    clean = re.sub(r'<summary>.*?</summary>','',raw).strip()
+    # clean = re.sub(r'<summary>.*?</summary>','',raw).strip()
+    clean = raw.strip()
     resp = make_response(jsonify({"reply":clean}))
     resp.headers['Content-Type'] = 'application/json; charset=utf-8'
     return resp
