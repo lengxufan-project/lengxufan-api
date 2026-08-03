@@ -23,7 +23,12 @@
   <!-- CHAT SCREEN -->
   <div id="chat-screen">
     <div id="header">
-      <div class="title"><span class="dot"></span> 冷旭帆</div>
+      <div class="title">
+        <span class="dot"></span>
+        <select id="char-select" onchange="switchCharacter(this.value)" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:14px;">
+          <option value="lengxufan">冷旭帆</option>
+        </select>
+      </div>
       <div class="actions">
         <button class="icon-btn" id="dev-toggle" title="开发者面板">⚙️</button>
         <button class="icon-btn" id="export-btn" title="导出对话">📥</button>

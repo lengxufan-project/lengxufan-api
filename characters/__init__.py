@@ -2,7 +2,6 @@
 import os
 import sys
 
-# 确保项目根目录在路径中
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class CharacterConfig:
@@ -33,111 +32,199 @@ class CharacterConfig:
     def load(self):
         """从数据目录加载所有角色数据"""
         data_dir = self.data_dir
+
         # 加载 Persona
         persona_file = os.path.join(data_dir, 'persona.py')
         if os.path.exists(persona_file):
-            spec = __import__(f'characters.{self.char_id}.data.persona', fromlist=['PERSONA'])
-            self.persona = spec.PERSONA
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.persona',
+                persona_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.persona = module.PERSONA
+            # 用 Persona 中配置的名称覆盖文件夹名
+            if 'name' in self.persona:
+                self.name = self.persona['name']
 
         # 加载自传体记忆
         auto_file = os.path.join(data_dir, 'autobiographical.py')
         if os.path.exists(auto_file):
-            spec = __import__(f'characters.{self.char_id}.data.autobiographical', fromlist=['AUTOBIOGRAPHICAL_MEMORIES'])
-            self.autobiographical = spec.AUTOBIOGRAPHICAL_MEMORIES
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.autobiographical',
+                auto_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.autobiographical = module.AUTOBIOGRAPHICAL_MEMORIES
 
         # 加载关系里程碑
         milestones_file = os.path.join(data_dir, 'milestones.py')
         if os.path.exists(milestones_file):
-            spec = __import__(f'characters.{self.char_id}.data.milestones', fromlist=['RELATIONSHIP_MILESTONES'])
-            self.milestones = spec.RELATIONSHIP_MILESTONES
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.milestones',
+                milestones_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.milestones = module.RELATIONSHIP_MILESTONES
 
         # 加载定时解锁记忆
         scheduled_file = os.path.join(data_dir, 'scheduled_memories.py')
         if os.path.exists(scheduled_file):
-            spec = __import__(f'characters.{self.char_id}.data.scheduled_memories', fromlist=['SCHEDULED_MEMORIES'])
-            self.scheduled_memories = spec.SCHEDULED_MEMORIES
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.scheduled_memories',
+                scheduled_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.scheduled_memories = module.SCHEDULED_MEMORIES
 
         # 加载兜底动作库
         actions_file = os.path.join(data_dir, 'fallback_actions.py')
         if os.path.exists(actions_file):
-            spec = __import__(f'characters.{self.char_id}.data.fallback_actions', fromlist=['FALLBACK_ACTIONS', 'STATUS_OVERLAY_ACTIONS'])
-            self.fallback_actions = spec.FALLBACK_ACTIONS
-            self.status_overlay_actions = spec.STATUS_OVERLAY_ACTIONS
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.fallback_actions',
+                actions_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.fallback_actions = module.FALLBACK_ACTIONS
+            self.status_overlay_actions = module.STATUS_OVERLAY_ACTIONS
 
         # 加载情感翻译层
         feeling_file = os.path.join(data_dir, 'feeling_translations.py')
         if os.path.exists(feeling_file):
-            spec = __import__(f'characters.{self.char_id}.data.feeling_translations', fromlist=['FEELING_TRANSLATIONS'])
-            self.feeling_translations = spec.FEELING_TRANSLATIONS
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.feeling_translations',
+                feeling_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.feeling_translations = module.FEELING_TRANSLATIONS
 
         # 加载记忆规则
         mem_rules_file = os.path.join(data_dir, 'memory_rules.py')
         if os.path.exists(mem_rules_file):
-            spec = __import__(f'characters.{self.char_id}.data.memory_rules', fromlist=['MEMORY_RULES', 'IDENTITY_EVIDENCE_RULES'])
-            self.memory_rules = spec.MEMORY_RULES
-            self.identity_evidence_rules = spec.IDENTITY_EVIDENCE_RULES
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.memory_rules',
+                mem_rules_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.memory_rules = module.MEMORY_RULES
+            self.identity_evidence_rules = module.IDENTITY_EVIDENCE_RULES
 
         # 加载意愿模板
         intent_file = os.path.join(data_dir, 'intent_templates.py')
         if os.path.exists(intent_file):
-            spec = __import__(f'characters.{self.char_id}.data.intent_templates', fromlist=['INTENT_TEMPLATES'])
-            self.intent_templates = spec.INTENT_TEMPLATES
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.intent_templates',
+                intent_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.intent_templates = module.INTENT_TEMPLATES
 
         # 加载后台事件模板
         events_file = os.path.join(data_dir, 'event_templates.py')
         if os.path.exists(events_file):
-            spec = __import__(f'characters.{self.char_id}.data.event_templates', fromlist=['EVENT_TEMPLATES', 'CAUSAL_CHAIN'])
-            self.event_templates = spec.EVENT_TEMPLATES
-            self.causal_chains = spec.CAUSAL_CHAIN
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.event_templates',
+                events_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.event_templates = module.EVENT_TEMPLATES
+            self.causal_chains = module.CAUSAL_CHAIN
 
         # 加载场景模板
         scene_file = os.path.join(data_dir, 'scene_templates.py')
         if os.path.exists(scene_file):
-            spec = __import__(f'characters.{self.char_id}.data.scene_templates', fromlist=['TIME_ATMOSPHERE', 'LOCATION_FEATURES', 'DEFAULT_CHARACTER_ACTIVITIES'])
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.scene_templates',
+                scene_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
             self.scene_templates = {
-                'time_atmosphere': spec.TIME_ATMOSPHERE,
-                'location_features': spec.LOCATION_FEATURES,
-                'default_character_activities': spec.DEFAULT_CHARACTER_ACTIVITIES
+                'time_atmosphere': module.TIME_ATMOSPHERE,
+                'location_features': module.LOCATION_FEATURES,
+                'default_character_activities': module.DEFAULT_CHARACTER_ACTIVITIES
             }
 
         # 加载上下文模式
         ctx_file = os.path.join(data_dir, 'context_patterns.py')
         if os.path.exists(ctx_file):
-            spec = __import__(f'characters.{self.char_id}.data.context_patterns', fromlist=['INTENT_PATTERNS', 'FOLLOWUP_TRIGGERS', 'EMOTIONAL_WORDS', 'TOPIC_KEYWORDS'])
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.context_patterns',
+                ctx_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
             self.context_patterns = {
-                'intent_patterns': spec.INTENT_PATTERNS,
-                'followup_triggers': spec.FOLLOWUP_TRIGGERS,
-                'emotional_words': spec.EMOTIONAL_WORDS,
-                'topic_keywords': spec.TOPIC_KEYWORDS
+                'intent_patterns': module.INTENT_PATTERNS,
+                'followup_triggers': module.FOLLOWUP_TRIGGERS,
+                'emotional_words': module.EMOTIONAL_WORDS,
+                'topic_keywords': module.TOPIC_KEYWORDS
             }
 
         # 加载独白模板
         mono_file = os.path.join(data_dir, 'monologue_styles.py')
         if os.path.exists(mono_file):
-            spec = __import__(f'characters.{self.char_id}.data.monologue_styles', fromlist=['MONOLOGUE_TEMPLATES', 'BODY_MONOLOGUE_PARTS', 'DEFAULT_BODY_PARTS', 'SCENE_TRIGGERED_MONOLOGUES'])
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.monologue_styles',
+                mono_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
             self.monologue_styles = {
-                'monologue_templates': spec.MONOLOGUE_TEMPLATES,
-                'body_monologue_parts': spec.BODY_MONOLOGUE_PARTS,
-                'default_body_parts': spec.DEFAULT_BODY_PARTS,
-                'scene_triggered_monologues': spec.SCENE_TRIGGERED_MONOLOGUES
+                'monologue_templates': module.MONOLOGUE_TEMPLATES,
+                'body_monologue_parts': module.BODY_MONOLOGUE_PARTS,
+                'default_body_parts': module.DEFAULT_BODY_PARTS,
+                'scene_triggered_monologues': module.SCENE_TRIGGERED_MONOLOGUES
             }
 
         # 加载信任规则
         trust_file = os.path.join(data_dir, 'trust_rules.py')
         if os.path.exists(trust_file):
-            spec = __import__(f'characters.{self.char_id}.data.trust_rules', fromlist=['TRUST_STAGES', 'SUSPICION_TRIGGERS', 'IDENTITY_EVIDENCE', 'QUESTION_TEMPLATES'])
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.trust_rules',
+                trust_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
             self.trust_rules = {
-                'trust_stages': spec.TRUST_STAGES,
-                'suspicion_triggers': spec.SUSPICION_TRIGGERS,
-                'identity_evidence': spec.IDENTITY_EVIDENCE,
-                'question_templates': spec.QUESTION_TEMPLATES
+                'trust_stages': module.TRUST_STAGES,
+                'suspicion_triggers': module.SUSPICION_TRIGGERS,
+                'identity_evidence': module.IDENTITY_EVIDENCE,
+                'question_templates': module.QUESTION_TEMPLATES
             }
 
         # 加载关系阶段
         rel_file = os.path.join(data_dir, 'relationship_stages.py')
         if os.path.exists(rel_file):
-            spec = __import__(f'characters.{self.char_id}.data.relationship_stages', fromlist=['RELATIONSHIP_STAGES'])
-            self.relationship_stages = spec.RELATIONSHIP_STAGES
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                f'characters.{self.char_id}.data.relationship_stages',
+                rel_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.relationship_stages = module.RELATIONSHIP_STAGES
 
         return self
 
@@ -175,6 +262,6 @@ class CharacterRegistry:
                     try:
                         config = cls.register(item, item, data_dir)
                         config.load()
-                        print(f"[CharacterRegistry] 已加载角色: {item}")
+                        print(f"[CharacterRegistry] 已加载角色: {config.name}")
                     except Exception as e:
                         print(f"[CharacterRegistry] 加载角色 {item} 失败: {e}")

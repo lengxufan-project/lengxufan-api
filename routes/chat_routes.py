@@ -5,20 +5,23 @@ import json
 
 chat_bp = Blueprint('chat', __name__)
 
-# 延迟导入 engine_service 以避免循环依赖
-def get_engine():
+def get_engine(char_id="lengxufan"):
     from services.engine_service import EngineService
-    if not hasattr(get_engine, '_engine'):
-        get_engine._engine = EngineService()
-    return get_engine._engine
+    cache_key = f'_engine_{char_id}'
+    if not hasattr(get_engine, cache_key):
+        setattr(get_engine, cache_key, EngineService(char_id=char_id))
+    return getattr(get_engine, cache_key)
 
 @chat_bp.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
     user_input = data.get('message', '')
-    if not user_input: return jsonify({"reply": "……（他沉默着，没有回答）"}), 400
+    char_id = data.get('char_id', 'lengxufan')
 
-    engine_svc = get_engine()
+    if not user_input:
+        return jsonify({"reply": "……（他沉默着，没有回答）"}), 400
+
+    engine_svc = get_engine(char_id)
     user_id = session.get('user_id')
     if user_id:
         user_msg = Conversation(user_id=user_id, role='user', content=user_input)

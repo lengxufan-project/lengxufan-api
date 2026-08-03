@@ -1,4 +1,27 @@
 ﻿let messages = [];
+let currentCharId = 'lengxufan';
+
+async function loadCharacters() {
+    try {
+        const chars = await API.getCharacters();
+        const select = document.getElementById('char-select');
+        if (!select) return;
+        select.innerHTML = '';
+        chars.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.id;
+            option.textContent = c.name;
+            if (c.id === currentCharId) option.selected = true;
+            select.appendChild(option);
+        });
+    } catch(e) {}
+}
+
+function switchCharacter(charId) {
+    currentCharId = charId;
+    messages = [];
+    document.getElementById('messages').innerHTML = '';
+}
 
 async function sendMessage() {
     const input = document.getElementById('msg-input');
@@ -9,7 +32,7 @@ async function sendMessage() {
     renderMessages();
     document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
     try {
-        const res = await API.chat(text);
+        const res = await API.chat(text, currentCharId);
         messages.push({ role:'lxf', content: res.reply, state: res.state });
         renderMessages();
         document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
@@ -57,3 +80,5 @@ function renderMessages() {
         container.appendChild(div);
     });
 }
+
+loadCharacters();

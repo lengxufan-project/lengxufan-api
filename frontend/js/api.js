@@ -13,7 +13,12 @@
     login: (username, password) => API._fetch('/api/auth/login', 'POST', {username, password}),
     guest: () => API._fetch('/api/auth/guest', 'POST'),
     me: () => API._fetch('/api/auth/me'),
-    chat: (message) => API._fetch('/api/chat', 'POST', {message}),
+    chat: (message, charId = null) => {
+        const body = { message };
+        if (charId) body.char_id = charId;
+        return API._fetch('/api/chat', 'POST', body);
+    },
+    getCharacters: () => API._fetch('/api/characters'),
     getConversations: () => API._fetch('/api/conversations'),
     annotateMessage: (id, annotation) => API._fetch(`/api/conversations/${id}/annotate`, 'PUT', {annotation}),
 };
