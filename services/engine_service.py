@@ -1,8 +1,8 @@
-﻿"""引擎服务：负责冷旭帆引擎的初始化与状态收集"""
+﻿"""引擎服务：负责冷旭帆引擎的初始化与状态收集（v5.5 - 角色注册中心版）"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from infra.persistence import load_full_state
+from infra.logger import info
 from api.router import router as model_router
 from lengxufan_core import (
     Perception, Memory, IdentityState, BehaviorEngine,
@@ -19,9 +19,15 @@ from lengxufan_core.cognition.trust_suspicion import TrustSuspicionEngine
 from lengxufan_core.character_state.body_state import BodyState
 from lengxufan_core.character_state.mind_state import MindState
 from lengxufan_core.character_state.relationship_dynamics import RelationshipDynamics
+from characters import CharacterRegistry
 
 class EngineService:
-    def __init__(self):
+    def __init__(self, char_id="lengxufan"):
+        # 加载角色配置
+        CharacterRegistry.load_all()
+        self.char_config = CharacterRegistry.get(char_id)
+        info(f"已加载角色: {self.char_config.name}")
+
         self.perception = Perception()
         self.memory = Memory()
         self.identity = IdentityState()
@@ -38,6 +44,7 @@ class EngineService:
         self.mind_state = MindState()
         self.relationship_dynamics = RelationshipDynamics()
 
+        from infra.persistence import load_full_state
         saved = load_full_state()
         if saved:
             self.perception = Perception.from_dict(saved)
