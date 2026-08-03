@@ -1,6 +1,7 @@
-﻿"""冷旭帆 启动器 v5.4 - PWA + 开发者面板"""
-import os, sys, re, argparse
-from flask import Flask, request, jsonify, make_response, send_from_directory
+﻿"""冷旭帆 启动器 v5.4 - SQLite数据库 + 用户系统 + 双向感知"""
+import os, sys, re, argparse, json
+from flask import Flask, request, jsonify, make_response, send_from_directory, session
+from flask_cors import CORS
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -21,6 +22,8 @@ from lengxufan_core.cognition.trust_suspicion import TrustSuspicionEngine
 from lengxufan_core.character_state.body_state import BodyState
 from lengxufan_core.character_state.mind_state import MindState
 from lengxufan_core.character_state.relationship_dynamics import RelationshipDynamics
+from models import db, User, Conversation
+from auth import auth_bp
 
 perception = Perception()
 memory = Memory()
@@ -59,6 +62,18 @@ engine = DialogueEngine(
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 app.config["JSON_AS_ASCII"] = False
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "lengxufan-dev-secret-key-2024")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'lengxufan.db')}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+CORS(app, supports_credentials=True)
+db.init_app(app)
+app.register_blueprint(auth_bp)
+
+os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data'), exist_ok=True)
+
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def index():
@@ -85,15 +100,64 @@ def dev_state():
         "verified_evidence": list(trust_suspicion.verified_evidence) if trust_suspicion.wang_claim else [],
         "recent_memories": [e["summary"] for e in memory.episodic[-5:]],
         "last_thought": tc.last_thought if tc else "",
+        # 新增：用户状态
+        "user_state": us.get_state_summary() if us else {},
     })
+
+@app.route('/api/conversations', methods=['GET'])
+def get_conversations():
+    if 'user_id' not in session:
+        return jsonify({"error": "未登录"}), 401
+    conversations = Conversation.query.filter_by(user_id=session['user_id']).order_by(Conversation.created_at.asc()).all()
+    return jsonify([{
+        "id": c.id, "role": c.role, "content": c.content,
+        "annotation": c.annotation,
+        "state_snapshot": json.loads(c.state_snapshot) if c.state_snapshot else None,
+        "created_at": c.created_at.isoformat()
+    } for c in conversations])
+
+@app.route('/api/conversations/<int:msg_id>/annotate', methods=['PUT'])
+def annotate_message(msg_id):
+    if 'user_id' not in session:
+        return jsonify({"error": "未登录"}), 401
+    conversation = Conversation.query.filter_by(id=msg_id, user_id=session['user_id']).first()
+    if not conversation:
+        return jsonify({"error": "消息不存在"}), 404
+    data = request.get_json()
+    conversation.annotation = data.get('annotation', '')
+    db.session.commit()
+    return jsonify({"message": "标注已保存"})
 
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
     user_input = data.get('message', '')
     if not user_input: return jsonify({"reply": "……（他沉默着，没有回答）"}), 400
+    user_id = session.get('user_id')
+    if user_id:
+        user_msg = Conversation(user_id=user_id, role='user', content=user_input)
+        db.session.add(user_msg)
     raw = engine.process(user_input)
-    return jsonify({"reply": raw.strip()})
+    reply_text = raw.strip()
+    state_snapshot = {
+        "emotion": perception.emotion,
+        "body": body_state.get_status_summary(),
+        "mind": mind_state.get_status_summary(),
+        "relationship": relationship_dynamics.get_stage_summary(),
+        "wang_claim": trust_suspicion.wang_claim,
+        "wang_trust": trust_suspicion.trust_value if trust_suspicion.wang_claim else 0,
+        "verified_evidence": list(trust_suspicion.verified_evidence) if trust_suspicion.wang_claim else [],
+        "last_thought": tc.last_thought if tc else "",
+        "pending_question": trust_suspicion.pending_question if trust_suspicion.wang_claim else None,
+        # 新增：用户状态
+        "user_state": us.get_state_summary() if us else {},
+    }
+    if user_id:
+        lxf_msg = Conversation(user_id=user_id, role='lxf', content=reply_text,
+                               state_snapshot=json.dumps(state_snapshot, ensure_ascii=False))
+        db.session.add(lxf_msg)
+        db.session.commit()
+    return jsonify({"reply": reply_text, "state": state_snapshot})
 
 def run_cli():
     print("=" * 40)

@@ -1,4 +1,4 @@
-﻿"""对话流程引擎 v5.4 - 修复版：信任系统统一"""
+﻿"""对话流程引擎 v5.4 - 用户状态双向感知"""
 import re
 import random
 from infra.logger import info
@@ -62,6 +62,12 @@ class DialogueEngine:
             self.perception.emotion = min(85, self.perception.emotion + 0.5)
 
         text = user_input.strip()
+
+        # ---- 新增：用户状态分析 ----
+        user_analysis = {}
+        if self.user_state:
+            user_analysis = self.user_state.analyze_input(text)
+            self.user_state.apply_analysis(user_analysis)
 
         scene_context = ""
         if self.scene_engine:
@@ -129,7 +135,6 @@ class DialogueEngine:
                         "正确验证身份",
                         trust_delta=trust_result["evidence_matched"]["trust_delta"],
                         description=f"答对了验证问题: {trust_result['evidence_matched']['evidence_id']}")
-            # 每次信任状态机处理后同步
             self._sync_trust_systems()
 
         # 关键词触发
@@ -165,7 +170,6 @@ class DialogueEngine:
         if self.relationship_dynamics:
             self.relationship_dynamics.process_event("长时间陪伴", trust_delta=1, description="又来了一轮对话")
 
-        # 同步信任系统
         self._sync_trust_systems()
 
         # 思考链
@@ -180,6 +184,10 @@ class DialogueEngine:
         if self.relationship_dynamics:
             rel_prompt = self.relationship_dynamics.get_prompt_injection()
             if rel_prompt: sp = sp + f"\n\n【关系阶段】{rel_prompt}"
+        # ---- 新增：注入用户状态 ----
+        if self.user_state:
+            user_prompt = self.user_state.get_prompt_injection()
+            if user_prompt: sp = sp + f"\n\n【对方状态】{user_prompt}"
         if thought_result: sp = sp + f"\n\n【思考过程】{thought_result['thought_summary']}"
 
         msgs = build_messages(text, sp)
@@ -220,7 +228,6 @@ class DialogueEngine:
         return full_reply
 
     def _sync_trust_systems(self):
-        """修复：望仔验证期间，关系信任跟随望仔信任"""
         if self.trust_suspicion and self.trust_suspicion.wang_claim and self.relationship_dynamics:
             wang_trust = self.trust_suspicion.trust_value
             cap = min(wang_trust + 15, 100)
