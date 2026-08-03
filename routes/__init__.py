@@ -1,0 +1,11 @@
+﻿from flask import Blueprint
+from .auth_routes import auth_bp
+from .chat_routes import chat_bp
+from .state_routes import state_bp
+from .history_routes import history_bp
+
+def register_routes(app):
+    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(chat_bp, url_prefix='/api')
+    app.register_blueprint(state_bp, url_prefix='/api')
+    app.register_blueprint(history_bp, url_prefix='/api')

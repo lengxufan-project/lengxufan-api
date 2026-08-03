@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>冷旭帆</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <h1>冷旭帆</h1>
+    <div class="form-group"><input type="text" id="login-username" placeholder="用户名" autocomplete="off"></div>
+    <div class="form-group"><input type="password" id="login-password" placeholder="密码"></div>
+    <button class="btn-primary" id="login-btn">登录</button>
+    <button class="btn-secondary" id="register-btn">注册</button>
+    <span class="guest-link" id="guest-link">以游客身份进入</span>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div id="chat-screen">
+    <div id="header">
+      <div class="title"><span class="dot"></span> 冷旭帆</div>
+      <div class="actions">
+        <button class="icon-btn" id="dev-toggle" title="开发者面板">⚙️</button>
+        <button class="icon-btn" id="export-btn" title="导出对话">📥</button>
+      </div>
+    </div>
+    <div id="messages"></div>
+    <div id="dev-panel"></div>
+    <div id="input-area">
+      <input type="text" id="msg-input" placeholder="说点什么..." autocomplete="off">
+      <button id="send-btn">↑</button>
+    </div>
+  </div>
+
+  <!-- ANNOTATION MODAL -->
+  <div id="annotation-modal">
+    <div class="modal-content">
+      <h4 style="margin-bottom:10px">标注这条消息</h4>
+      <textarea id="annotation-text" placeholder="写点备注..."></textarea>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="annotation-cancel">取消</button>
+        <button class="btn-primary" id="annotation-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT MODAL -->
+  <div id="export-modal">
+    <div class="modal-content">
+      <h4 style="margin-bottom:10px">导出预览</h4>
+      <div id="export-preview"></div>
+      <div class="export-options">
+        <button class="btn-secondary" id="export-cancel">关闭</button>
+        <button class="btn-primary" id="export-txt">导出 TXT</button>
+        <button class="btn-primary" id="export-md">导出 MD</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/chat.js"></script>
+  <script src="/js/dev-panel.js"></script>
+  <script src="/js/annotation.js"></script>
+  <script src="/js/export.js"></script>
+</body>
+</html>
