@@ -9,10 +9,16 @@ class BehaviorEngine:
     pending_intents: list = field(default_factory=list)
     _in_conversation: bool = False
     _last_intent_check: float = field(default_factory=time.time)
+    _last_actions: list = field(default_factory=lambda: [""] * 3)  # 记录最近3次动作
 
     def generate_action(self, emotion, status, identity_state, ai_action=None):
         if ai_action: return f"（{ai_action}）"
-        if emotion < 30: base = random.choice(FALLBACK_ACTIONS["very_low"])
+        if emotion < 30:
+            # base = random.choice(FALLBACK_ACTIONS["very_low"])
+            available = [a for a in FALLBACK_ACTIONS["very_low"] if a not in self._last_actions]
+            if not available:
+                available = FALLBACK_ACTIONS["very_low"]
+            base = random.choice(available)
         elif emotion < 50: base = random.choice(FALLBACK_ACTIONS["low"])
         elif emotion < 70: base = random.choice(FALLBACK_ACTIONS["medium"])
         else: base = random.choice(FALLBACK_ACTIONS["high"])
@@ -23,6 +29,8 @@ class BehaviorEngine:
         if identity_state.get("wang_claim") and identity_state.get("wang_belief",0)>50 and random.random()<0.4:
             ov.append(random.choice(STATUS_OVERLAY_ACTIONS["high_trust"]))
         for o in ov[:2]: base = o + " " + base
+        self._last_actions.pop(0)
+        self._last_actions.append(base)
         return base
 
     def start_conversation(self): self._in_conversation = True

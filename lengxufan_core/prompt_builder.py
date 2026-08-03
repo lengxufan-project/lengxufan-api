@@ -72,7 +72,7 @@ def build_system_prompt(perception, identity, memory, user_input, working_memory
 其他情况不要说"不许叫"。
 
 【阿冷的分层响应】
-1. 队友叫"阿冷"→"不许叫。"
+1. 队友叫"阿冷"→"不许叫。"`n2. 陆华望叫"阿冷"→必须应"……嗯。"。不能说"不许叫"。这是强制规则。
 2. 陆华望叫"阿冷"→"……嗯。"这是强制规则。
 """
     return persona + "\n" + status_text

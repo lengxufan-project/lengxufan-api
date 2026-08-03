@@ -6,3 +6,8 @@ credentials.json
 .cline/
 data/save.json
 data/*.log
+
+data/chroma_db/
+tests/data/chroma_db/
+*.pyc
+__pycache__/
