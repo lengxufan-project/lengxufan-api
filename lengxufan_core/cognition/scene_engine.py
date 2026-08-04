@@ -1,25 +1,21 @@
-﻿"""场景感知与推导引擎 - 解析场景输入，生成五感描述和System Prompt注入文本"""
+﻿"""场景感知与推导引擎 - 使用共享世界状态"""
 from datetime import datetime
 from typing import Optional
 from infra.logger import debug
+from world_state import world
 from lengxufan_core.character_data.scene_templates import (
     TIME_ATMOSPHERE,
     LOCATION_FEATURES,
     DEFAULT_CHARACTER_ACTIVITIES,
-    get_time_of_day,
 )
 
 
 class SceneEngine:
-    """
-    管理时间、地点、场景氛围。
-    输出五感描述。
-    动态推导场景变化。
-    """
+    """管理时间、地点、场景氛围。输出五感描述。动态推导场景变化。"""
 
     def __init__(self):
         self.current_location = "307室"
-        self.time_of_day = get_time_of_day()
+        self.time_of_day = world.get_time_of_day()
         self.atmosphere = "安静"
         self.nearby_characters = []
         self._last_scene_input = None
@@ -29,7 +25,8 @@ class SceneEngine:
         self._scene_changed = (scene_input != self._last_scene_input)
         self._last_scene_input = scene_input
 
-        new_time = get_time_of_day()
+        # 从共享世界状态获取时间
+        new_time = world.get_time_of_day()
         if new_time != self.time_of_day:
             self._scene_changed = True
             self.time_of_day = new_time
@@ -39,15 +36,20 @@ class SceneEngine:
             self.current_location, LOCATION_FEATURES["307室"]
         )
 
+        # 从共享世界状态获取室友活动
         characters = []
         if scene_input and "characters" in scene_input:
             characters = scene_input["characters"]
         else:
-            for name, activity in DEFAULT_CHARACTER_ACTIVITIES.items():
+            dorm_activities = world.get_dorm_activities()
+            for name, activity in dorm_activities.items():
                 characters.append({"name": name, "activity": activity})
 
         self.nearby_characters = characters
         self.atmosphere = time_data.get("atmosphere", "安静")
+
+        # 天气描述
+        weather_desc = world.get_weather_description()
 
         result = {
             "visual": location_data.get("visual", "") + "。" + time_data.get("visual", ""),
@@ -55,19 +57,20 @@ class SceneEngine:
             "tactile": time_data.get("tactile", "") + "。" + location_data.get("tactile", ""),
             "olfactory": time_data.get("olfactory", "") + "。" + location_data.get("olfactory", ""),
             "atmosphere": time_data.get("atmosphere", "安静"),
+            "weather": weather_desc,
             "characters": characters,
         }
 
         for sense in ["visual", "audio", "tactile", "olfactory"]:
             result[sense] = result[sense].strip("。").strip()
 
-        debug(f"[SceneEngine] 时间段={self.time_of_day}, 地点={self.current_location}, "
-              f"人物={len(characters)}人, 场景变化={self._scene_changed}")
+        debug(f"[SceneEngine] 时间段={self.time_of_day}, 天气={world.get_weather()}, "
+              f"地点={self.current_location}, 人物={len(characters)}人")
 
         return result
 
     def update(self, elapsed_seconds: float):
-        new_time = get_time_of_day()
+        new_time = world.get_time_of_day()
         if new_time != self.time_of_day:
             self.time_of_day = new_time
             self._scene_changed = True
@@ -76,8 +79,9 @@ class SceneEngine:
         if not self.nearby_characters:
             return f"你在{self.current_location}。{self.atmosphere}。"
 
-        lines = [f"你靠在{self.current_location}靠门的床上。"
-                 f"{self.time_of_day}的{TIME_ATMOSPHERE.get(self.time_of_day, {}).get('visual', '')}。"]
+        world_summary = world.get_world_summary()
+
+        lines = [f"你靠在{self.current_location}靠门的床上。{world_summary}"]
 
         preferred_order = ["向云舟", "冉昭然", "黄景云", "叶清辞",
                            "陆华望", "秦狐戏", "陆华希"]

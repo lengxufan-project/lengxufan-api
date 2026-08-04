@@ -1,4 +1,4 @@
-﻿"""对话流程引擎 v5.4 - 用户状态双向感知"""
+﻿"""对话流程引擎 v5.4 - 事件总线版"""
 import re
 import random
 from infra.logger import info
@@ -31,6 +31,7 @@ class DialogueEngine:
         thought_chain=None, scene_engine=None, context_analyzer=None,
         inner_monologue=None, trust_suspicion=None,
         body_state=None, mind_state=None, relationship_dynamics=None,
+        event_bus=None, char_id=None,
     ):
         self.perception = perception
         self.memory = memory
@@ -48,6 +49,8 @@ class DialogueEngine:
         self.body_state = body_state
         self.mind_state = mind_state
         self.relationship_dynamics = relationship_dynamics
+        self.event_bus = event_bus
+        self.char_id = char_id or "unknown"
 
     def process(self, user_input):
         self.perception.advance_time()
@@ -63,11 +66,18 @@ class DialogueEngine:
 
         text = user_input.strip()
 
-        # ---- 新增：用户状态分析 ----
-        user_analysis = {}
         if self.user_state:
+            self.user_state.update_per_turn()
             user_analysis = self.user_state.analyze_input(text)
             self.user_state.apply_analysis(user_analysis)
+
+            user_mood = user_analysis.get("mood_change")
+            if user_mood == "开心":
+                self.perception.emotion = min(85, self.perception.emotion + 3)
+            elif user_mood == "悲伤":
+                self.perception.emotion = max(0, self.perception.emotion - 3)
+            elif user_mood == "愤怒":
+                self.perception.emotion = max(0, self.perception.emotion - 2)
 
         scene_context = ""
         if self.scene_engine:
@@ -136,6 +146,8 @@ class DialogueEngine:
                         trust_delta=trust_result["evidence_matched"]["trust_delta"],
                         description=f"答对了验证问题: {trust_result['evidence_matched']['evidence_id']}")
             self._sync_trust_systems()
+            if self.user_state:
+                self.user_state.update_lxf_trust(self.trust_suspicion.trust_value)
 
         # 关键词触发
         for kw in ["哥哥", "塑料刀", "护腕", "讨厌", "恨", "望仔"]:
@@ -184,11 +196,25 @@ class DialogueEngine:
         if self.relationship_dynamics:
             rel_prompt = self.relationship_dynamics.get_prompt_injection()
             if rel_prompt: sp = sp + f"\n\n【关系阶段】{rel_prompt}"
-        # ---- 新增：注入用户状态 ----
         if self.user_state:
             user_prompt = self.user_state.get_prompt_injection()
             if user_prompt: sp = sp + f"\n\n【对方状态】{user_prompt}"
         if thought_result: sp = sp + f"\n\n【思考过程】{thought_result['thought_summary']}"
+
+        # ---- 新增：注入最近的角色间事件 ----
+        if self.event_bus:
+            recent = self.event_bus.get_recent_events(3)
+            if recent:
+                event_texts = []
+                for e in recent:
+                    etype = e.get("type", "")
+                    edata = e.get("data", {})
+                    if etype == "huangjingyun.action":
+                        event_texts.append(f"黄景云刚刚{edata.get('action', '')}。")
+                    elif etype == "lengxufan.action":
+                        event_texts.append(f"冷旭帆刚刚{edata.get('action', '')}。")
+                if event_texts:
+                    sp = sp + "\n\n【宿舍里发生的事】\n" + "\n".join(event_texts)
 
         msgs = build_messages(text, sp)
         ai_raw = self.model_router.call(msgs)
@@ -211,6 +237,10 @@ class DialogueEngine:
 
         if ai_summary: self.memory.add_episode(ai_summary)
         self.perception.pending_events.clear()
+
+        # ---- 新增：角色行为发布事件 ----
+        self._publish_action(ai_text)
+
         self._save()
 
         if self.working_memory:
@@ -226,6 +256,41 @@ class DialogueEngine:
                 if name in text: self.social_network.update_from_dialogue(name, text); break
 
         return full_reply
+
+    def _publish_action(self, reply_text):
+        """从回复中提取关键词，发布角色事件"""
+        if not self.event_bus:
+            return
+
+        # 冷旭帆的行为关键词
+        if self.char_id == "lengxufan":
+            action_keywords = {
+                "护腕": "摸了一下护腕",
+                "擦刀": "擦了擦塑料刀",
+                "不许叫": "说了不许叫",
+                "望仔": "叫了望仔",
+                "陆华望": "提到了陆华望",
+                "妈妈": "想起了妈妈",
+            }
+            for kw, desc in action_keywords.items():
+                if kw in reply_text:
+                    self.event_bus.publish("lengxufan.action", {"action": desc, "character": "lengxufan"})
+                    break
+
+        # 黄景云的行为关键词
+        elif self.char_id == "huangjingyun":
+            action_keywords = {
+                "糖": "剥了一颗糖",
+                "方言": "说了一句方言",
+                "斯瓦希里": "说了一句斯瓦希里语",
+                "叶清辞": "提到了叶清辞",
+                "录音笔": "摸了一下录音笔",
+                "噩梦": "想起了审讯训练",
+            }
+            for kw, desc in action_keywords.items():
+                if kw in reply_text:
+                    self.event_bus.publish("huangjingyun.action", {"action": desc, "character": "huangjingyun"})
+                    break
 
     def _sync_trust_systems(self):
         if self.trust_suspicion and self.trust_suspicion.wang_claim and self.relationship_dynamics:

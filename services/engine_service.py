@@ -1,4 +1,4 @@
-﻿"""引擎服务：负责冷旭帆引擎的初始化与状态收集（v5.5 - 角色注册中心版）"""
+﻿"""引擎服务：负责角色引擎的初始化与状态收集（v5.5 - 事件总线版）"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -20,12 +20,19 @@ from lengxufan_core.character_state.body_state import BodyState
 from lengxufan_core.character_state.mind_state import MindState
 from lengxufan_core.character_state.relationship_dynamics import RelationshipDynamics
 from characters import CharacterRegistry
+from world_state import world
+from event_bus import bus
+
+# 全局引擎缓存（事件总线需要跨角色通信）
+_engine_cache = {}
 
 class EngineService:
     def __init__(self, char_id="lengxufan"):
-        # 加载角色配置
+        info(f"世界状态: {world.get_world_summary()}")
+
         CharacterRegistry.load_all()
         self.char_config = CharacterRegistry.get(char_id)
+        self.char_id = char_id
         info(f"已加载角色: {self.char_config.name}")
 
         self.perception = Perception()
@@ -62,8 +69,46 @@ class EngineService:
             trust_suspicion=self.trust_suspicion,
             body_state=self.body_state,
             mind_state=self.mind_state,
-            relationship_dynamics=self.relationship_dynamics
+            relationship_dynamics=self.relationship_dynamics,
+            event_bus=bus,
+            char_id=char_id
         )
+
+        # 注册到全局缓存
+        _engine_cache[char_id] = self
+
+        # 注册角色间事件监听
+        self._register_cross_character_events()
+
+    def _register_cross_character_events(self):
+        """注册角色间事件的响应逻辑"""
+        char_name = self.char_config.name
+
+        # 冷旭帆对黄景云行为的响应
+        if self.char_id == "lengxufan":
+            def on_huangjingyun_action(data):
+                action = data.get("action", "")
+                if "剥糖纸" in action:
+                    self.perception.emotion = min(85, self.perception.emotion + 2)
+                elif "方言" in action or "斯瓦希里" in action:
+                    self.perception.emotion = min(85, self.perception.emotion + 1)
+                elif "噩梦" in action or "审讯" in action:
+                    self.perception.emotion = max(0, self.perception.emotion - 3)
+
+            bus.subscribe("huangjingyun.action", on_huangjingyun_action)
+
+        # 黄景云对冷旭帆行为的响应
+        elif self.char_id == "huangjingyun":
+            def on_lengxufan_action(data):
+                action = data.get("action", "")
+                if "护腕" in action or "擦刀" in action:
+                    self.perception.emotion = min(85, self.perception.emotion + 2)
+                elif "望仔" in action or "陆华望" in action:
+                    self.perception.emotion = min(85, self.perception.emotion + 3)
+                elif "不许叫" in action:
+                    self.perception.emotion = max(0, self.perception.emotion - 2)
+
+            bus.subscribe("lengxufan.action", on_lengxufan_action)
 
     def get_reply(self, user_input):
         return self.engine.process(user_input)
@@ -84,5 +129,19 @@ class EngineService:
             "verified_evidence": list(self.trust_suspicion.verified_evidence) if self.trust_suspicion.wang_claim else [],
             "last_thought": self.tc.last_thought if self.tc else "",
             "pending_question": self.trust_suspicion.pending_question if self.trust_suspicion.wang_claim else None,
-            "user_state": self.us.get_state_summary()
+            "user_state": self.us.get_state_summary(),
+            "world": {
+                "day": world.get_simulated_time(),
+                "time_of_day": world.get_time_of_day(),
+                "weather": world.get_weather(),
+                "weather_desc": world.get_weather_description()
+            },
+            "recent_events": [e.get("type", "") for e in bus.get_recent_events(5)]
         }
+
+    @classmethod
+    def get_engine(cls, char_id):
+        """获取或创建角色引擎（支持跨角色通信）"""
+        if char_id not in _engine_cache:
+            _engine_cache[char_id] = cls(char_id=char_id)
+        return _engine_cache[char_id]
