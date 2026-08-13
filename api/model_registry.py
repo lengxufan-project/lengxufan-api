@@ -1,3 +1,21 @@
+"""模型注册表 - 从 .env 文件读取 API Key"""
+import os
+from pathlib import Path
+
+# 加载 .env 文件
+def _load_env_file():
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        with open(env_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                key, _, value = line.partition('=')
+                os.environ[key.strip()] = value.strip()
+
+_load_env_file()
+
 MODEL_REGISTRY = [
     {
         "name": "qwen-plus",

@@ -2,13 +2,13 @@
 import time, requests
 from infra.logger import error
 
-def call_ai(messages, api_key, api_url, model, max_tokens=120, temperature=0.7, retries=2):
+def call_ai(messages, api_key, api_url, model, max_tokens=120, temperature=0.7, retries=1):
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     payload = {"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens, "top_p": 0.9}
     for attempt in range(retries+1):
         try:
             time.sleep(0.5)
-            resp = requests.post(api_url, headers=headers, json=payload, timeout=60)
+            resp = requests.post(api_url, headers=headers, json=payload, timeout=15)
             if resp.status_code == 200:
                 return resp.json()["choices"][0]["message"]["content"].strip()
             else:
