@@ -6,7 +6,7 @@
 技术上采用"代码管里子、AI管面子"的混合架构，拥有四阶段认知处理链、前后端分离部署、
 支持多角色扩展。
 
-**公网地址**：http://122.51.17.57:5000/
+**公网地址**：http://139.199.168.140:5000/
 
 ---
 
@@ -88,3 +88,4 @@ python run.py --cli    # CLI 调试模式
 本项目为课余时间独立完成——从工厂流水线旁边的下班时间，到公网上的第一个 AI NPC。
 
 GitHub：[lengxufan-project/lengxufan-api](https://github.com/lengxufan-project/lengxufan-api)
+
