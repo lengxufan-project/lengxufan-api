@@ -1,9 +1,9 @@
-﻿"""对话流程引擎 v5.4 - 事件总线版"""
-import re
-import random
+﻿"""对话流程引擎 v5.4 - 角色上下文版"""
+import re, random
 from infra.logger import info
 from infra.persistence import save_full_state
 from .prompt_builder import build_system_prompt, build_messages
+from .character_context import get_character_data
 
 
 def parse_ai_response(raw):
@@ -18,8 +18,7 @@ def parse_ai_response(raw):
         e = text.find("】")
         action = text[s:e]
         text = text[e + 1 :].strip()
-        if not text:
-            text = "……"
+        if not text: text = "……"
     return action, text.strip(), summary
 
 
@@ -70,14 +69,10 @@ class DialogueEngine:
             self.user_state.update_per_turn()
             user_analysis = self.user_state.analyze_input(text)
             self.user_state.apply_analysis(user_analysis)
-
             user_mood = user_analysis.get("mood_change")
-            if user_mood == "开心":
-                self.perception.emotion = min(85, self.perception.emotion + 3)
-            elif user_mood == "悲伤":
-                self.perception.emotion = max(0, self.perception.emotion - 3)
-            elif user_mood == "愤怒":
-                self.perception.emotion = max(0, self.perception.emotion - 2)
+            if user_mood == "开心": self.perception.emotion = min(85, self.perception.emotion + 3)
+            elif user_mood == "悲伤": self.perception.emotion = max(0, self.perception.emotion - 3)
+            elif user_mood == "愤怒": self.perception.emotion = max(0, self.perception.emotion - 2)
 
         scene_context = ""
         if self.scene_engine:
@@ -87,27 +82,19 @@ class DialogueEngine:
         context_result = {}
         if self.context_analyzer:
             recent_ctx = ""
-            if self.working_memory:
-                recent_ctx = self.working_memory.get_recent_context()
+            if self.working_memory: recent_ctx = self.working_memory.get_recent_context()
             context_result = self.context_analyzer.analyze(text, recent_ctx)
 
-        # 身份处理
         if "我叫" in text:
-            name_part = (
-                text.split("我叫")[-1].strip()
-                .split("，")[0].split("。")[0].split(" ")[0]
-                .split("、")[0].split(",")[0].strip()
-            )
+            name_part = (text.split("我叫")[-1].strip().split("，")[0].split("。")[0].split(" ")[0].split("、")[0].split(",")[0].strip())
             if name_part:
                 if self.trust_suspicion:
                     claim_result = self.trust_suspicion.handle_self_claim(name_part)
                     if claim_result["claimed"]:
                         self.memory.add_fact("user_claimed_wang")
                         self.perception.emotion = max(0, self.perception.emotion - 15)
-                        if self.user_state:
-                            self.user_state.set_identity(claimed="陆华望")
-                        action = self.behavior.generate_action(
-                            self.perception.emotion, self.perception.status, self.identity.__dict__)
+                        if self.user_state: self.user_state.set_identity(claimed="陆华望")
+                        action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__)
                         self.memory.add_episode("用户自称陆华望")
                         self._sync_trust_systems()
                         self._save()
@@ -118,12 +105,10 @@ class DialogueEngine:
                             self.memory.add_fact(f"user_name_is_{name_part}")
                             if self.user_state: self.user_state.set_identity(name=name_part)
                             reply_text = f"……{name_part}。" if self.perception.emotion < 70 else f"{name_part}。"
-                            action = self.behavior.generate_action(
-                                self.perception.emotion, self.perception.status, self.identity.__dict__)
+                            action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__)
                             self.memory.add_episode(f"玩家自称{name_part}")
                             if self.relationship_dynamics:
-                                self.relationship_dynamics.process_event(
-                                    "告知名字", trust_delta=10, description=f"用户说「我叫{name_part}」")
+                                self.relationship_dynamics.process_event("告知名字", trust_delta=10, description=f"用户说「我叫{name_part}」")
                             self._save()
                             return f"{action} {reply_text}"
                         else:
@@ -131,25 +116,18 @@ class DialogueEngine:
                             self.perception.emotion = max(0, self.perception.emotion - 15)
                             self._sync_trust_systems()
 
-        # 信任状态机
         trust_result = {}
         if self.trust_suspicion and self.trust_suspicion.wang_claim:
             trust_result = self.trust_suspicion.process_turn(text)
             if trust_result.get("question"):
-                action = self.behavior.generate_action(
-                    self.perception.emotion, self.perception.status, self.identity.__dict__)
+                action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__)
                 return f"{action} {trust_result['question']}"
             if trust_result.get("evidence_matched") and trust_result["evidence_matched"].get("passed"):
                 if self.relationship_dynamics:
-                    self.relationship_dynamics.process_event(
-                        "正确验证身份",
-                        trust_delta=trust_result["evidence_matched"]["trust_delta"],
-                        description=f"答对了验证问题: {trust_result['evidence_matched']['evidence_id']}")
+                    self.relationship_dynamics.process_event("正确验证身份", trust_delta=trust_result["evidence_matched"]["trust_delta"], description=f"答对了验证问题: {trust_result['evidence_matched']['evidence_id']}")
             self._sync_trust_systems()
-            if self.user_state:
-                self.user_state.update_lxf_trust(self.trust_suspicion.trust_value)
+            if self.user_state: self.user_state.update_lxf_trust(self.trust_suspicion.trust_value)
 
-        # 关键词触发
         for kw in ["哥哥", "塑料刀", "护腕", "讨厌", "恨", "望仔"]:
             if kw in text:
                 delta = self.identity.apply_evidence(kw)
@@ -184,13 +162,10 @@ class DialogueEngine:
 
         self._sync_trust_systems()
 
-        # 思考链
         thought_result = None
         if self.thought_chain:
-            thought_result = self.thought_chain.think(
-                self.perception, self.identity, self.memory, self.user_state, text, self.working_memory)
+            thought_result = self.thought_chain.think(self.perception, self.identity, self.memory, self.user_state, text, self.working_memory)
 
-        # System Prompt
         sp = build_system_prompt(self.perception, self.identity, self.memory, text, self.working_memory, self.social_network)
         if scene_context: sp = sp + "\n\n【当前场景】\n" + scene_context
         if self.relationship_dynamics:
@@ -201,21 +176,6 @@ class DialogueEngine:
             if user_prompt: sp = sp + f"\n\n【对方状态】{user_prompt}"
         if thought_result: sp = sp + f"\n\n【思考过程】{thought_result['thought_summary']}"
 
-        # ---- 新增：注入最近的角色间事件 ----
-        if self.event_bus:
-            recent = self.event_bus.get_recent_events(3)
-            if recent:
-                event_texts = []
-                for e in recent:
-                    etype = e.get("type", "")
-                    edata = e.get("data", {})
-                    if etype == "huangjingyun.action":
-                        event_texts.append(f"黄景云刚刚{edata.get('action', '')}。")
-                    elif etype == "lengxufan.action":
-                        event_texts.append(f"冷旭帆刚刚{edata.get('action', '')}。")
-                if event_texts:
-                    sp = sp + "\n\n【宿舍里发生的事】\n" + "\n".join(event_texts)
-
         msgs = build_messages(text, sp)
         ai_raw = self.model_router.call(msgs)
         ai_action, ai_text, ai_summary = parse_ai_response(ai_raw)
@@ -225,22 +185,15 @@ class DialogueEngine:
         inner_text = ""
         if self.inner_monologue:
             scene_info = {}
-            if self.scene_engine:
-                scene_info = {"time_of_day": self.scene_engine.time_of_day, "location": self.scene_engine.current_location}
-            inner_text = self.inner_monologue.generate(
-                emotion=self.perception.emotion, status=self.perception.status,
-                scene=scene_info, context=context_result,
-                thought_summary=thought_result["thought_summary"] if thought_result else "")
+            if self.scene_engine: scene_info = {"time_of_day": self.scene_engine.time_of_day, "location": self.scene_engine.current_location}
+            inner_text = self.inner_monologue.generate(emotion=self.perception.emotion, status=self.perception.status, scene=scene_info, context=context_result, thought_summary=thought_result["thought_summary"] if thought_result else "")
 
         full_reply = f"{action} {ai_text}".strip()
         if inner_text: full_reply = full_reply + f"\n💭 {inner_text}"
 
         if ai_summary: self.memory.add_episode(ai_summary)
         self.perception.pending_events.clear()
-
-        # ---- 新增：角色行为发布事件 ----
         self._publish_action(ai_text)
-
         self._save()
 
         if self.working_memory:
@@ -252,45 +205,21 @@ class DialogueEngine:
             self.working_memory.adjust_window(len(ai_text))
 
         if self.social_network:
-            for name in ["向云舟","黄景云","秦狐戏","叶清辞","冉昭然","陆华希"]:
+            for name in ["向云舟", "黄景云", "秦狐戏", "叶清辞", "冉昭然", "陆华希"]:
                 if name in text: self.social_network.update_from_dialogue(name, text); break
 
         return full_reply
 
     def _publish_action(self, reply_text):
-        """从回复中提取关键词，发布角色事件"""
-        if not self.event_bus:
-            return
-
-        # 冷旭帆的行为关键词
+        if not self.event_bus: return
         if self.char_id == "lengxufan":
-            action_keywords = {
-                "护腕": "摸了一下护腕",
-                "擦刀": "擦了擦塑料刀",
-                "不许叫": "说了不许叫",
-                "望仔": "叫了望仔",
-                "陆华望": "提到了陆华望",
-                "妈妈": "想起了妈妈",
-            }
+            action_keywords = {"护腕": "摸了一下护腕", "擦刀": "擦了擦塑料刀", "不许叫": "说了不许叫", "望仔": "叫了望仔", "陆华望": "提到了陆华望", "妈妈": "想起了妈妈"}
             for kw, desc in action_keywords.items():
-                if kw in reply_text:
-                    self.event_bus.publish("lengxufan.action", {"action": desc, "character": "lengxufan"})
-                    break
-
-        # 黄景云的行为关键词
+                if kw in reply_text: self.event_bus.publish("lengxufan.action", {"action": desc, "character": "lengxufan"}); break
         elif self.char_id == "huangjingyun":
-            action_keywords = {
-                "糖": "剥了一颗糖",
-                "方言": "说了一句方言",
-                "斯瓦希里": "说了一句斯瓦希里语",
-                "叶清辞": "提到了叶清辞",
-                "录音笔": "摸了一下录音笔",
-                "噩梦": "想起了审讯训练",
-            }
+            action_keywords = {"糖": "剥了一颗糖", "方言": "说了一句方言", "斯瓦希里": "说了一句斯瓦希里语", "叶清辞": "提到了叶清辞", "录音笔": "摸了一下录音笔", "噩梦": "想起了审讯训练"}
             for kw, desc in action_keywords.items():
-                if kw in reply_text:
-                    self.event_bus.publish("huangjingyun.action", {"action": desc, "character": "huangjingyun"})
-                    break
+                if kw in reply_text: self.event_bus.publish("huangjingyun.action", {"action": desc, "character": "huangjingyun"}); break
 
     def _sync_trust_systems(self):
         if self.trust_suspicion and self.trust_suspicion.wang_claim and self.relationship_dynamics:
@@ -302,16 +231,15 @@ class DialogueEngine:
                 self.relationship_dynamics.current_stage = get_relationship_stage(cap)["stage"]
 
     def _apply_memory_rules(self, text):
-        from .character_data import MEMORY_RULES
-        for kws, tag, delta in MEMORY_RULES:
+        memory_rules = get_character_data("memory_rules") or []
+        for kws, tag, delta in memory_rules:
             if any(kw in text for kw in kws):
                 self.memory.add_fact(tag)
                 self.perception.emotion += delta
-                if tag == "user_asked_about_wang" and any(w in text for w in ["受伤","疼","病"]):
+                if tag == "user_asked_about_wang" and any(w in text for w in ["受伤", "疼", "病"]):
                     self.perception.emotion -= 50
                 self.perception.emotion = max(0, min(100, self.perception.emotion))
 
     def _save(self):
-        state = {**self.perception.to_dict(), **self.memory.to_dict(),
-                 "identity_state": self.identity.to_dict(), "simulated_day": self.perception.simulated_day}
+        state = {**self.perception.to_dict(), **self.memory.to_dict(), "identity_state": self.identity.to_dict(), "simulated_day": self.perception.simulated_day}
         save_full_state(state)
