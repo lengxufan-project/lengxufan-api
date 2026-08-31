@@ -1,125 +1,126 @@
-<!DOCTYPE html>
-<html lang="zh">
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>冷旭帆 · 世界入口</title>
-    <link rel="stylesheet" href="/css/main.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冷旭帆 · 世界入口</title>
+<link rel="stylesheet" href="css/emotion-chart.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/scene-transition.css">
+<link rel="stylesheet" href="css/character-display.css">
+<link rel="stylesheet" href="css/world-clock.css">
+<link rel="stylesheet" href="css/loading-bar.css">
+<link rel="stylesheet" href="css/relation-thermometer.css">
+<link rel="stylesheet" href="css/status-dashboard.css">
+<link rel="stylesheet" href="css/character-tooltip.css">
+<link rel="stylesheet" href="css/event-log.css">
+<link rel="stylesheet" href="css/scene-shortcut.css">
+<link rel="stylesheet" href="css/relation-thermometer.css">
+<link rel="stylesheet" href="css/status-dashboard.css">
+<link rel="stylesheet" href="css/character-tooltip.css">
+<link rel="stylesheet" href="css/event-log.css">
+<link rel="stylesheet" href="css/scene-shortcut.css">
+<link rel="stylesheet" href="css/weather-effects.css">
+<link rel="stylesheet" href="css/achievement-card.css">
+<link rel="stylesheet" href="css/notification-center.css">
+<link rel="stylesheet" href="css/choice-branch.css">
 </head>
 <body>
-    <div id="intro-overlay"><div class="intro-bg"></div><div class="intro-sphere"></div></div>
+<div id="loadingBar"></div>
+  <div id="globalParticles"></div>
 
-    <div class="world-container fade-in">
-        <header class="world-header">
-            <h1>冷旭帆 <span style="font-weight:300;">· 世界入口</span></h1>
-            <div class="header-actions" id="header-actions">
-                <button id="btn-login" onclick="openLoginModal()">登录 / 游客</button>
-                <span id="user-display" style="display:none; font-size:13px; color:#8b949e;"></span>
-                <button id="btn-logout" style="display:none;" onclick="logout()">退出</button>
-            </div>
-            <div class="status-badge">307室 · 潜龙学院</div>
-        </header>
+  <!-- 开场动画 -->
+  <div class="intro" id="intro">
+    <div class="intro-particles" id="introParticles"></div>
+    <div class="intro-glow" id="introGlow"></div>
+    <div class="intro-ball" id="introBall"></div>
+    <div class="intro-text" id="introText">世界入口</div>
+    <div class="intro-skip" id="introSkip">跳过</div>
+  </div>
 
-        <div class="scene-area" id="scene-area">
-            <div class="bg-layer" id="bg-layer" style="background-image:url('/assets/backgrounds/snow-palace.webp')"></div>
-            <div class="overlay"></div>
-            <div class="scene-content">
-                <div class="scene-info" id="scene-info">🌃 307室 · 深夜</div>
-                <div class="room-activity" id="room-activity">室友们正在……</div>
-                <div class="character-display">
-                    <div class="char-item" onclick="switchChar('lengxufan')">
-                        <div class="sprite" id="sprite-lengxufan"><img src="/assets/characters/A.png" alt="冷旭帆"></div>
-                        <div class="label">冷旭帆</div>
-                        <div class="emotion-badge" id="lxf-emotion">😐 平静</div>
-                    </div>
-                    <div class="char-item" onclick="switchChar('huangjingyun')">
-                        <div class="sprite" id="sprite-huangjingyun"><img src="/assets/characters/B.png" alt="黄景云"></div>
-                        <div class="label">黄景云</div>
-                        <div class="emotion-badge" id="hyj-emotion">🙂 稍好</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="chat-area">
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input-group">
-                <input type="text" id="chat-input" placeholder="说点什么..." />
-                <button id="chat-send">发送</button>
-            </div>
-        </div>
-
-        <div class="status-bar" id="status-bar">
-            <span class="item">情绪 <span class="value" id="emotion-value">--</span></span>
-            <span class="item">身体 <span class="value" id="body-value">--</span></span>
-            <span class="item">心理 <span class="value" id="mind-value">--</span></span>
-            <span class="item">关系 <span class="value" id="relation-value">--</span></span>
-            <span class="item">天气 <span class="value" id="weather-value">--</span></span>
-            <span class="item">时间 <span class="value" id="time-value">--</span></span>
-            <span class="item">世界日 <span class="value" id="day-value">--</span></span>
-            <span class="item"><span class="dot green"></span> 在线</span>
-        </div>
-
-        <div class="curve-container">
-            <canvas id="emotion-curve" width="960" height="80"></canvas>
-        </div>
-
-        <div class="footer-actions" id="footer-actions">
-            <div id="char-buttons" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-            <button id="btn-group-mode" onclick="toggleGroupMode()">群聊模式</button>
-            
-            
-            <button id="btn-switch-bg" onclick="cycleBackground()">切换场景</button>
-            <button id="btn-dev" onclick="openDevPanel()" style="display:none;">开发者</button>
-            <button id="btn-profile" onclick="openProfileModal()">个人中心</button>
-            <button id="btn-export" onclick="exportConversation()">导出</button>
-            <span class="spacer"></span>
-            <span style="color:#484f58;font-size:12px;">v5.5 · 占位符</span>
-        </div>
+  <!-- 主界面 -->
+  <div class="app" id="app">
+    <div class="header">
+      <div class="title">冷旭帆 <span class="sep">·</span> 世界入口</div>
+      <div class="online"><span class="green-dot"></span>在线</div>
     </div>
 
-    <!-- 登录弹窗 -->
-    <div class="modal" id="login-modal">
-        <div class="modal-content">
-            <div class="modal-title">进入世界</div>
-            <div class="form-group"><input type="text" id="login-username" placeholder="用户名"></div>
-            <div class="form-group"><input type="password" id="login-password" placeholder="密码"></div>
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="login()">登录</button>
-                <button class="btn-secondary" onclick="register()">注册</button>
-                <button class="btn-secondary" onclick="guestLogin()">游客进入</button>
-            </div>
-        </div>
+    <div class="nav-menu" id="navMenu">
+      <a href="character-profile.html" class="nav-item">人物典籍</a>
+      <a href="relation-map.html" class="nav-item">关系图谱</a>
+      <a href="observer-panel.html" class="nav-item">观察者之窗</a>
+      <a href="exploration.html" class="nav-item">暗夜拾遗</a>
+      <a href="memory-gallery.html" class="nav-item">时光回廊</a>
+      <a href="world-map.html" class="nav-item">星图导航</a>
+      <a href="login.html" class="nav-item">登录</a>
     </div>
 
-    <!-- 开发者面板 -->
-    <div class="dev-modal" id="dev-modal">
-        <div class="dev-content">
-            <button class="dev-close" onclick="closeDevPanel()">&times;</button>
-            <div class="dev-title">开发者面板</div>
-            <div id="dev-panel-content">
-                <div class="dev-section"><h4>情绪</h4><div class="dev-value" id="dev-emotion">--</div></div>
-                <div class="dev-section"><h4>身体</h4><div class="dev-value" id="dev-body">--</div></div>
-                <div class="dev-section"><h4>心理</h4><div class="dev-value" id="dev-mind">--</div></div>
-                <div class="dev-section"><h4>关系</h4><div class="dev-value" id="dev-relation">--</div></div>
-                <div class="dev-section"><h4>望仔验证</h4><div class="dev-value" id="dev-wang">未触发</div></div>
-                <div class="dev-section"><h4>思考链</h4><div class="dev-value" id="dev-thought">--</div></div>
-                <div class="dev-section"><h4>最近事件</h4><div class="dev-value" id="dev-events">--</div></div>
-                <div class="dev-section"><h4>室友活动</h4><div class="dev-value" id="dev-dorm">--</div></div>
-                <div class="dev-section"><h4>最后里程碑</h4><div class="dev-value" id="dev-milestone">--</div></div>
-            </div>
-        </div>
+    <div class="charbar" id="charbar">
+      <button class="group-toggle" id="groupToggle">群聊模式：关</button>
     </div>
 
-    <script src="/js/api.js"></script>
-<script src="/js/app.js"></script>
-<div class="profile-modal" id="profile-modal">
-    <div class="profile-content">
-        <button class="profile-close" onclick="closeProfileModal()">&times;</button>
-        <div class="profile-title">个人中心 · 回忆碎片</div>
-        <div class="profile-info" id="profile-info">未登录</div>
-        <div id="memory-list"></div>
+    <div class="scene" id="scene">
+      <div class="scene-label" id="sceneLabel">307室 · --</div>
+      <div class="scene-meta" id="sceneMeta">第--天 · --</div>
+      <div class="scene-acts" id="sceneActs"></div>
     </div>
-</div>
+
+    <div class="charinfo">
+      <div class="avatar" id="ciAvatar">冷</div>
+      <div class="cname" id="ciName">冷旭帆</div>
+      <div class="elabel" id="ciLabel">--</div>
+      <div class="ebar-wrap">
+        <div class="ebar"><div class="ebar-fill" id="ciFill" style="width:0%"></div></div>
+        <div class="eval" id="ciVal">0</div>
+      </div>
+    </div>
+
+    <div class="chat" id="chat"></div>
+
+    <div class="composer">
+      <textarea id="input" placeholder="输入消息，Enter 发送，Shift+Enter 换行" rows="1"></textarea>
+      <button id="send">发送</button>
+    </div>
+
+    <!-- 情绪曲线图容器（结构由 js/emotion-chart.js 动态生成） -->
+    <div class="emotion-chart" id="emotionChart"></div>
+
+    <div class="statusbar" id="statusbar">
+      <div class="st"><span class="lab">情绪</span><span class="v" id="s-emotion">--</span><div class="mini-bar"><div class="mini-bar-fill" id="s-emoBar" style="width:0%"></div></div></div>
+      <div class="st"><span class="lab">身体</span><span class="v" id="s-body">--</span></div>
+      <div class="st"><span class="lab">心理</span><span class="v" id="s-mind">--</span></div>
+      <div class="st"><span class="lab">关系</span><span class="v" id="s-rel">--</span><div class="mini-bar"><div class="mini-bar-fill" id="s-relBar" style="width:0%"></div></div></div>
+      <div class="st"><span class="lab">天气</span><span class="v" id="s-weather">--</span></div>
+      <div class="st"><span class="lab">时间</span><span class="v" id="s-time">--</span></div>
+    </div>
+  </div>
+
+  <!-- 悬浮球 -->
+  <div id="floatingBall" class="floating-ball"></div>
+
+  <script src="js/loading-bar.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/characters.js"></script>
+  <script src="js/scene-transition.js"></script>
+  <script src="js/character-display.js"></script>
+  <script src="js/emotion-chart.js"></script>
+  <script src="js/world-clock.js"></script>
+  <script src="js/relation-thermometer.js"></script>
+<script src="js/status-dashboard.js"></script>
+<script src="js/character-tooltip.js"></script>
+<script src="js/event-log.js"></script>
+<script src="js/scene-shortcut.js"></script>
+<script src="js/weather-effects.js"></script>
+<script src="js/achievement-card.js"></script>
+<script src="js/notification-center.js"></script>
+<script src="js/choice-branch.js"></script>
+<script src="js/app.js"></script>
+<div id="notificationTrigger"></div>
+<div id="notificationDrawer"></div>
 </body>
 </html>

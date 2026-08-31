@@ -1,505 +1,186 @@
+/* 主入口：初始化所有模块、开场动画、定时刷新、事件绑定 */
+(function () {
+  "use strict";
 
-        // ============ 全局变量 ============
-        let currentChar = 'lengxufan';
-let characterList = [];
-let groupMode = false;
-        let currentUser = null;
-        let latestState = null;
-        let bgIndex = 0;
-        const backgrounds = [
-            '/assets/backgrounds/snow-palace.webp',
-            '/assets/backgrounds/crimson-nocturne.webp',
-            '/assets/backgrounds/crystal-swan.webp',
-            '/assets/backgrounds/rose-vow.webp',
-            '/assets/backgrounds/verdant-dawnsong.webp'
-        ];
+  var intro = document.getElementById("intro");
+  var introSkip = document.getElementById("introSkip");
+  var app = document.getElementById("app");
+  var inputEl = document.getElementById("input");
+  var sendBtn = document.getElementById("send");
+  var groupToggle = document.getElementById("groupToggle");
+  var chatEl = document.getElementById("chat");
 
-        // ============ 登录逻辑 ============
-        async function apiFetch(url, method='GET', body=null) {
-            const opts = { method, headers:{'Content-Type':'application/json'}, credentials:'same-origin' };
-            if (body) opts.body = JSON.stringify(body);
-            const res = await fetch(url, opts);
-            if (!res.ok) {
-                const err = await res.json().catch(()=>({}));
-                throw new Error(err.error || res.statusText);
-            }
-            return res.json();
-        }
+  // ---------- 开场动画 ----------
+  var introParticles = document.getElementById("introParticles");
+  var introBall = document.getElementById("introBall");
+  var floatingBall = document.getElementById("floatingBall");
 
-        async function login() {
-            const u = document.getElementById('login-username').value.trim();
-            const p = document.getElementById('login-password').value.trim();
-            if (!u || !p) return alert('请输入用户名和密码');
-            try {
-                currentUser = await apiFetch('/api/auth/login', 'POST', {username:u, password:p});
-                updateUserUI();
-                closeLoginModal();
-            } catch(e) { alert(e.message); }
-        }
+  // 主界面初始隐藏，过渡时淡入（opacity 0→1，0.8s）
+  if (app) { app.style.opacity = "0"; app.style.transition = "opacity 0.8s ease-in-out"; }
 
-        async function register() {
-            const u = document.getElementById('login-username').value.trim();
-            const p = document.getElementById('login-password').value.trim();
-            if (!u || !p) return alert('请输入用户名和密码');
-            try {
-                currentUser = await apiFetch('/api/auth/register', 'POST', {username:u, password:p});
-                updateUserUI();
-                closeLoginModal();
-            } catch(e) { alert(e.message); }
-        }
-
-        async function guestLogin() {
-            try {
-                currentUser = await apiFetch('/api/auth/guest', 'POST');
-                updateUserUI();
-                closeLoginModal();
-            } catch(e) { alert(e.message); }
-        }
-
-        async function logout() {
-            try { await apiFetch('/api/auth/logout', 'POST'); } catch(e) {}
-            currentUser = null;
-            updateUserUI();
-        }
-
-        function updateUserUI() {
-            const loginBtn = document.getElementById('btn-login');
-            const userDisplay = document.getElementById('user-display');
-            const logoutBtn = document.getElementById('btn-logout');
-            const devBtn = document.getElementById('btn-dev');
-            if (currentUser) {
-                loginBtn.style.display = 'none';
-                userDisplay.style.display = 'inline';
-                userDisplay.textContent = `${currentUser.username} (${currentUser.role === 'developer' ? '开发者' : '用户'})`;
-                logoutBtn.style.display = 'inline';
-                if (currentUser.role === 'developer') {
-                    devBtn.style.display = 'inline-block';
-                } else {
-                    devBtn.style.display = 'none';
-                }
-            } else {
-                loginBtn.style.display = 'inline-block';
-                userDisplay.style.display = 'none';
-                logoutBtn.style.display = 'none';
-                devBtn.style.display = 'none';
-            }
-        }
-
-        function openLoginModal() {
-            document.getElementById('login-modal').classList.add('active');
-        }
-        function closeLoginModal() {
-            document.getElementById('login-modal').classList.remove('active');
-        }
-
-        // 页面加载时检查是否已登录，若未登录则自动游客登录（demo 模式）
-        (async function initAuth() {
-            try {
-                currentUser = await apiFetch('/api/auth/me');
-                updateUserUI();
-            } catch(e) {
-                // 未登录，自动游客登录
-                try {
-                    currentUser = await apiFetch('/api/auth/guest', 'POST');
-                    updateUserUI();
-                } catch(err) {
-                    console.error('自动游客登录失败', err);
-                }
-            }
-        })();
-
-        // ============ 聊天逻辑 ============
-        const messagesContainer = document.getElementById('chat-messages');
-        const inputField = document.getElementById('chat-input');
-        const sendButton = document.getElementById('chat-send');
-        let isProcessing = false;
-
-        function addMessage(role, content, speakerName) {
-            const div = document.createElement('div');
-            div.className = 'msg ' + role;
-            if (role === 'ai' && content.includes('💭')) {
-                const parts = content.split('💭');
-                div.textContent = parts[0].trim();
-                if (parts.length > 1) {
-                    const mono = document.createElement('div');
-                    mono.className = 'monologue';
-                    mono.textContent = '💭 ' + parts.slice(1).join('💭').trim();
-                    div.appendChild(mono);
-                }
-            } else {
-                div.textContent = speakerName ? speakerName + '：' + content : content;
-            }
-            messagesContainer.appendChild(div);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function showTyping() {
-            const div = document.createElement('div');
-            div.className = 'msg typing';
-            div.id = 'typing-indicator';
-            div.textContent = '角色正在输入...';
-            messagesContainer.appendChild(div);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        function hideTyping() {
-            const el = document.getElementById('typing-indicator');
-            if (el) el.remove();
-        }
-
-        async function sendMessage() {
-            const text = inputField.value.trim();
-            if (!text || isProcessing) return;
-            inputField.value = '';
-            isProcessing = true;
-            addMessage('user', text);
-
-            if (groupMode) {
-                // 群聊模式：依次让所有角色回复，并传递上下文
-                showTyping();
-                let groupContext = '';
-                for (const c of characterList) {
-                    try {
-                        const res = await fetch('/api/chat', {
-                            method: 'POST',
-                            headers: {'Content-Type':'application/json'},
-                            body: JSON.stringify({message:text, char_id:c.id, group_context:groupContext})
-                        });
-                        const data = await res.json();
-                        hideTyping();
-                        let cleanReply = data.reply.replace(/💭 身体没有异常/g, '').trim();
-                        addMessage('ai', cleanReply || '……（他沉默着，没有回答）', c.name);
-                        groupContext += `${c.name}：${data.reply}\n`;
-                        showTyping();
-                    } catch(err) {
-                        hideTyping();
-                        addMessage('ai', '……（他沉默着，没有回答）', c.name);
-                    }
-                }
-                hideTyping();
-                isProcessing = false;
-            } else {
-                // 单人模式
-                showTyping();
-                try {
-                    const res = await fetch('/api/chat', {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json'},
-                        body: JSON.stringify({message:text, char_id:currentChar})
-                    });
-                    const data = await res.json();
-                    hideTyping();
-                    addMessage('ai', data.reply);
-                } catch(err) {
-                    hideTyping();
-                    addMessage('ai', '……（他沉默着，没有回答）');
-                    console.error(err);
-                } finally {
-                    isProcessing = false;
-                }
-            }
-        }
-
-        sendButton.addEventListener('click', sendMessage);
-        inputField.addEventListener('keydown', e => { if(e.key==='Enter') sendMessage(); });
-
-        // 欢迎消息
-        setTimeout(() => addMessage('ai', '（他抬眼看了你一下，指尖无意识摩挲着护腕边缘）……嗯。'), 500);
-
-        // ============ 角色切换 ============
-        function switchChar(charId) {
-    currentChar = charId;
-    document.querySelectorAll('#char-buttons .char-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.id === 'btn-' + charId);
-    });
-    const char = characterList.find(c => c.id === charId);
-    addMessage('ai', '（切换到' + (char ? char.name : charId) + '）');
-}
-
-
-        function toggleGroupMode() {
-            groupMode = !groupMode;
-            const btn = document.getElementById('btn-group-mode');
-            if (btn) {
-                btn.classList.toggle('active', groupMode);
-                btn.textContent = groupMode ? '退出群聊' : '群聊模式';
-            }
-            addMessage('ai', groupMode ? '（已进入群聊模式，所有角色将依次回复）' : '（已退出群聊模式）');
-        }
-async function loadCharacters() {
-    try {
-        const chars = await API.getCharacters();
-        characterList = chars;
-        const container = document.getElementById('char-buttons');
-        if (!container) return;
-        container.innerHTML = '';
-        chars.forEach(c => {
-            const btn = document.createElement('button');
-            btn.id = 'btn-' + c.id;
-            btn.className = 'char-btn';
-            if (c.id === currentChar) btn.classList.add('active');
-            btn.textContent = c.name;
-            btn.onclick = () => switchChar(c.id);
-            container.appendChild(btn);
-        });
-    } catch(e) {
-        console.error('加载角色列表失败:', e);
+  // 动态生成 40 个开场粒子（1-2px，冰蓝色，随机位置/延迟，floatUp 8-12s）
+  if (introParticles) {
+    for (var i = 0; i < 40; i++) {
+      var p = document.createElement("div");
+      p.className = "intro-particle";
+      var pSize = 1 + Math.random();              // 1-2px
+      var pOpacity = 0.3 + Math.random() * 0.4;
+      var pDur = 8 + Math.random() * 4;            // 8-12s
+      var pDelay = Math.random() * 6;
+      p.style.left = (Math.random() * 100) + "%";
+      p.style.width = pSize.toFixed(2) + "px";
+      p.style.height = pSize.toFixed(2) + "px";
+      p.style.setProperty("--p-opacity", pOpacity.toFixed(2));
+      p.style.animationDuration = pDur.toFixed(1) + "s";
+      p.style.animationDelay = pDelay.toFixed(1) + "s";
+      introParticles.appendChild(p);
     }
-}// ============ 背景切换 ============
-        function cycleBackground() {
-            bgIndex = (bgIndex + 1) % backgrounds.length;
-            document.getElementById('bg-layer').style.backgroundImage = `url('${backgrounds[bgIndex]}')`;
-        }
+  }
 
-        // ============ 情绪曲线 ============
-        const emotionHistory = [];
-        const MAX_POINTS = 50;
-        function addEmotionPoint(emotion, trust) {
-            emotionHistory.push({time: Date.now(), emotion: emotion, trust: trust});
-            if (emotionHistory.length > MAX_POINTS) emotionHistory.shift();
-            drawCurve();
-        }
-        function drawCurve() {
-            const canvas = document.getElementById('emotion-curve');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = '#2d333b';
-            ctx.lineWidth = 0.5;
-            for (let i=0; i<=4; i++) {
-                const y = (height/4)*i;
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
-            }
-            if (emotionHistory.length < 2) return;
-            const stepX = width / (MAX_POINTS - 1);
-            ctx.beginPath();
-            ctx.strokeStyle = '#58a6ff';
-            ctx.lineWidth = 2;
-            emotionHistory.forEach((point, idx) => {
-                const x = width - (emotionHistory.length - 1 - idx) * stepX;
-                const y = height - ((point.emotion - 0) / 100) * height;
-                if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-            const hasTrust = emotionHistory.some(p => p.trust !== undefined && p.trust !== null);
-            if (hasTrust) {
-                ctx.beginPath();
-                ctx.strokeStyle = '#3fb950';
-                ctx.lineWidth = 1.5;
-                emotionHistory.forEach((point, idx) => {
-                    if (point.trust === undefined || point.trust === null) return;
-                    const x = width - (emotionHistory.length - 1 - idx) * stepX;
-                    const y = height - ((point.trust - 0) / 100) * height;
-                    if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-            }
-        }
+  var introTimers = [];
+  function clearIntroTimers() { introTimers.forEach(clearTimeout); introTimers = []; }
 
-        // ============ 状态轮询 ============
-        const EMOTION_MAP = [
-            { min:0, max:20, emoji:'😞', label:'低落' },
-            { min:21, max:40, emoji:'😐', label:'平静' },
-            { min:41, max:60, emoji:'🙂', label:'稍好' },
-            { min:61, max:80, emoji:'😊', label:'不错' },
-            { min:81, max:100, emoji:'😄', label:'高涨' },
-        ];
-        function getEmotion(v) {
-            for (const r of EMOTION_MAP) if (v>=r.min && v<=r.max) return r;
-            return EMOTION_MAP[1];
-        }
+  // 0ms：光点已显示（CSS 初始 scale 1 opacity 0.3）
+  // 1000ms：光球膨胀 + 环状波纹
+  introTimers.push(setTimeout(function () {
+    if (introBall) introBall.classList.add("expand");
+  }, 1000));
+  // 2500ms：光球爆发 + 粒子散落（"世界入口"文字由 CSS 2s 延迟自动出现）
+  introTimers.push(setTimeout(function () {
+    if (introBall) introBall.classList.add("burst");
+    if (introParticles) introParticles.classList.add("scatter");
+  }, 2500));
+  // 3500ms：整体淡出，光球缩小至右下角，主界面淡入
+  introTimers.push(setTimeout(function () {
+    if (introBall) introBall.classList.add("shrink-to-corner");
+    if (intro) intro.classList.add("transparent");
+    var introGlow = document.getElementById("introGlow");
+    var introText = document.getElementById("introText");
+    if (introGlow) introGlow.classList.add("fade-out");
+    if (introText) introText.classList.add("fade-out");
+    if (app) app.style.opacity = "1";
+  }, 3500));
+  // 4000ms：移除 #intro，悬浮球接替
+  introTimers.push(setTimeout(function () {
+    if (intro) { intro.classList.add("hide"); intro.style.display = "none"; }
+    if (floatingBall) {
+      floatingBall.style.transition = "none";
+      floatingBall.style.opacity = "1";
+      requestAnimationFrame(function () { floatingBall.style.transition = ""; });
+    }
+  }, 4000));
 
-        let trustValue = null;
-        async function fetchState() {
-            try {
-                const res = await fetch('/api/state');
-                const state = await res.json();
-                latestState = state;
-                document.getElementById('emotion-value').textContent = state.emotion?.toFixed(0) || '--';
-                const emo = getEmotion(state.emotion || 50);
-                document.getElementById('lxf-emotion').textContent = emo.emoji + ' ' + emo.label;
-                document.getElementById('body-value').textContent = state.body || '--';
-                document.getElementById('mind-value').textContent = state.mind || '--';
-                document.getElementById('relation-value').textContent = state.relationship || '--';
-                if (state.world) {
-                    document.getElementById('weather-value').textContent = state.world.weather || '--';
-                    document.getElementById('time-value').textContent = state.world.time_of_day || '--';
-                    document.getElementById('day-value').textContent = state.world.day ? '第'+state.world.day+'天' : '--';
-                    const timeOfDay = state.world.time_of_day;
-                    if (timeOfDay === '清晨' || timeOfDay === '上午') {
-                        document.getElementById('bg-layer').style.backgroundImage = "url('/assets/backgrounds/verdant-dawnsong.webp')";
-                    } else if (timeOfDay === '中午' || timeOfDay === '下午') {
-                        document.getElementById('bg-layer').style.backgroundImage = "url('/assets/backgrounds/crystal-swan.webp')";
-                    } else if (timeOfDay === '傍晚') {
-                        document.getElementById('bg-layer').style.backgroundImage = "url('/assets/backgrounds/rose-vow.webp')";
-                    } else if (timeOfDay === '夜晚') {
-                        document.getElementById('bg-layer').style.backgroundImage = "url('/assets/backgrounds/crimson-nocturne.webp')";
-                    } else {
-                        document.getElementById('bg-layer').style.backgroundImage = "url('/assets/backgrounds/snow-palace.webp')";
-                    }
-                    const roomEl = document.getElementById('room-activity');
-                    if (roomEl && state.dorm_activities) {
-                        const acts = Object.entries(state.dorm_activities).slice(0, 3).map(([name, act]) => `${name}${act}`).join('；');
-                        roomEl.textContent = '室友们：' + (acts || '没有动静');
-                    }
-                }
-                if (state.wang_claim) {
-                    trustValue = state.wang_trust;
-                } else if (state.relationship) {
-                    const match = state.relationship.match(/信任(\d+)/);
-                    trustValue = match ? parseInt(match[1]) : null;
-                }
-                addEmotionPoint(state.emotion || 50, trustValue);
+  // 跳过：立即结束动画并显示主界面
+  if (introSkip) introSkip.addEventListener("click", function () {
+    clearIntroTimers();
+    if (app) app.style.opacity = "1";
+    if (intro) { intro.classList.add("hide"); intro.style.display = "none"; }
+    if (floatingBall) {
+      floatingBall.style.transition = "none";
+      floatingBall.style.opacity = "1";
+      requestAnimationFrame(function () { floatingBall.style.transition = ""; });
+    }
+  });
 
-                if (state.last_milestone && state.last_milestone !== window.lastShownMilestone) {
-                    window.lastShownMilestone = state.last_milestone;
-                    showMilestoneToast(state.last_milestone);
-                }
+  // ---------- 全局粒子 ----------
+  (function initGlobalParticles() {
+    var container = document.getElementById("globalParticles");
+    if (!container) return;
+    var isMobile = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
+    var count = isMobile ? 15 : 30;
+    for (var i = 0; i < count; i++) {
+      var p = document.createElement("div");
+      p.className = "global-particle";
+      var size = 1 + Math.random() * 2;
+      var opacity = 0.2 + Math.random() * 0.3;
+      var duration = 8 + Math.random() * 7;
+      var delay = Math.random() * 5;
+      p.style.left = (Math.random() * 100) + "%";
+      p.style.top = (Math.random() * 100) + "%";
+      p.style.width = size + "px";
+      p.style.height = size + "px";
+      p.style.opacity = opacity;
+      p.style.setProperty("--p-opacity", opacity.toFixed(2));
+      p.style.animationDuration = duration.toFixed(1) + "s";
+      p.style.animationDelay = delay.toFixed(1) + "s";
+      container.appendChild(p);
+    }
+  })();
 
-                // 立绘表情
-                const lxfSprite = document.getElementById('sprite-lengxufan').querySelector('img');
-                if (lxfSprite) {
-                    const emotion = state.emotion || 50;
-                    if (emotion < 20) lxfSprite.src = '/assets/characters/E.png';
-                    else if (emotion < 40) lxfSprite.src = '/assets/characters/D.png';
-                    else if (emotion < 60) lxfSprite.src = '/assets/characters/A.png';
-                    else if (emotion < 80) lxfSprite.src = '/assets/characters/B.png';
-                    else lxfSprite.src = '/assets/characters/C.png';
-                }
-            } catch(e) {}
-        }
+  // ---------- 状态刷新 ----------
+  function refreshState() {
+    if (!window.API || !window.API.getState) return;
+    window.API.getState().then(function (s) {
+      if (!s) return;
+      if (window.Scene && window.Scene.update) window.Scene.update(s);
+      if (window.UI && window.UI.updateState) window.UI.updateState(s);
+      if (window.WorldClock && s.world) window.WorldClock.update(s.world.time_of_day, s.world.day);
+      // 时段氛围光：依据 world.time_of_day 切换场景光晕
+      if (window.TimeLighting && s.world) window.TimeLighting.update(s.world.time_of_day);
+      // 天气特效：依据 world.weather 切换晴 / 雨 / 雪 / 阴 / 风
+      if (window.WeatherEffects && s.world) window.WeatherEffects.update(s.world.weather);
+      if (window.EmotionChart) {
+        // 记录情绪历史
+        if (!window._emotionHistory) window._emotionHistory = [];
+        var now = new Date();
+        var timeStr = ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2);
+        window._emotionHistory.push({ time: timeStr, value: Number(s.emotion) || 0 });
+        if (window._emotionHistory.length > 20) window._emotionHistory.shift();
+        window.EmotionChart.update(window._emotionHistory);
+      }
+      // 情绪粒子：依据情绪值调整颜色 / 速度 / 方向 / 密度
+      if (window.EmotionParticles) window.EmotionParticles.update(s.emotion);
+    }).catch(function () { /* 静默失败 */ });
+  }
 
-        function openProfileModal() {
-            if (!currentUser) {
-                alert('请先登录或游客进入');
-                openLoginModal();
-                return;
-            }
-            document.getElementById('profile-modal').classList.add('active');
-            loadProfile();
-        }
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.remove('active');
-        }
-        async function loadProfile() {
-            const infoEl = document.getElementById('profile-info');
-            const listEl = document.getElementById('memory-list');
-            infoEl.textContent = '用户名：' + currentUser.username + ' | 角色：' + (currentUser.role === 'developer' ? '开发者' : '用户');
-            listEl.innerHTML = '<div style="color:#8b949e;">加载中...</div>';
-            try {
-                const conversations = await apiFetch('/api/conversations');
-                if (!conversations || conversations.length === 0) {
-                    listEl.innerHTML = '<div style="color:#8b949e;">还没有对话记录。</div>';
-                    return;
-                }
-                // 只显示最近30条
-                const recent = conversations.slice(-30).reverse();
-                listEl.innerHTML = '';
-                recent.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'memory-item';
-                    const who = c.role === 'user' ? '你' : (c.role === 'lxf' ? '冷旭帆' : c.role);
-                    const timeStr = c.created_at ? new Date(c.created_at).toLocaleString('zh-CN', {hour12:false}) : '';
-                    const content = c.content || '';
-                    const preview = content.length > 50 ? content.substring(0,50) + '...' : content;
-                    div.innerHTML = '<span class="who">[' + who + ']</span> ' + preview + '<span class="time">' + timeStr + '</span>';
-                    listEl.appendChild(div);
-                });
-            } catch(e) {
-                listEl.innerHTML = '<div style="color:#8b949e;">加载失败：' + e.message + '</div>';
-            }
-        }
+  // ---------- 初始化 ----------
+  function init() {
+    // 初始化各模块
+    if (window.Characters && window.Characters.load) window.Characters.load();
+    if (window.Scene && window.Scene.init) window.Scene.init();
+    if (window.EmotionChart) window.EmotionChart.init("emotionChart");
+    if (window.WorldClock) window.WorldClock.init();
+    if (window.ChoiceBranch) window.ChoiceBranch.init();
+    if (window.EmotionParticles) window.EmotionParticles.init();
+    if (window.TimeLighting) window.TimeLighting.init();
+    if (window.WeatherEffects) window.WeatherEffects.init();
+    if (window.AchievementCard) window.AchievementCard.init();
+    if (window.NotificationCenter) window.NotificationCenter.init();
 
-        function openProfileModal() {
-            if (!currentUser) {
-                alert('请先登录或游客进入');
-                openLoginModal();
-                return;
-            }
-            document.getElementById('profile-modal').classList.add('active');
-            loadProfile();
-        }
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.remove('active');
-        }
-        async function loadProfile() {
-            const infoEl = document.getElementById('profile-info');
-            const listEl = document.getElementById('memory-list');
-            infoEl.textContent = '用户名：' + currentUser.username + ' | 角色：' + (currentUser.role === 'developer' ? '开发者' : '用户');
-            listEl.innerHTML = '<div style="color:#8b949e;">加载中...</div>';
-            try {
-                const conversations = await apiFetch('/api/conversations');
-                if (!conversations || conversations.length === 0) {
-                    listEl.innerHTML = '<div style="color:#8b949e;">还没有对话记录。</div>';
-                    return;
-                }
-                const recent = conversations.slice(-30).reverse();
-                listEl.innerHTML = '';
-                recent.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'memory-item';
-                    const who = c.role === 'user' ? '你' : (c.role === 'lxf' ? '冷旭帆' : c.role);
-                    const timeStr = c.created_at ? new Date(c.created_at).toLocaleString('zh-CN', {hour12:false}) : '';
-                    const content = c.content || '';
-                    const preview = content.length > 50 ? content.substring(0,50) + '...' : content;
-                    div.innerHTML = '<span class="who">[' + who + ']</span> ' + preview + '<span class="time">' + timeStr + '</span>';
-                    listEl.appendChild(div);
-                });
-            } catch(e) {
-                listEl.innerHTML = '<div style="color:#8b949e;">加载失败：' + e.message + '</div>';
-            }
-        }
+    // 首次加载 3 秒后显示首个成就（占位，后续接入后端）
+    if (window.AchievementCard && window.AchievementCard.show) {
+      setTimeout(function () {
+        window.AchievementCard.show("初见", "你第一次踏入 307 室");
+      }, 3000);
+    }
 
-        function showMilestoneToast(text) {
-            const toast = document.createElement('div');
-            toast.className = 'milestone-toast';
-            toast.textContent = '✨ ' + text;
-            document.body.appendChild(toast);
-            setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 3000);
-        }
+    // 初始消息
+    if (window.UI && window.UI.addMessage) {
+      window.UI.addMessage("……（他靠在窗边，目光淡淡地落过来）", "ai");
+    }
 
-        function openDevPanel() {
-            if (!currentUser || currentUser.role !== 'developer') return;
-            document.getElementById('dev-modal').classList.add('active');
-            updateDevPanel();
-        }
-        function closeDevPanel() {
-            document.getElementById('dev-modal').classList.remove('active');
-        }
-        function updateDevPanel() {
-            if (!latestState) return;
-            document.getElementById('dev-emotion').textContent = latestState.emotion?.toFixed(1) + ' (' + (latestState.emotion_label || '') + ')';
-            document.getElementById('dev-body').textContent = latestState.body || '--';
-            document.getElementById('dev-mind').textContent = latestState.mind || '--';
-            document.getElementById('dev-relation').textContent = latestState.relationship || '--';
-            if (latestState.wang_claim) {
-                document.getElementById('dev-wang').textContent = '信任:' + latestState.wang_trust + ' | 证据:' + (latestState.verified_evidence?.join(', ') || '无');
-            } else {
-                document.getElementById('dev-wang').textContent = '未触发';
-            }
-            document.getElementById('dev-thought').textContent = latestState.last_thought || '--';
-            document.getElementById('dev-events').textContent = latestState.recent_events?.join(' | ') || '--';
-            if (latestState.dorm_activities) {
-                const acts = Object.entries(latestState.dorm_activities).slice(0, 5).map(([n,a]) => n+a).join('；');
-                document.getElementById('dev-dorm').textContent = acts || '--';
-            } else {
-                document.getElementById('dev-dorm').textContent = '--';
-            }
-            document.getElementById('dev-milestone').textContent = latestState.last_milestone || '--';
-        }
+    refreshState();
+    setInterval(refreshState, 2000);
+  }
 
-        fetchState();
-        setInterval(fetchState, 2000);
-        setInterval(() => { if (document.getElementById('dev-modal')?.classList.contains('active')) updateDevPanel(); }, 2000);
+  // ---------- 事件绑定 ----------
+  if (sendBtn && inputEl) {
+    sendBtn.addEventListener("click", function () {
+      if (window.Chat && window.Chat.send) window.Chat.send();
+    });
+    inputEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (window.Chat && window.Chat.send) window.Chat.send();
+      }
+    });
+  }
+  if (groupToggle) {
+    groupToggle.addEventListener("click", function () {
+      if (window.Chat && window.Chat.toggleGroup) window.Chat.toggleGroup();
+    });
+  }
 
-        // 开场动画
-        setTimeout(() => {
-            const overlay = document.getElementById('intro-overlay');
-            if (overlay) {
-                overlay.classList.add('hidden');
-                setTimeout(() => { if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 1500);
-            }
-        }, 2800);
-
-loadCharacters();
+  // 启动
+  init();
+})();

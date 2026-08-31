@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关系温度计</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/relation-thermometer.css">
+<style>
+  body { background: #10131f; color: #c9d6f0; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; }
+  .relations-page { max-width: 420px; margin: 0 auto; padding: 16px 12px 40px; }
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .page-title { font-size: 16px; font-weight: 400; letter-spacing: 0.05em; margin: 0; }
+  .back-btn {
+    color: #8fa0c0;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+  }
+  .back-btn:hover { color: #fff; }
+</style>
+</head>
+<body>
+  <div class="relations-page">
+    <div class="page-header">
+      <a class="back-btn" href="index.html">&larr; 返回</a>
+      <h1 class="page-title">关系温度计</h1>
+    </div>
+    <div id="relationsContainer"></div>
+  </div>
+
+  <script src="js/relation-thermometer.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      window.RelationThermometer.init("relationsContainer");
+
+      function load() {
+        Promise.all([
+          fetch("/api/characters").then(function (r) { return r.json(); }),
+          fetch("/api/state").then(function (r) { return r.json(); })
+        ]).then(function (res) {
+          window.RelationThermometer.update(res[0], res[1]);
+        }).catch(function () {
+          // 接口暂时不可用时静默处理
+        });
+      }
+
+      load();
+    })();
+  </script>
+</body>
+</html>

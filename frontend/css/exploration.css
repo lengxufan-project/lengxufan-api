@@ -1,0 +1,273 @@
+/* ============ 暗夜拾遗（独立页面） ============ */
+/* 覆盖 main.css 的全局 body 设定 */
+body {
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* ---------- 全屏场景区：307 室夜晚 ---------- */
+.scene-area {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  /* 深色渐变模拟夜晚宿舍：上方夜色 + 下方地面微光 */
+  background:
+    radial-gradient(ellipse 60% 40% at 72% 22%, rgba(88, 166, 255, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 45% at 50% 108%, rgba(58, 72, 105, 0.22) 0%, transparent 65%),
+    linear-gradient(180deg, #05060a 0%, #0a0d16 55%, #0d1019 100%);
+}
+/* 迷雾层：径向渐变暗角 */
+.scene-area::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 38%, rgba(0, 0, 0, 0.35) 72%, rgba(0, 0, 0, 0.62) 100%);
+}
+/* 月光斜照光斑 */
+.moonlight {
+  position: absolute;
+  top: -12%;
+  right: 6%;
+  width: 420px;
+  height: 620px;
+  pointer-events: none;
+  background: linear-gradient(200deg, rgba(159, 216, 255, 0.10) 0%, rgba(159, 216, 255, 0.03) 42%, transparent 70%);
+  transform: rotate(14deg);
+  border-radius: 50%;
+  filter: blur(6px);
+}
+
+/* ---------- 顶部：返回 + 标题 ---------- */
+.ex-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 14px;
+  background: linear-gradient(180deg, rgba(5, 6, 10, 0.85) 0%, transparent 100%);
+}
+.back-btn {
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 1px solid #2a3550;
+  background: rgba(255, 255, 255, 0.04);
+  color: #8fa0c0;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+.back-btn:hover {
+  color: #d8e6ff;
+  border-color: #4a6fa5;
+  background: rgba(80, 140, 255, 0.12);
+}
+.ex-title {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 17px;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  color: #eaf0ff;
+  text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+}
+.ex-sub {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: #3d4761;
+}
+
+/* ---------- 探索点 ---------- */
+.explore-point {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #9fd8ff;
+  box-shadow:
+    0 0 8px rgba(88, 166, 255, 0.9),
+    0 0 22px rgba(88, 166, 255, 0.45);
+  cursor: pointer;
+  z-index: 5;
+  animation: pointPulse 2s ease-in-out infinite;
+  transition: background 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+  -webkit-tap-highlight-color: transparent;
+}
+/* 呼吸动画 */
+@keyframes pointPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+/* 扩散波纹 */
+.explore-point::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(88, 166, 255, 0.6);
+  pointer-events: none;
+  animation: pointRipple 2s ease-in-out infinite;
+}
+@keyframes pointRipple {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  70%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* 悬浮提示：磨砂黑底 + 冰蓝边框 */
+.item-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  min-width: 128px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(10, 13, 20, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(88, 166, 255, 0.45);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 14px rgba(88, 166, 255, 0.12);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 20;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.item-tooltip .tip-name {
+  font-size: 13px;
+  color: #bfe0ff;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.5);
+}
+.item-tooltip .tip-desc {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #6f7d96;
+}
+.explore-point:hover .item-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 已收集：变暗、光晕消失 */
+.explore-point.found {
+  background: #333c52;
+  box-shadow: 0 0 4px rgba(51, 60, 82, 0.5);
+  cursor: default;
+  animation: none;
+  transform: scale(0.85);
+}
+.explore-point.found::after {
+  animation: none;
+  opacity: 0;
+}
+
+/* ---------- 收集爆破粒子 ---------- */
+.burst-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #bfe0ff;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.9);
+  pointer-events: none;
+  z-index: 8;
+  animation: burstFly 0.7s ease-out forwards;
+}
+@keyframes burstFly {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(0.25); opacity: 0; }
+}
+
+/* ---------- 底部收集栏：半透明胶囊 ---------- */
+.collect-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(10, 12, 18, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(88, 166, 255, 0.18);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  z-index: 30;
+}
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(88, 166, 255, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 15px;
+  color: transparent;
+  user-select: none;
+  transition: background 0.6s ease-in-out, border-color 0.6s ease-in-out,
+              box-shadow 0.6s ease-in-out, color 0.6s ease-in-out, transform 0.6s ease-in-out;
+}
+.slot::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(88, 166, 255, 0.18);
+  transition: opacity 0.6s ease-in-out;
+}
+/* 已收集：发光 */
+.slot.filled {
+  color: #bfe0ff;
+  border-color: rgba(88, 166, 255, 0.5);
+  background: rgba(88, 166, 255, 0.10);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.35), inset 0 0 8px rgba(88, 166, 255, 0.15);
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+  transform: translateY(-2px);
+}
+.slot.filled::before {
+  display: none;
+}
+
+/* ---------- 拾遗完成文字 ---------- */
+.done-text {
+  position: fixed;
+  left: 50%;
+  bottom: 88px;
+  transform: translateX(-50%) translateY(6px);
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 15px;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  color: #bfe0ff;
+  text-shadow: 0 0 12px rgba(88, 166, 255, 0.7), 0 0 32px rgba(88, 166, 255, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 25;
+  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+}
+.done-text.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- 移动端适配 ---------- */
+@media (max-width: 600px) {
+  .ex-header { padding: 12px 14px; }
+  .ex-title { font-size: 15px; }
+  .moonlight { width: 260px; height: 380px; }
+  .slot { width: 34px; height: 34px; font-size: 13px; }
+  .collect-bar { bottom: 14px; gap: 7px; padding: 8px 12px; }
+  .done-text { bottom: 74px; font-size: 13px; }
+  .item-tooltip { min-width: 104px; }
+  .item-tooltip .tip-desc { display: none; }
+}
