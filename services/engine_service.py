@@ -1,3 +1,8 @@
+def get_engine(char_id="lengxufan"):
+    """从缓存获取或创建引擎实例"""
+    if char_id not in _engine_cache:
+        _engine_cache[char_id] = EngineService(char_id=char_id)
+    return _engine_cache[char_id]
 """引擎服务：负责角色引擎的初始化与状态收集（v5.5 - 角色上下文版）"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -20,6 +25,7 @@ from lengxufan_core.character_state.body_state import BodyState
 from lengxufan_core.character_state.mind_state import MindState
 from lengxufan_core.character_state.relationship_dynamics import RelationshipDynamics
 from characters import CharacterRegistry
+from characters.roster import get_anchor_name
 from world_state import world
 from event_bus import bus
 from lengxufan_core.character_context import set_current_character
@@ -97,7 +103,7 @@ class EngineService:
                 action = data.get("action", "")
                 if "护腕" in action or "擦刀" in action:
                     self.perception.emotion = min(85, self.perception.emotion + 2)
-                elif "望仔" in action or "陆华望" in action:
+                elif "望仔" in action or (get_anchor_name(self.char_id) and get_anchor_name(self.char_id) in action):
                     self.perception.emotion = min(85, self.perception.emotion + 3)
                 elif "不许叫" in action:
                     self.perception.emotion = max(0, self.perception.emotion - 2)
@@ -136,8 +142,20 @@ class EngineService:
             "last_milestone": self.engine.last_milestone if hasattr(self.engine, "last_milestone") else None
         }
 
+    def group_reply(self, user_input, group_context=""):
+        """群聊模式回复：接收用户消息和之前的群聊上下文，返回本角色回复"""
+        set_current_character(self.char_config)
+        return self.engine.process(user_input, group_context=group_context)
+
     @classmethod
     def get_engine(cls, char_id):
         if char_id not in _engine_cache:
             _engine_cache[char_id] = cls(char_id=char_id)
         return _engine_cache[char_id]
+
+# 全局群聊管理器
+from lengxufan_core.group_chat import GroupChatManager
+group_chat_manager = GroupChatManager()
+
+def get_group_chat_manager():
+    return group_chat_manager

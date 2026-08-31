@@ -1,14 +1,19 @@
-"""当前角色上下文管理 - 让核心引擎从当前角色读取数据"""
-_current_character = None
+"""当前角色上下文管理 - 使用线程局部存储避免多线程串味"""
+import threading
+
+_thread_local = threading.local()
 
 def set_current_character(config):
-    global _current_character
-    _current_character = config
+    """设置当前线程的角色配置"""
+    _thread_local.character = config
 
 def get_current_character():
-    return _current_character
+    """获取当前线程的角色配置"""
+    return getattr(_thread_local, 'character', None)
 
 def get_character_data(key, default=None):
-    if _current_character is None:
+    """从当前线程的角色配置中获取数据"""
+    config = get_current_character()
+    if config is None:
         return default
-    return getattr(_current_character, key, default)
+    return getattr(config, key, default)

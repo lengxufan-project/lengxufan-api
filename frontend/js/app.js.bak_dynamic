@@ -2,7 +2,6 @@
         // ============ 全局变量 ============
         let currentChar = 'lengxufan';
 let characterList = [];
-let groupMode = false;
         let currentUser = null;
         let latestState = null;
         let bgIndex = 0;
@@ -114,7 +113,7 @@ let groupMode = false;
         const sendButton = document.getElementById('chat-send');
         let isProcessing = false;
 
-        function addMessage(role, content, speakerName) {
+        function addMessage(role, content, monologue) {
             const div = document.createElement('div');
             div.className = 'msg ' + role;
             if (role === 'ai' && content.includes('💭')) {
@@ -127,7 +126,7 @@ let groupMode = false;
                     div.appendChild(mono);
                 }
             } else {
-                div.textContent = speakerName ? speakerName + '：' + content : content;
+                div.textContent = content;
             }
             messagesContainer.appendChild(div);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -152,50 +151,22 @@ let groupMode = false;
             inputField.value = '';
             isProcessing = true;
             addMessage('user', text);
-
-            if (groupMode) {
-                // 群聊模式：依次让所有角色回复，并传递上下文
-                showTyping();
-                let groupContext = '';
-                for (const c of characterList) {
-                    try {
-                        const res = await fetch('/api/chat', {
-                            method: 'POST',
-                            headers: {'Content-Type':'application/json'},
-                            body: JSON.stringify({message:text, char_id:c.id, group_context:groupContext})
-                        });
-                        const data = await res.json();
-                        hideTyping();
-                        let cleanReply = data.reply.replace(/💭 身体没有异常/g, '').trim();
-                        addMessage('ai', cleanReply || '……（他沉默着，没有回答）', c.name);
-                        groupContext += `${c.name}：${data.reply}\n`;
-                        showTyping();
-                    } catch(err) {
-                        hideTyping();
-                        addMessage('ai', '……（他沉默着，没有回答）', c.name);
-                    }
-                }
+            showTyping();
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({message:text, char_id:currentChar})
+                });
+                const data = await res.json();
                 hideTyping();
+                addMessage('ai', data.reply || '……（他沉默着，没有回答）');
+            } catch(err) {
+                hideTyping();
+                addMessage('ai', '……（他沉默着，没有回答）');
+                console.error(err);
+            } finally {
                 isProcessing = false;
-            } else {
-                // 单人模式
-                showTyping();
-                try {
-                    const res = await fetch('/api/chat', {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json'},
-                        body: JSON.stringify({message:text, char_id:currentChar})
-                    });
-                    const data = await res.json();
-                    hideTyping();
-                    addMessage('ai', data.reply);
-                } catch(err) {
-                    hideTyping();
-                    addMessage('ai', '……（他沉默着，没有回答）');
-                    console.error(err);
-                } finally {
-                    isProcessing = false;
-                }
             }
         }
 
@@ -207,44 +178,15 @@ let groupMode = false;
 
         // ============ 角色切换 ============
         function switchChar(charId) {
-    currentChar = charId;
-    document.querySelectorAll('#char-buttons .char-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.id === 'btn-' + charId);
-    });
-    const char = characterList.find(c => c.id === charId);
-    addMessage('ai', '（切换到' + (char ? char.name : charId) + '）');
-}
-
-
-        function toggleGroupMode() {
-            groupMode = !groupMode;
-            const btn = document.getElementById('btn-group-mode');
-            if (btn) {
-                btn.classList.toggle('active', groupMode);
-                btn.textContent = groupMode ? '退出群聊' : '群聊模式';
-            }
-            addMessage('ai', groupMode ? '（已进入群聊模式，所有角色将依次回复）' : '（已退出群聊模式）');
+            currentChar = charId;
+            document.getElementById('btn-lengxufan').classList.toggle('active', charId==='lengxufan');
+            document.getElementById('btn-huangjingyun').classList.toggle('active', charId==='huangjingyun');
+            addMessage('ai', charId==='lengxufan' ? '（切换到冷旭帆）' : '（切换到黄景云）');
         }
-async function loadCharacters() {
-    try {
-        const chars = await API.getCharacters();
-        characterList = chars;
-        const container = document.getElementById('char-buttons');
-        if (!container) return;
-        container.innerHTML = '';
-        chars.forEach(c => {
-            const btn = document.createElement('button');
-            btn.id = 'btn-' + c.id;
-            btn.className = 'char-btn';
-            if (c.id === currentChar) btn.classList.add('active');
-            btn.textContent = c.name;
-            btn.onclick = () => switchChar(c.id);
-            container.appendChild(btn);
-        });
-    } catch(e) {
-        console.error('加载角色列表失败:', e);
-    }
-}// ============ 背景切换 ============
+        document.getElementById('btn-lengxufan').addEventListener('click', ()=>switchChar('lengxufan'));
+        document.getElementById('btn-huangjingyun').addEventListener('click', ()=>switchChar('huangjingyun'));
+
+        // ============ 背景切换 ============
         function cycleBackground() {
             bgIndex = (bgIndex + 1) % backgrounds.length;
             document.getElementById('bg-layer').style.backgroundImage = `url('${backgrounds[bgIndex]}')`;
@@ -501,5 +443,4 @@ async function loadCharacters() {
                 setTimeout(() => { if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 1500);
             }
         }, 2800);
-
-loadCharacters();
+    

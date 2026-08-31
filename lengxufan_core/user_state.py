@@ -1,5 +1,6 @@
 """用户状态追踪模块 - 深化版：连续追踪 + 情绪曲线 + 关系对称性 + 双向影响"""
 import re
+from lengxufan_core.character_context import get_current_character
 
 
 class UserState:

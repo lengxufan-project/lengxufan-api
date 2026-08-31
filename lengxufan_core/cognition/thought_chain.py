@@ -1,3 +1,5 @@
+from characters.roster import get_anchor_name
+from lengxufan_core.character_context import get_current_character
 """角色思考链模块 - 模拟冷旭帆的思考过程：感知→分析→决策→输出"""
 
 class ThoughtChain:
@@ -34,7 +36,8 @@ class ThoughtChain:
         body = []
         if perception.status.get("shoulder_pain"): body.append("左肩旧伤隐隐作痛")
         if perception.status.get("holding_knife"): body.append("握着塑料刀")
-        if perception.status.get("miss_wang"): body.append("在想陆华望")
+        anchor = get_anchor_name(get_current_character().char_id) if get_current_character() else "陆华望"
+        if perception.status.get("miss_wang"): body.append(f"在想{anchor}")
         trust = identity.wang_belief if identity.wang_claim else identity.trust_level
         return {"mood": mood, "emotion": e, "body": body, "trust": trust}
     

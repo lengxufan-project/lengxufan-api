@@ -1,6 +1,7 @@
 """身份模块 - 从当前角色上下文读取数据"""
 from dataclasses import dataclass
-from .character_context import get_character_data
+from .character_context import get_character_data, get_current_character
+from characters.roster import get_anchor_name, get_anchor_aliases
 
 @dataclass
 class IdentityState:
@@ -10,7 +11,9 @@ class IdentityState:
     trust_level: int = 30
 
     def handle_self_introduction(self, name, _):
-        if name in ["陆华望", "华望"]:
+        anchor = get_anchor_name(get_current_character().char_id) if get_current_character() else "陆华望"
+        aliases = get_anchor_aliases(get_current_character().char_id) if get_current_character() else ["华望"]
+        if name in [anchor] + aliases:
             self.wang_claim = True
             if self.wang_belief == 0: self.wang_belief = 10
             return "wang_claimed"

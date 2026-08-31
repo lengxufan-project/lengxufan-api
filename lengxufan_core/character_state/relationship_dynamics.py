@@ -1,10 +1,14 @@
 """关系动态引擎 - 从当前角色上下文读取数据"""
 from infra.logger import debug
-from lengxufan_core.character_context import get_character_data
+from lengxufan_core.character_context import get_character_data, get_current_character
+from characters.roster import get_anchor_name
 
 
 class RelationshipDynamics:
-    def __init__(self, character_name="冷旭帆", target_name="用户"):
+    def __init__(self, character_name=None, target_name="用户"):
+        if character_name is None:
+            current = get_current_character()
+            character_name = current.name if current else "冷旭帆"
         self.character_name = character_name
         self.target_name = target_name
         self.trust_value = 0

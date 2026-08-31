@@ -1,6 +1,7 @@
 """Prompt 工厂 - 从当前角色上下文读取数据"""
 import time, random
-from .character_context import get_character_data
+from .character_context import get_character_data, get_current_character
+from characters.roster import get_anchor_name
 
 def build_system_prompt(perception, identity, memory, user_input, working_memory=None, social_network=None):
     feeling_translations = get_character_data("feeling_translations") or {}
@@ -65,5 +66,7 @@ def _build_memory_text(memory):
     fc = memory.count_fact("user_gave_flower")
     if fc == 1: parts.append("此人送过你一朵花。")
     elif fc > 1: parts.append(f"此人送过你好几次花。")
-    if memory.has_fact("user_asked_about_wang"): parts.append("此人问过陆华望。")
+    if memory.has_fact("user_asked_about_wang"):
+        anchor = get_anchor_name(get_current_character().char_id) if get_current_character() else "陆华望"
+        parts.append(f"此人问过{anchor}。")
     return " ".join(parts)

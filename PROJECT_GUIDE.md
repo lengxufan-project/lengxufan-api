@@ -1,133 +1,277 @@
-# 冷旭帆项目 · 完整工程化导向手册（含关联原因）
+# 冷旭帆项目 · 完整工程化导向手册（v5.5+）
 
-> 版本：v5.5+  
 > 最后更新：2026-08-31  
-> 用途：修改任何功能时，先查本文件定位到唯一应修改的文件。  
+> 用途：修改任意功能时，先查本文件定位到唯一应修改的文件。  
 > 原则：一个功能对应一个文件，尽量只改一个文件。
 
 ---
 
-## 〇、项目根目录总览
+## 一、项目总览
 
-| 名称 | 类型 | 作用 | 是否可忽略 |
-|------|------|------|-----------|
-| `.git/` | 目录 | Git 版本控制历史 | ⚠️ 不可删除 |
-| `.gitignore` | 文件 | Git 忽略规则 | ✅ 可修改 |
-| `.vscode/` | 目录 | VS Code 配置 | ✅ 可忽略 |
-| `__pycache__/` | 目录 | Python 编译缓存 | ✅ 可删除 |
-| `api/` | 目录 | 大模型 API 适配层 | ❗ 核心 |
-| `characters/` | 目录 | 角色数据（单一数据源） | ❗ 核心 |
-| `cognition/` | 目录 | P1 预置接口 | ❗ 核心 |
-| `data/` | 目录 | 运行时数据 | ⚠️ 可清理 |
-| `docs/` | 目录 | 技术文档 | ✅ 保留 |
-| `frontend/` | 目录 | 前端页面 | ❗ 核心 |
-| `infra/` | 目录 | 基础设施 | ❗ 核心 |
-| `lengxufan_core/` | 目录 | 核心引擎 | ❗ 核心 |
-| `routes/` | 目录 | API 路由 | ❗ 核心 |
-| `services/` | 目录 | 业务服务 | ❗ 核心 |
-| `tests/` | 目录 | 测试套件 | ✅ 保留 |
-| `tools/` | 目录 | 工具脚本 | ✅ 保留 |
-| `app.py` | 文件 | Flask 应用 | ❗ 核心 |
-| `config.py` | 文件 | 全局配置 | ❗ 核心 |
-| `config.yaml` | 文件 | 角色基础设定 | ❗ 核心 |
-| `event_bus.py` | 文件 | 事件总线 | ❗ 核心 |
-| `models.py` | 文件 | SQLAlchemy 模型 | ❗ 核心 |
-| `run.py` | 文件 | 启动入口 | ❗ 核心 |
-| `world_state.py` | 文件 | 共享世界状态 | ❗ 核心 |
-| `ARCHITECTURE.md` | 文件 | 架构决策记录 | ✅ 文档 |
-| `BUILD.md` | 文件 | 构建指南 | ✅ 文档 |
-| `PROJECT_GUIDE.md` | 文件 | 本导向文件 | ✅ 文档 |
-| `README.md` | 文件 | 项目说明 | ✅ 文档 |
-| `requirements.txt` | 文件 | 依赖清单 | ❗ 核心配置 |
-
----
-
-## 一、功能 → 文件映射（含关联原因）
-
-| 修改什么 | 主文件 | 关联文件 | 为什么关联 |
-|----------|--------|---------|-----------|
-| 角色人设/说话风格 | `characters/<角色>/data/persona.py` | 无 | 只有 Prompt 构建时读取，独立 |
-| 角色背景故事 | `characters/<角色>/data/autobiographical.py` | 无 | 仅 Memory 加载，独立 |
-| 后台随机事件 | `characters/<角色>/data/event_templates.py` | `lengxufan_core/perception.py` | perception 遍历事件模板并应用状态变化 |
-| 角色动作描述 | `characters/<角色>/data/fallback_actions.py` | `lengxufan_core/behavior.py` | behavior 根据情绪档位读取动作库 |
-| 情绪描述翻译 | `characters/<角色>/data/feeling_translations.py` | `lengxufan_core/prompt_builder.py` | prompt_builder 将数值翻译成感受文本 |
-| 角色主动意愿 | `characters/<角色>/data/intent_templates.py` | `lengxufan_core/behavior.py` | behavior 的 check_intents 读取意愿模板 |
-| 记忆触发规则 | `characters/<角色>/data/memory_rules.py` | `lengxufan_core/dialogue_engine.py` | dialogue_engine 调用 _apply_memory_rules |
-| 关系里程碑 | `characters/<角色>/data/milestones.py` | `lengxufan_core/memory.py` | memory 的 check_milestones 读取里程碑数据 |
-| 心理独白风格 | `characters/<角色>/data/monologue_styles.py` | `lengxufan_core/cognition/inner_monologue.py` | 独白生成器根据情绪选择模板 |
-| 关系阶段定义 | `characters/<角色>/data/relationship_stages.py` | `lengxufan_core/character_state/relationship_dynamics.py` | 关系动态按信任值查找阶段 |
-| 场景五感描述 | `characters/<角色>/data/scene_templates.py` | `lengxufan_core/cognition/scene_engine.py` | 场景引擎组装五感描述 |
-| 定时解锁记忆 | `characters/<角色>/data/scheduled_memories.py` | `lengxufan_core/memory.py` | memory 检查解锁条件 |
-| 信任规则/验证问题 | `characters/<角色>/data/trust_rules.py` | `lengxufan_core/cognition/trust_suspicion.py` | 信任引擎读取规则和问题 |
-| 意图分类规则 | `characters/<角色>/data/context_patterns.py` | `lengxufan_core/cognition/context_analyzer.py` | 上下文分析调用分类函数 |
-| 情绪值计算 | `lengxufan_core/perception.py` | `lengxufan_core/dialogue_engine.py` | 对话流程中推进时间、触发事件 |
-| 对话主流程 | `lengxufan_core/dialogue_engine.py` | 几乎所有核心模块 | 它是编排者，调用所有其他模块 |
-| Prompt 组装 | `lengxufan_core/prompt_builder.py` | `lengxufan_core/dialogue_engine.py` | 对话引擎调用它生成系统提示词 |
-| 身份验证 | `lengxufan_core/identity.py` | `lengxufan_core/cognition/trust_suspicion.py` | 信任引擎和身份状态机共同工作 |
-| 记忆存储/检索 | `lengxufan_core/memory.py` | `lengxufan_core/prompt_builder.py` | Prompt 构建时提取记忆 |
-| 行为生成 | `lengxufan_core/behavior.py` | `lengxufan_core/dialogue_engine.py` | 对话流程中生成动作前缀 |
-| 角色上下文切换 | `lengxufan_core/character_context.py` | `services/engine_service.py` | 服务层在切换角色时设置上下文 |
-| 身体状态 | `lengxufan_core/character_state/body_state.py` | `lengxufan_core/dialogue_engine.py` | 对话每轮更新身体状态 |
-| 心理状态 | `lengxufan_core/character_state/mind_state.py` | `lengxufan_core/dialogue_engine.py` | 同上 |
-| 关系动态 | `lengxufan_core/character_state/relationship_dynamics.py` | `lengxufan_core/dialogue_engine.py` | 对话中处理关系事件 |
-| 场景感知 | `lengxufan_core/cognition/scene_engine.py` | `world_state.py` | 场景读取世界状态（时间/天气/活动） |
-| 上下文分析 | `lengxufan_core/cognition/context_analyzer.py` | `characters/<角色>/data/context_patterns.py` | 分析器使用数据文件中的规则 |
-| 心理独白生成 | `lengxufan_core/cognition/inner_monologue.py` | `characters/<角色>/data/monologue_styles.py` | 读取模板 |
-| 思考链 | `lengxufan_core/cognition/thought_chain.py` | `lengxufan_core/dialogue_engine.py` | 对话中生成思考总结 |
-| 信任怀疑状态机 | `lengxufan_core/cognition/trust_suspicion.py` | `characters/<角色>/data/trust_rules.py` | 读取验证规则 |
-| 用户状态追踪 | `lengxufan_core/user_state.py` | `lengxufan_core/dialogue_engine.py` | 对话中更新用户情绪/身份 |
-| 短期记忆 | `lengxufan_core/working_memory.py` | `lengxufan_core/dialogue_engine.py` | 对话后记录上下文 |
-| 室友关系 | `lengxufan_core/social_network.py` | `lengxufan_core/dialogue_engine.py` | 对话后更新社交网络 |
-| 事件总线 | `event_bus.py` | `services/engine_service.py` | 服务注册跨角色事件监听 |
-| 共享世界状态 | `world_state.py` | `lengxufan_core/cognition/scene_engine.py` | 场景引擎读取世界状态 |
-| 日志系统 | `infra/logger.py` | 无 | 独立 |
-| 状态持久化 | `infra/persistence.py` | `lengxufan_core/dialogue_engine.py` | 对话结束时保存状态 |
-| 时间工具 | `infra/time_utils.py` | `lengxufan_core/perception.py` | 感知系统使用节律和时间 |
-| 模型注册表 | `api/model_registry.py` | `.env` 文件 | 读取 API Key |
-| API 调用适配器 | `api/siliconflow_adapter.py` | `api/router.py` | 路由器调用适配器发请求 |
-| 多平台容错路由 | `api/router.py` | `api/model_registry.py` | 从注册表获取平台信息 |
-| 认证接口 | `routes/auth_routes.py` | `services/user_service.py` | 路由调用服务层业务逻辑 |
-| 对话接口 | `routes/chat_routes.py` | `services/engine_service.py` | 路由转发到引擎服务 |
-| 状态接口 | `routes/state_routes.py` | `services/engine_service.py` | 获取状态快照 |
-| 历史记录接口 | `routes/history_routes.py` | `models.py` | 查询数据库模型 |
-| 角色列表接口 | `routes/character_routes.py` | `characters/__init__.py` | 从注册中心获取角色列表 |
-| 引擎实例管理 | `services/engine_service.py` | `lengxufan_core/dialogue_engine.py` | 初始化引擎对象 |
-| 用户业务逻辑 | `services/user_service.py` | `models.py` | 操作用户表 |
-| Flask 路由注册 | `app.py` | `routes/__init__.py` | 注册蓝图 |
-| 启动入口 | `run.py` | `app.py` | 创建应用实例 |
-| 用户/对话表结构 | `models.py` | 无 | 独立定义 |
-| 前端页面 | `frontend/index.html` | `frontend/demo.html` | 两个页面共享逻辑 |
-| 免登录演示 | `frontend/demo.html` | `frontend/index.html` | 复制自 index |
-| 开发者调试页 | `frontend/dev.html` | `routes/state_routes.py` | 请求状态接口 |
-| 主题样式 | `frontend/css/theme-override.css` | `frontend/index.html` | 被页面引用 |
-| 背景/立绘素材 | `frontend/assets/` | `frontend/index.html` | 页面加载图片 |
-| 测试运行器 | `tests/test_runner.py` | `tests/test_dialogs.txt` | 读取测试数据 |
-| 100轮测试 | `tests/test_100_turns.py` | `tests/test_100_dialogs.txt` | 读取测试数据 |
-| ChromaDB 查看工具 | `tools/view_memory.py` | `data/chroma_db/` | 读取向量数据库 |
-
----
-
-## 二、运行时生成/可忽略文件清单
-
-| 文件/目录 | 说明 |
+| 目录/文件 | 作用 |
 |-----------|------|
-| `__pycache__/` | Python 编译缓存 |
-| `*.pyc` | 同上 |
-| `data/lengxufan_*.log` | 运行日志 |
-| `data/lengxufan.db.bak_*` | 数据库备份 |
-| `data/chroma_db/` | 向量数据库（可删除重建） |
-| `tests/data/chroma_db/` | 测试临时向量库 |
-| `frontend/index.html.bak_*` | 前端备份 |
-| `.git/` | 版本控制历史（不可删） |
+| `app.py` | Flask 应用创建、静态目录、路由注册 |
+| `run.py` | 启动入口（Web/CLI） |
+| `config.py` / `config.yaml` | 全局配置与角色基础设定 |
+| `models.py` | SQLAlchemy 模型（User, Conversation） |
+| `requirements.txt` | 依赖清单 |
+| `event_bus.py` | 角色间事件总线 |
+| `world_state.py` | 共享世界状态（时间/天气/室友活动） |
+| `api/` | 大模型 API 适配（注册表、适配器、路由） |
+| `infra/` | 基础设施（日志、持久化、时间） |
+| `lengxufan_core/` | 核心引擎（感知、记忆、身份、行为、对话等） |
+| `cognition/` | P1 预置接口（空壳） |
+| `characters/` | 角色数据（单一数据源） |
+| `routes/` | API 路由层 |
+| `services/` | 业务服务层 |
+| `frontend/` | 前端页面 |
+| `tests/` | 测试套件 |
+| `tools/` | 工具脚本 |
+| `data/` | 运行时数据（SQLite、状态文件、ChromaDB） |
 
 ---
 
-## 三、维护原则
+## 二、角色数据目录（重要）
 
-1. 数据与逻辑分离  
-2. 单一数据源  
-3. 修改最小化  
-4. 前后端契约  
-5. 版本控制  
+角色数据全部以 `character.json` 形式存储，位于 `characters/<角色名>/data/character.json`。  
+**新增角色**：创建 `characters/<新角色>/data/character.json`，前端自动显示按钮。  
+**修改角色数据**：只改对应 `character.json`，不影响任何代码。
+
+角色名单集中管理在 `characters/roster.py`：  
+- `DORM_MEMBERS`：室友名单  
+- `SPECIAL_NAMES`：特殊锚点角色（如冷旭帆→陆华望）  
+- `DEFAULT_ACTIVITIES`：默认室友活动
 
 ---
+
+## 三、功能 → 文件映射（核心）
+
+| 修改什么 | 文件 |
+|----------|------|
+| 角色人设/风格 | `characters/<角色>/data/character.json` |
+| 信任验证规则 | `characters/<角色>/data/character.json`（`trust_rules`字段） |
+| 情绪/后台事件 | `lengxufan_core/perception.py` + `character.json` 的 `event_templates` |
+| 记忆规则 | `lengxufan_core/dialogue_engine.py`（调用 `_apply_memory_rules`） |
+| 信任同步 | `lengxufan_core/cognition/trust_sync.py` |
+| 关系动态 | `lengxufan_core/character_state/relationship_dynamics.py` |
+| 场景感知 | `lengxufan_core/cognition/scene_engine.py` + `world_state.py` |
+| 上下文分析 | `lengxufan_core/cognition/context_analyzer.py` |
+| 心理独白 | `lengxufan_core/cognition/inner_monologue.py` |
+| 思考链 | `lengxufan_core/cognition/thought_chain.py` |
+| 行为生成 | `lengxufan_core/behavior.py` |
+| 多平台路由 | `api/router.py` + `api/model_registry.py` |
+| 状态持久化 | `infra/persistence.py` |
+| 认证接口 | `routes/auth_routes.py` + `services/user_service.py` |
+| 对话接口 | `routes/chat_routes.py` + `services/engine_service.py` |
+| 状态接口 | `routes/state_routes.py` |
+| 历史记录 | `routes/history_routes.py` + `models.py` |
+| 角色列表 | `routes/character_routes.py` + `characters/__init__.py` |
+| 群聊管理器 | `lengxufan_core/group_chat.py`（占位骨架） |
+| 前端页面 | `frontend/index.html` / `demo.html` |
+| 前端样式 | `frontend/css/` |
+| 前端逻辑 | `frontend/js/` |
+
+---
+
+## 四、新增文件说明（本次重构）
+
+| 文件 | 作用 |
+|------|------|
+| `characters/roster.py` | 集中管理室友名单、特殊锚点、默认活动 |
+| `lengxufan_core/cognition/trust_sync.py` | 信任同步逻辑独立模块 |
+| `lengxufan_core/group_chat.py` | 群聊管理器骨架（预留参与者上限、分组、主动插话） |
+| `characters/*/data/character.json` | 角色单文件数据 |
+
+---
+
+## 五、维护原则
+
+1. 数据与逻辑分离：数据只存 `character.json`，逻辑在核心模块。  
+2. 单一数据源：角色数据只存在一处。  
+3. 修改最小化：改一个功能，只改对应文件。  
+4. 前后端契约：后端返回字段不得随意变更。  
+5. 版本控制：每次改动前 Git 提交。
+---
+
+
+## 附录：完整核心文件清单（精确版）
+
+
+### 根目录
+- `ARCHITECTURE.md`：架构决策记录
+- `BUILD.md`：构建指南
+- `PROJECT_GUIDE.md`：本导向文件
+- `README.md`：项目说明
+
+### api/
+- `api\__init__.py`：导出 API 模块
+- `api\model_registry.py`：模型注册表，读取 .env
+- `api\router.py`：多平台容错路由
+- `api\siliconflow_adapter.py`：通用 API 调用适配器
+
+### 根目录
+- `app.py`：Flask 应用创建，静态目录与路由注册
+
+### characters/
+- `characters\__init__.py`：角色注册中心
+
+### characters\huangjingyun/
+- `characters\huangjingyun\__init__.py`：待补充
+
+### characters\huangjingyun\data/
+- `characters\huangjingyun\data\__init__.py`：待补充
+- `characters\huangjingyun\data\character.json`：角色单文件数据（核心）
+
+### characters\lengxufan/
+- `characters\lengxufan\__init__.py`：待补充
+
+### characters\lengxufan\data/
+- `characters\lengxufan\data\__init__.py`：待补充
+- `characters\lengxufan\data\character.json`：角色单文件数据（核心）
+
+### characters/
+- `characters\roster.py`：室友名单与特殊锚点
+
+### characters\yeqingci/
+- `characters\yeqingci\__init__.py`：待补充
+
+### characters\yeqingci\data/
+- `characters\yeqingci\data\__init__.py`：待补充
+- `characters\yeqingci\data\character.json`：角色单文件数据（核心）
+
+### cognition/
+- `cognition\__init__.py`：待补充
+- `cognition\intention.py`：待补充
+- `cognition\relationships.py`：待补充
+- `cognition\spacetime.py`：待补充
+
+### 根目录
+- `config.py`：全局配置
+- `config.yaml`：角色基础设定
+
+### data/
+- `data\save_huangjingyun.json`：角色状态存档（运行时生成）
+- `data\save_lengxufan.json`：角色状态存档（运行时生成）
+- `data\save_yeqingci.json`：角色状态存档（运行时生成）
+
+### docs/
+- `docs\ADD_NEW_CHARACTER.md`：待补充
+- `docs\building-ai-npc-hybrid-architecture.md`：待补充
+
+### 根目录
+- `event_bus.py`：角色间事件总线
+
+### frontend\assets/
+- `frontend\assets\chatlog-frame.svg`：待补充
+
+### frontend\css/
+- `frontend\css\main.css`：主样式
+- `frontend\css\theme-override.css`：主题增强样式
+
+### frontend/
+- `frontend\demo.html`：免登录演示页
+- `frontend\dev.html`：开发者调试页
+
+### frontend\icons/
+- `frontend\icons\close.svg`：待补充
+- `frontend\icons\popup.svg`：待补充
+
+### frontend/
+- `frontend\index.html`：主页面
+
+### frontend\js/
+- `frontend\js\api.js`：API 调用封装
+- `frontend\js\app.js`：前端逻辑
+
+### frontend/
+- `frontend\manifest.json`：PWA 清单
+- `frontend\sw.js`：Service Worker
+
+### 根目录
+- `gen_guide_exact.py`：待补充
+
+### infra/
+- `infra\__init__.py`：导出基础设施
+- `infra\logger.py`：日志系统（含 JSON 事件）
+- `infra\persistence.py`：状态持久化（按角色保存）
+- `infra\time_utils.py`：时间工具与生理节律
+
+### lengxufan_core/
+- `lengxufan_core\__init__.py`：核心导出
+- `lengxufan_core\behavior.py`：行为生成、意愿检查
+- `lengxufan_core\character_context.py`：角色上下文（线程局部）
+
+### lengxufan_core\character_state/
+- `lengxufan_core\character_state\__init__.py`：导出状态模块
+- `lengxufan_core\character_state\body_state.py`：身体状态管理
+- `lengxufan_core\character_state\mind_state.py`：心理状态管理
+- `lengxufan_core\character_state\relationship_dynamics.py`：关系动态引擎
+
+### lengxufan_core\cognition/
+- `lengxufan_core\cognition\__init__.py`：导出认知模块
+- `lengxufan_core\cognition\context_analyzer.py`：上下文分析
+- `lengxufan_core\cognition\inner_monologue.py`：心理独白生成
+- `lengxufan_core\cognition\scene_engine.py`：场景感知
+- `lengxufan_core\cognition\thought_chain.py`：思考链
+- `lengxufan_core\cognition\trust_suspicion.py`：信任/怀疑状态机
+- `lengxufan_core\cognition\trust_sync.py`：信任同步逻辑
+
+### lengxufan_core/
+- `lengxufan_core\dialogue_engine.py`：对话流程编排
+- `lengxufan_core\group_chat.py`：群聊管理器骨架
+- `lengxufan_core\identity.py`：身份状态机
+- `lengxufan_core\memory.py`：记忆系统（含 ChromaDB）
+- `lengxufan_core\perception.py`：情绪、状态、后台时间
+- `lengxufan_core\prompt_builder.py`：Prompt 组装
+- `lengxufan_core\social_network.py`：室友关系网络
+- `lengxufan_core\user_state.py`：用户状态追踪
+- `lengxufan_core\working_memory.py`：短期记忆缓冲区
+
+### 根目录
+- `models.py`：SQLAlchemy 数据模型
+- `requirements.txt`：依赖清单
+
+### routes/
+- `routes\__init__.py`：注册蓝图
+- `routes\auth_routes.py`：认证接口
+- `routes\character_routes.py`：角色列表接口
+- `routes\chat_routes.py`：对话接口
+- `routes\history_routes.py`：历史记录接口
+- `routes\state_routes.py`：状态接口
+
+### 根目录
+- `run.py`：启动入口（Web/CLI）
+
+### services/
+- `services\engine_service.py`：引擎实例管理与状态汇总
+- `services\user_service.py`：用户业务逻辑
+
+### tests/
+- `tests\scene_01_first_meet.txt`：测试场景数据
+- `tests\scene_02_wang_identity.txt`：测试场景数据
+- `tests\scene_03_conflict.txt`：测试场景数据
+- `tests\scene_04_night_company.txt`：测试场景数据
+- `tests\scene_05_daily_chat.txt`：测试场景数据
+- `tests\scene_dusk_307.txt`：测试场景数据
+- `tests\scene_forbidden_zone.txt`：测试场景数据
+- `tests\scene_memory_test.txt`：测试场景数据
+- `tests\scene_name_weight.txt`：测试场景数据
+- `tests\scene_painting_dusk.txt`：测试场景数据
+- `tests\test_100_dialogs.txt`：测试场景数据
+- `tests\test_100_turns.py`：100轮测试
+- `tests\test_core_logic.py`：核心逻辑测试
+- `tests\test_dialogs.txt`：测试场景数据
+- `tests\test_report_100.md`：测试报告
+- `tests\test_runner.py`：通用测试
+
+### tools/
+- `tools\ai_ai_multi_test.py`：AI 对 AI 多角色测试
+- `tools\convert_character_to_json.py`：数据转换脚本
+- `tools\engineering_check.py`：工程化检查
+- `tools\import_character_md.py`：Markdown 导入脚本
+- `tools\multi_char_test.py`：多角色并发测试
+- `tools\verify_isolation.py`：状态隔离验证
+- `tools\view_memory.py`：ChromaDB 记忆查看
+
+### 根目录
+- `world_state.py`：共享世界状态

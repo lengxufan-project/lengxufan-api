@@ -4,7 +4,6 @@ from infra.logger import info
 from infra.persistence import save_full_state
 from .prompt_builder import build_system_prompt, build_messages
 from .character_context import get_character_data
-from .cognition.trust_sync import sync_trust_systems
 
 
 def parse_ai_response(raw):
@@ -53,7 +52,7 @@ class DialogueEngine:
         self.char_id = char_id or "unknown"
         self.last_milestone = None
 
-    def process(self, user_input, group_context=None):
+    def process(self, user_input):
         self.perception.advance_time()
         self.behavior.check_intents(30, self.perception.emotion)
 
@@ -99,7 +98,7 @@ class DialogueEngine:
                         if self.user_state: self.user_state.set_identity(claimed="陆华望")
                         action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__)
                         self.memory.add_episode("用户自称陆华望")
-                        sync_trust_systems(self)
+                        self._sync_trust_systems()
                         self._save()
                         return f"{action} ……你说你是望仔。你证明给我看。"
 
@@ -125,7 +124,7 @@ class DialogueEngine:
             if trust_result.get("evidence_matched") and trust_result["evidence_matched"].get("passed"):
                 if self.relationship_dynamics:
                     self.relationship_dynamics.process_event("正确验证身份", trust_delta=trust_result["evidence_matched"]["trust_delta"], description=f"答对了验证问题: {trust_result['evidence_matched']['evidence_id']}")
-            sync_trust_systems(self)
+            self._sync_trust_systems()
             if self.user_state: self.user_state.update_lxf_trust(self.trust_suspicion.trust_value)
 
         # 关键词证据
@@ -164,15 +163,13 @@ class DialogueEngine:
                 info(f"里程碑: {ms}")
         for mem in self.memory.check_scheduled(): info(f"记忆解锁: {mem}")
 
-        sync_trust_systems(self)
+        self._sync_trust_systems()
 
         thought_result = None
         if self.thought_chain:
             thought_result = self.thought_chain.think(self.perception, self.identity, self.memory, self.user_state, text, self.working_memory)
 
         sp = build_system_prompt(self.perception, self.identity, self.memory, text, self.working_memory, self.social_network)
-        if group_context:
-            sp = sp + "\n\n【群聊上下文】\n" + group_context
         if scene_context: sp = sp + "\n\n【当前场景】\n" + scene_context
         if self.relationship_dynamics:
             rel_prompt = self.relationship_dynamics.get_prompt_injection()
@@ -227,6 +224,14 @@ class DialogueEngine:
             for kw, desc in action_keywords.items():
                 if kw in reply_text: self.event_bus.publish("huangjingyun.action", {"action": desc, "character": "huangjingyun"}); break
 
+    def _sync_trust_systems(self):
+        if self.trust_suspicion and self.trust_suspicion.wang_claim and self.relationship_dynamics:
+            wang_trust = self.trust_suspicion.trust_value
+            cap = min(wang_trust + 15, 100)
+            if self.relationship_dynamics.trust_value > cap:
+                self.relationship_dynamics.trust_value = cap
+                
+                self.relationship_dynamics.current_stage = get_relationship_stage(cap)["stage"]
 
     def _apply_memory_rules(self, text):
         memory_rules = get_character_data("memory_rules") or []

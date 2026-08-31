@@ -1,13 +1,11 @@
 """社会关系网络 - 307室每个成员的极简关系模型"""
 import random
 
+from characters.roster import DORM_MEMBERS as DORM_NAMES
+
+# 为每个室友初始化关系数据
 DORM_MEMBERS = {
-    "向云舟": {"closeness": 30, "last_memory": "他修台灯的时候很安静"},
-    "黄景云": {"closeness": 35, "last_memory": "他给奶奶打电话用粤语"},
-    "秦狐戏": {"closeness": 25, "last_memory": "他嚼口香糖的声音很脆"},
-    "叶清辞": {"closeness": 30, "last_memory": "他盯着手表秒针发呆"},
-    "冉昭然": {"closeness": 30, "last_memory": "他在折纸条"},
-    "陆华希": {"closeness": 30, "last_memory": "他在看书"},
+    name: {"closeness": 30, "last_memory": "暂无"} for name in DORM_NAMES
 }
 
 class SocialNetwork:

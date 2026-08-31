@@ -1,7 +1,8 @@
 """信任怀疑状态机 - 从当前角色上下文读取数据"""
 import random
 from infra.logger import debug
-from lengxufan_core.character_context import get_character_data
+from lengxufan_core.character_context import get_character_data, get_current_character
+from characters.roster import get_anchor_name, get_anchor_aliases
 
 
 class TrustSuspicionEngine:
@@ -84,7 +85,9 @@ class TrustSuspicionEngine:
         return result
 
     def handle_self_claim(self, name):
-        if name in ["陆华望", "华望", "望仔"]:
+        anchor = get_anchor_name(get_current_character().char_id) if get_current_character() else "陆华望"
+        aliases = get_anchor_aliases(get_current_character().char_id) if get_current_character() else ["华望", "望仔"]
+        if name in [anchor] + aliases:
             self.wang_claim = True
             self.trust_value = 10
             self.current_stage = "警惕"
