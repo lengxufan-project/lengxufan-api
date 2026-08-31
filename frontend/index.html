@@ -6,6 +6,7 @@
 <title>冷旭帆 · 世界入口</title>
 <link rel="stylesheet" href="css/emotion-chart.css">
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/sidebar.css">
 <link rel="stylesheet" href="css/animations.css">
 <link rel="stylesheet" href="css/scene-transition.css">
 <link rel="stylesheet" href="css/character-display.css">
@@ -16,15 +17,13 @@
 <link rel="stylesheet" href="css/character-tooltip.css">
 <link rel="stylesheet" href="css/event-log.css">
 <link rel="stylesheet" href="css/scene-shortcut.css">
-<link rel="stylesheet" href="css/relation-thermometer.css">
-<link rel="stylesheet" href="css/status-dashboard.css">
-<link rel="stylesheet" href="css/character-tooltip.css">
-<link rel="stylesheet" href="css/event-log.css">
-<link rel="stylesheet" href="css/scene-shortcut.css">
 <link rel="stylesheet" href="css/weather-effects.css">
 <link rel="stylesheet" href="css/achievement-card.css">
 <link rel="stylesheet" href="css/notification-center.css">
 <link rel="stylesheet" href="css/choice-branch.css">
+<link rel="stylesheet" href="css/search-panel.css">
+<link rel="stylesheet" href="css/shortcuts-panel.css">
+<link rel="stylesheet" href="css/skeleton.css">
 </head>
 <body>
 <div id="loadingBar"></div>
@@ -39,11 +38,41 @@
     <div class="intro-skip" id="introSkip">跳过</div>
   </div>
 
+  <!-- 左侧可收起侧边栏 -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-toggle" id="sidebarToggle">☰</div>
+    <div class="sidebar-header">
+      <div class="sidebar-ball"></div>
+      <span class="sidebar-title">世界入口</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html?skipIntro=1" class="nav-link active">世界入口</a>
+      <a href="character-gallery.html" class="nav-link">角色画廊</a>
+      <a href="character-profile.html" class="nav-link">人物典籍</a>
+      <a href="relation-map.html" class="nav-link">关系图谱</a>
+      <a href="observer-panel.html" class="nav-link">观察者之窗</a>
+      <a href="exploration.html" class="nav-link">暗夜拾遗</a>
+      <a href="memory-gallery.html" class="nav-link">时光回廊</a>
+      <a href="world-map.html" class="nav-link">星图导航</a>
+      <a href="world-guide.html" class="nav-link">世界观</a>
+      <a href="journey.html" class="nav-link">旅程时间线</a>
+      <a href="export.html" class="nav-link">对话导出</a>
+      <a href="about.html" class="nav-link">关于</a>
+      <a href="help.html" class="nav-link">帮助</a>
+      <a href="settings.html" class="nav-link">设置</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span id="sidebarWeather">--</span>
+      <span id="sidebarTime">--</span>
+    </div>
+  </div>
+
   <!-- 主界面 -->
   <div class="app" id="app">
     <div class="header">
       <div class="title">冷旭帆 <span class="sep">·</span> 世界入口</div>
       <div class="online"><span class="green-dot"></span>在线</div>
+      <button class="search-trigger" id="searchTrigger" type="button" title="搜索 (Ctrl+K)">🔍</button>
     </div>
 
     <div class="nav-menu" id="navMenu">
@@ -101,6 +130,7 @@
 
   <script src="js/loading-bar.js"></script>
   <script src="js/api.js"></script>
+<script src="js/skeleton.js"></script>
   <script src="js/state.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/chat.js"></script>
@@ -119,6 +149,8 @@
 <script src="js/achievement-card.js"></script>
 <script src="js/notification-center.js"></script>
 <script src="js/choice-branch.js"></script>
+<script src="js/search-panel.js"></script>
+<script src="js/shortcuts-panel.js"></script>
 <script src="js/app.js"></script>
 <div id="notificationTrigger"></div>
 <div id="notificationDrawer"></div>

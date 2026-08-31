@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>帮助中心</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/help.css">
+</head>
+<body>
+  <div class="help-page">
+
+    <!-- 顶部：返回 + 标题 -->
+    <header class="hp-header">
+      <a class="back-btn" href="index.html?skipIntro=1">← 返回</a>
+      <h1 class="hp-title">帮助中心</h1>
+      <span class="hp-sub">HELP</span>
+    </header>
+
+    <div class="hp-layout">
+
+      <!-- 左侧导航：快捷键 / 引导 / 常见问题（移动端折叠为顶部下拉） -->
+      <aside class="hp-nav" id="hpNav">
+        <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navList">
+          <span>目录导航</span>
+          <span class="toggle-arrow">▸</span>
+        </button>
+        <nav class="hp-nav-list" id="navList">
+          <a class="nav-link active" href="#sec-keys" data-target="sec-keys">快捷键</a>
+          <a class="nav-link" href="#sec-guide" data-target="sec-guide">新手引导</a>
+          <a class="nav-link" href="#sec-faq" data-target="sec-faq">常见问题</a>
+        </nav>
+      </aside>
+
+      <!-- 右侧内容区 -->
+      <main class="hp-content" id="hpContent">
+
+        <!-- 快捷键 -->
+        <section class="sec-block" id="sec-keys">
+          <h2 class="sec-title">快捷键</h2>
+
+          <div class="acc-item open">
+            <div class="acc-head">
+              <span class="acc-title">全局快捷键</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <ul class="key-list">
+                  <li><kbd>?</kbd>快速跳转到「常见问题」区块</li>
+                  <li><kbd>Esc</kbd>关闭弹层、返回上一级或主界面</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">对话快捷键</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <ul class="key-list">
+                  <li><kbd>Enter</kbd>发送消息</li>
+                  <li><kbd>Shift</kbd> + <kbd>Enter</kbd>在输入框中换行</li>
+                  <li><kbd>Esc</kbd>取消当前输入</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">关于自定义快捷键</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <p>当前版本暂不支持自定义快捷键。快捷键列表会随版本更新持续补充，如有建议欢迎反馈。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 新手引导 -->
+        <section class="sec-block" id="sec-guide">
+          <h2 class="sec-title">新手引导</h2>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">第一次进入世界</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <ol class="steps">
+                  <li>在主页选择一位想要对话的角色。</li>
+                  <li>进入主界面，熟悉顶部状态栏与情绪曲线。</li>
+                  <li>在底部输入框发送第一条消息，开始你们的对话。</li>
+                  <li>通过「探索」「世界地图」逐步解锁更多内容。</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">探索与世界地图</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <p>在顶部导航中打开「探索」进入随机事件，或打开「世界地图」查看已解锁的区域。探索结果会影响角色的情绪与亲密度。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">时光回廊与观察者之窗</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <p>「时光回廊」以卡片形式回顾过往的对话片段；「观察者之窗」展示当前的情绪值、压力值与各角色亲密度。在观察者之窗中点击中央光点，可进行一次深呼吸，让数值暂时归零。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section class="sec-block" id="sec-faq">
+          <h2 class="sec-title">常见问题</h2>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">对话进度会自动保存吗？</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <p>会。对话与角色状态都会自动保存，无需手动操作，重新打开页面即可继续。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">情绪值为什么会下降？</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <p>情绪值会随剧情走向与对话内容自然波动。可以在「观察者之窗」查看趋势，也可以通过深呼吸让数值暂时归零，再重新开始。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">无法登录或忘记密码怎么办？</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <p>请在登录页尝试「找回密码」；若仍然无法登录，请联系管理员重置账号。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head">
+              <span class="acc-title">如何返回主界面？</span>
+              <span class="acc-arrow">▸</span>
+            </div>
+            <div class="acc-body">
+              <div class="acc-inner">
+                <p>点击页面左上角的「← 返回」按钮即可回到主界面，也可以使用浏览器的后退功能。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- 底部提示 -->
+    <footer class="hp-footer">
+      <p>提示：在页面任意位置按下 <kbd>?</kbd> 键，可快速跳转到「常见问题」。</p>
+    </footer>
+
+  </div>
+
+  <script src="js/help.js"></script>
+</body>
+</html>

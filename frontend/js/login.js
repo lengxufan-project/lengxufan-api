@@ -43,7 +43,7 @@
     redirecting = true;
     ball.classList.add("burst");
     setTimeout(function () {
-      window.location.href = "index.html";
+      window.location.href = "index.html?skipIntro=1";
     }, 1000);
   }
 

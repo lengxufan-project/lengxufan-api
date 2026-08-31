@@ -1,0 +1,81 @@
+/* ============================================================
+   skeleton.css — 数据加载骨架屏
+   仅服务于 .sk-box / .skeleton-block / .sk-* 元素
+   光带动画：linear-gradient 高亮带 + background-position 平移
+   ============================================================ */
+
+/* ============ 基础骨架块：底色 + 滑动光带 ============ */
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: skShimmer 1.6s ease-in-out infinite;
+}
+@keyframes skShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============ 骨架容器 ============ */
+.sk-box { pointer-events: none; }
+.chat .sk-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+}
+.statusbar .sk-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.scene .sk-box { display: block; }
+
+/* ============ 聊天区骨架：左右交替气泡 ============ */
+.sk-bubble { height: 36px; border-radius: 12px; }
+.sk-bubble.left  { width: 60%; border-radius: 12px 12px 12px 4px; }
+.sk-bubble.right {
+  width: 46%;
+  margin-left: auto;
+  border-radius: 12px 12px 4px 12px;
+}
+.sk-bubble.short { width: 34%; }
+
+/* ============ 状态栏骨架：标签 + 迷你条 ============ */
+.sk-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 110px;
+}
+.sk-label { width: 30px; height: 10px; border-radius: 3px; }
+.sk-line  { flex: 1; height: 8px; border-radius: 4px; }
+
+/* ============ 场景区骨架：两行文字 ============ */
+.sk-scene-line { height: 12px; border-radius: 4px; }
+.sk-scene-line.main { width: 42%; }
+.sk-scene-line.sub  { width: 28%; margin-top: 8px; }
+
+/* ============ 通用骨架行（未知容器兜底） ============ */
+.sk-line-generic { height: 12px; width: 70%; margin-top: 8px; }
+
+/* ============ 真实内容隐藏 / 淡入 ============ */
+.sk-hidden { display: none !important; }
+.sk-fade { transition: opacity 0.45s ease-in-out; }
+
+/* 减弱动效偏好：关闭光带 */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block { animation: none; }
+}
