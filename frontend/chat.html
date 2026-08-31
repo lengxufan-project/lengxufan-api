@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>冷旭帆 · 对话</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+  <div class="cp-page">
+    <!-- 顶栏：返回 + 角色 + 情绪 + 状态开关 -->
+    <header class="cp-topbar">
+      <a class="cp-back" href="index.html?skipIntro=1">&larr; 返回</a>
+      <div class="cp-char-info">
+        <span class="cp-char-name" id="chatCharName">冷旭帆</span>
+        <span class="cp-emotion-label" id="chatEmotionLabel">--</span>
+      </div>
+      <button class="cp-status-toggle" id="statusToggle" type="button" aria-controls="statusDrawer" aria-expanded="false">状态</button>
+    </header>
+
+    <!-- 聊天区 -->
+    <main class="cp-chat-area" id="chatArea"></main>
+
+    <!-- 输入区 -->
+    <footer class="cp-input-bar">
+      <textarea class="cp-input" id="chatInput" rows="1" placeholder="说点什么…（Enter 发送，Shift+Enter 换行）"></textarea>
+      <button class="cp-send" id="sendBtn" type="button" disabled>发送</button>
+    </footer>
+  </div>
+
+  <!-- 状态抽屉（默认收起） -->
+  <aside class="cp-status-drawer" id="statusDrawer" aria-hidden="true">
+    <div class="cp-drawer-header">
+      <span class="cp-drawer-title">状态面板</span>
+      <button class="cp-drawer-close" id="statusClose" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="cp-drawer-body">
+      <section class="cp-drawer-block">
+        <h4>情绪曲线</h4>
+        <div class="cp-chart-host" id="drawerChart"></div>
+      </section>
+      <section class="cp-drawer-block">
+        <h4>身体</h4>
+        <p id="drawerBody">--</p>
+      </section>
+      <section class="cp-drawer-block">
+        <h4>心理</h4>
+        <p id="drawerMind">--</p>
+      </section>
+      <section class="cp-drawer-block">
+        <h4>关系</h4>
+        <p id="drawerRelation">--</p>
+      </section>
+      <section class="cp-drawer-block cp-drawer-env">
+        <h4>环境</h4>
+        <p>天气：<span id="drawerWeather">--</span></p>
+        <p>时间：<span id="drawerTime">--</span></p>
+      </section>
+    </div>
+  </aside>
+
+  <script src="js/chat.js"></script>
+</body>
+</html>

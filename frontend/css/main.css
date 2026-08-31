@@ -556,3 +556,52 @@ button:hover,
   .chart-value { font-size: 13px; }
   .chart-labels { font-size: 9px; }
 }
+
+/* ============================================================
+   世界观察中心（index.html 重构）：全屏场景
+   .app 主容器已移除，场景升级为视口级背景层
+   ============================================================ */
+.scene.fullscreen {
+  position: fixed; inset: 0; z-index: 0;
+  width: 100%; max-width: none;
+  height: 100vh; height: 100dvh;
+  margin: 0; border: none; border-radius: 0;
+}
+
+/* 场景名：居中偏下，细字重大字距，冰蓝光晕 */
+.scene.fullscreen .scene-label {
+  top: auto; bottom: 30vh; left: 50%; transform: translateX(-50%);
+  font-size: 24px; font-weight: 200; letter-spacing: 0.3em;
+  color: #dceaff;
+  text-shadow: 0 0 14px rgba(88,166,255,0.75), 0 0 44px rgba(88,166,255,0.35);
+  white-space: nowrap;
+}
+/* 场景切换过渡（scene-transition.css 的 .transitioning/.transitioned）继续可用 */
+.scene.fullscreen .scene-label.transitioning,
+.scene.fullscreen .scene-label.transitioned { transform: translateX(-50%); }
+
+/* 元信息：右上角（位于世界时钟胶囊下方，避免重叠） */
+.scene.fullscreen .scene-meta {
+  top: 52px; right: 20px;
+  font-size: 12px; color: #8fa0c0;
+  text-shadow: 0 0 6px rgba(0,0,0,0.6), 0 0 8px rgba(88,166,255,0.35);
+}
+
+/* 室友活动：底部半透明遮罩，居中限宽 */
+.scene.fullscreen .scene-acts {
+  left: 50%; right: auto; transform: translateX(-50%);
+  width: min(560px, calc(100% - 48px));
+  padding: 14px 20px 18px;
+  background: linear-gradient(180deg, transparent, rgba(5,6,12,0.72));
+  border-radius: 14px 14px 0 0;
+  gap: 6px;
+}
+.scene.fullscreen .scene-act { font-size: 13px; line-height: 1.8; }
+
+/* 移动端：场景全屏，文字缩小，无重叠 */
+@media (max-width: 768px) {
+  .scene.fullscreen .scene-label { font-size: 16px; letter-spacing: 0.18em; bottom: 32vh; }
+  .scene.fullscreen .scene-meta { top: 40px; right: 14px; font-size: 11px; }   /* 位于时钟胶囊下方 */
+  .scene.fullscreen .scene-acts { width: calc(100% - 24px); padding: 10px 14px 14px; }
+  .scene.fullscreen .scene-act { font-size: 11.5px; line-height: 1.7; }
+}

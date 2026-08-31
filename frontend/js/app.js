@@ -4,19 +4,11 @@
 
   var intro = document.getElementById("intro");
   var introSkip = document.getElementById("introSkip");
-  var app = document.getElementById("app");
-  var inputEl = document.getElementById("input");
-  var sendBtn = document.getElementById("send");
-  var groupToggle = document.getElementById("groupToggle");
-  var chatEl = document.getElementById("chat");
 
   // ---------- 开场动画 ----------
   var introParticles = document.getElementById("introParticles");
   var introBall = document.getElementById("introBall");
   var floatingBall = document.getElementById("floatingBall");
-
-  // 主界面初始隐藏，过渡时淡入（opacity 0→1，0.8s）；同时挂载侧边栏偏移过渡
-  if (app) { app.style.opacity = "0"; app.style.transition = "opacity 0.8s ease-in-out, margin-left 0.3s ease-in-out"; }
 
   // 动态生成开场粒子：桌面 60 个 / 移动端 25 个（1-3px，冰蓝三色调 + 随机透明度，floatUp 8-12s）
   if (introParticles) {
@@ -51,7 +43,6 @@
   // 结束开场动画（"跳过"按钮与 skipIntro 参数共用）
   function endIntro() {
     clearIntroTimers();
-    if (app) app.style.opacity = "1";
     if (intro) {
       intro.classList.add("hide"); intro.style.display = "none";
       // 清理可能残留的拖尾球
@@ -90,7 +81,6 @@
       var introText = document.getElementById("introText");
       if (introGlow) introGlow.classList.add("fade-out");
       if (introText) introText.classList.add("fade-out");
-      if (app) app.style.opacity = "1";
       // 拖尾：3 个渐小球体沿收缩路径（视口中心 → 右下角悬浮球）依次消散
       if (intro) {
         var isMobileTrail = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
@@ -155,25 +145,12 @@
     }
   })();
 
-  // ---------- 状态刷新 ----------
-  // 首次数据返回前显示骨架屏
-  var skeletonVisible = true;
-
+  // ---------- 状态刷新（世界观察中心：场景 / 时段 / 天气 / 粒子） ----------
   function refreshState() {
     if (!window.API || !window.API.getState) return;
     window.API.getState().then(function (s) {
       if (!s) return;
-      // 首次数据返回：移除 .chat / .statusbar / .scene 骨架
-      if (skeletonVisible) {
-        skeletonVisible = false;
-        if (window.Skeleton) {
-          window.Skeleton.hide(".chat");
-          window.Skeleton.hide(".statusbar");
-          window.Skeleton.hide(".scene");
-        }
-      }
       if (window.Scene && window.Scene.update) window.Scene.update(s);
-      if (window.UI && window.UI.updateState) window.UI.updateState(s);
       if (window.WorldClock && s.world) window.WorldClock.update(s.world.time_of_day, s.world.day);
       // 时段氛围光：依据 world.time_of_day 切换场景光晕
       if (window.TimeLighting && s.world) window.TimeLighting.update(s.world.time_of_day);
@@ -186,15 +163,6 @@
         if (sbTime) sbTime.textContent = "第 " + (s.world.day != null ? s.world.day : "--") + " 天 · " + (s.world.time_of_day || "--");
         if (sbWeather) sbWeather.textContent = s.world.weather || "--";
       }
-      if (window.EmotionChart) {
-        // 记录情绪历史
-        if (!window._emotionHistory) window._emotionHistory = [];
-        var now = new Date();
-        var timeStr = ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2);
-        window._emotionHistory.push({ time: timeStr, value: Number(s.emotion) || 0 });
-        if (window._emotionHistory.length > 20) window._emotionHistory.shift();
-        window.EmotionChart.update(window._emotionHistory);
-      }
       // 情绪粒子：依据情绪值调整颜色 / 速度 / 方向 / 密度
       if (window.EmotionParticles) window.EmotionParticles.update(s.emotion);
     }).catch(function () { /* 静默失败 */ });
@@ -202,59 +170,15 @@
 
   // ---------- 初始化 ----------
   function init() {
-    // 初始化各模块
-    if (window.Characters && window.Characters.load) window.Characters.load();
+    // 初始化保留模块（场景 / 时钟 / 时段光 / 粒子 / 天气）
     if (window.Scene && window.Scene.init) window.Scene.init();
-    if (window.EmotionChart) window.EmotionChart.init("emotionChart");
     if (window.WorldClock) window.WorldClock.init();
-    if (window.ChoiceBranch) window.ChoiceBranch.init();
     if (window.EmotionParticles) window.EmotionParticles.init();
     if (window.TimeLighting) window.TimeLighting.init();
     if (window.WeatherEffects) window.WeatherEffects.init();
-    if (window.AchievementCard) window.AchievementCard.init();
-    if (window.NotificationCenter) window.NotificationCenter.init();
-    if (window.SearchPanel) window.SearchPanel.init();
-    if (window.ShortcutsPanel) window.ShortcutsPanel.init();
-
-    // 首次加载 3 秒后显示首个成就（占位，后续接入后端）
-    if (window.AchievementCard && window.AchievementCard.show) {
-      setTimeout(function () {
-        window.AchievementCard.show("初见", "你第一次踏入 307 室");
-      }, 3000);
-    }
-
-    // 初始消息
-    if (window.UI && window.UI.addMessage) {
-      window.UI.addMessage("……（他靠在窗边，目光淡淡地落过来）", "ai");
-    }
-
-    // 页面初始骨架：数据返回后由 refreshState 移除
-    if (window.Skeleton) {
-      window.Skeleton.show(".chat");
-      window.Skeleton.show(".statusbar");
-      window.Skeleton.show(".scene");
-    }
 
     refreshState();
     setInterval(refreshState, 2000);
-  }
-
-  // ---------- 事件绑定 ----------
-  if (sendBtn && inputEl) {
-    sendBtn.addEventListener("click", function () {
-      if (window.Chat && window.Chat.send) window.Chat.send();
-    });
-    inputEl.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        if (window.Chat && window.Chat.send) window.Chat.send();
-      }
-    });
-  }
-  if (groupToggle) {
-    groupToggle.addEventListener("click", function () {
-      if (window.Chat && window.Chat.toggleGroup) window.Chat.toggleGroup();
-    });
   }
 
   // ---------- 侧边栏 ----------
