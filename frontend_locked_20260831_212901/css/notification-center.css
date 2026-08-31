@@ -1,0 +1,102 @@
+/* ============ 通知中心（右上角触发按钮 + 右侧抽屉） ============ */
+
+/* ---- 触发按钮 ---- */
+#notificationTrigger {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 90;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(22,26,41,0.6);
+  border: 1px solid rgba(88,166,255,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#notificationTrigger .mail-icon {
+  font-size: 18px;
+  color: #8fa0c0;
+}
+
+#notificationTrigger.unread {
+  border-color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88,166,255,0.4);
+}
+
+#notificationTrigger.unread::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #58a6ff;
+  animation: pulse 2s infinite; /* 复用 animations.css 的 pulse */
+}
+
+/* ---- 抽屉 ---- */
+#notificationDrawer {
+  position: fixed;
+  top: 0;
+  right: -360px;
+  width: 340px;
+  height: 100vh;
+  background: rgba(10,12,18,0.95);
+  border-left: 1px solid rgba(88,166,255,0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 95;
+  transition: right 0.5s ease-in-out;
+  overflow-y: auto;
+}
+
+#notificationDrawer.open {
+  right: 0;
+}
+
+/* ---- 通知项 ---- */
+.notification-item {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.notification-item:hover {
+  background: rgba(88,166,255,0.05);
+}
+
+.notification-item.unread {
+  background: rgba(88,166,255,0.03);
+}
+
+.notification-item .sender {
+  font-size: 13px;
+  font-weight: 600;
+  color: #58a6ff;
+  margin-bottom: 4px;
+}
+
+.notification-item .time {
+  font-size: 11px;
+  color: #5f6b80;
+  margin-bottom: 6px;
+}
+
+.notification-item .preview {
+  font-size: 12px;
+  color: #9aa6bd;
+  line-height: 1.5;
+}
+
+.notification-item.expanded .preview {
+  color: #c9d6f0;
+}

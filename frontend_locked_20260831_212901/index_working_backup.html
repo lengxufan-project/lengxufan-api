@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冷旭帆</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #0f1115;
+    color: #e6e6e6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* 顶部标题栏 */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: #161922;
+    border-bottom: 1px solid #23262f;
+    flex-shrink: 0;
+  }
+  .header .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3a4a6b, #2a3550);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #cfe0ff; flex-shrink: 0;
+  }
+  .header .name { font-size: 16px; font-weight: 600; color: #f0f0f0; }
+  .header .status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a8f99; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #2ecc71;
+    box-shadow: 0 0 6px #2ecc71;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* 聊天区域 */
+  .chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chat::-webkit-scrollbar { width: 6px; }
+  .chat::-webkit-scrollbar-track { background: transparent; }
+  .chat::-webkit-scrollbar-thumb { background: #2c3140; border-radius: 3px; }
+
+  .row { display: flex; width: 100%; }
+  .row.left { justify-content: flex-start; }
+  .row.right { justify-content: flex-end; }
+
+  .bubble {
+    max-width: 72%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .bubble.ai {
+    background: #23262f;
+    color: #e6e6e6;
+    border-bottom-left-radius: 4px;
+  }
+  .bubble.user {
+    background: #1c6df0;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  /* 正在输入提示 */
+  .typing {
+    align-self: flex-start;
+    background: #23262f;
+    color: #9aa0aa;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+  }
+  .typing span::after {
+    content: '';
+    display: inline-block;
+    animation: dots 1.4s infinite;
+  }
+  @keyframes dots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+  }
+
+  /* 输入区 */
+  .composer {
+    flex-shrink: 0;
+    display: flex;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #161922;
+    border-top: 1px solid #23262f;
+  }
+  .composer textarea {
+    flex: 1;
+    resize: none;
+    max-height: 120px;
+    min-height: 42px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #2a2e3a;
+    background: #0f1115;
+    color: #e6e6e6;
+    font-size: 14px;
+    line-height: 1.5;
+    font-family: inherit;
+    outline: none;
+  }
+  .composer textarea:focus { border-color: #1c6df0; }
+  .composer button {
+    padding: 0 22px;
+    border: none;
+    border-radius: 10px;
+    background: #1c6df0;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .composer button:hover { background: #0f5fd0; }
+  .composer button:disabled { background: #2a3a55; cursor: not-allowed; }
+
+  /* 底部状态栏 */
+  .statusbar {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding: 8px 20px;
+    background: #12141b;
+    border-top: 1px solid #23262f;
+    font-size: 12px;
+    color: #8a8f99;
+  }
+  .statusbar .item { display: flex; align-items: center; gap: 6px; }
+  .statusbar .label { color: #6b7079; }
+  .statusbar .val { color: #c9d2e0; }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="avatar">冷</div>
+    <div class="name">冷旭帆</div>
+    <div class="status"><span class="dot"></span>在线</div>
+  </div>
+
+  <div class="chat" id="chat"></div>
+
+  <div class="composer">
+    <textarea id="input" placeholder="输入消息，Enter 发送，Shift+Enter 换行" rows="1"></textarea>
+    <button id="send">发送</button>
+  </div>
+
+  <div class="statusbar" id="statusbar">
+    <div class="item"><span class="label">情绪:</span><span class="val" id="s-emotion">--</span></div>
+    <div class="item"><span class="label">身体:</span><span class="val" id="s-body">--</span></div>
+    <div class="item"><span class="label">心理:</span><span class="val" id="s-mind">--</span></div>
+    <div class="item"><span class="label">关系:</span><span class="val" id="s-relationship">--</span></div>
+    <div class="item"><span class="label">天气:</span><span class="val" id="s-weather">--</span></div>
+    <div class="item"><span class="label">时间:</span><span class="val" id="s-time">--</span></div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var chatEl = document.getElementById("chat");
+  var inputEl = document.getElementById("input");
+  var sendBtn = document.getElementById("send");
+
+  // 自动滚到底
+  function scrollBottom() {
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  // 追加一条消息
+  function addMessage(text, role) {
+    var row = document.createElement("div");
+    row.className = "row " + (role === "user" ? "right" : "left");
+    var bubble = document.createElement("div");
+    bubble.className = "bubble " + (role === "user" ? "user" : "ai");
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    chatEl.appendChild(row);
+    scrollBottom();
+  }
+
+  // 显示"对方正在输入..."
+  function showTyping() {
+    var row = document.createElement("div");
+    row.className = "row left";
+    row.id = "typing-row";
+    var t = document.createElement("div");
+    t.className = "typing";
+    var span = document.createElement("span");
+    span.textContent = "对方正在输入";
+    t.appendChild(span);
+    row.appendChild(t);
+    chatEl.appendChild(row);
+    scrollBottom();
+  }
+
+  function removeTyping() {
+    var el = document.getElementById("typing-row");
+    if (el) el.parentNode.removeChild(el);
+  }
+
+  // 发送消息
+  function send() {
+    var text = inputEl.value.trim();
+    if (!text) return;
+    addMessage(text, "user");
+    inputEl.value = "";
+    autoResize();
+    setSending(true);
+
+    showTyping();
+
+    // 延迟1秒后请求AI回复
+    setTimeout(function () {
+      removeTyping();
+      fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, char_id: "lengxufan" })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          addMessage(data.reply || "……（他沉默着，没有回答）", "ai");
+          refreshState();
+        })
+        .catch(function (err) {
+          addMessage("（网络错误：无法获取回复）", "ai");
+        })
+        .finally(function () {
+          setSending(false);
+        });
+    }, 1000);
+  }
+
+  function setSending(v) {
+    sendBtn.disabled = v;
+    inputEl.disabled = v;
+    if (!v) inputEl.focus();
+  }
+
+  // 输入框自适应高度
+  function autoResize() {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+  }
+
+  // 事件绑定
+  sendBtn.addEventListener("click", send);
+  inputEl.addEventListener("input", autoResize);
+  inputEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  });
+
+  // 获取并刷新状态栏
+  function refreshState() {
+    fetch("/api/state")
+      .then(function (r) { return r.json(); })
+      .then(function (s) {
+        var emotion = (s.emotion != null ? s.emotion : "--");
+        var label = s.emotion_label ? " " + s.emotion_label : "";
+        document.getElementById("s-emotion").textContent = emotion + label;
+        document.getElementById("s-body").textContent = s.body || "--";
+        document.getElementById("s-mind").textContent = s.mind || "--";
+        document.getElementById("s-relationship").textContent = s.relationship || "--";
+
+        var w = s.world || {};
+        var weather = w.weather || "--";
+        if (w.weather_desc) weather += " " + w.weather_desc;
+        document.getElementById("s-weather").textContent = weather;
+
+        var day = w.day != null ? w.day : "--";
+        var tod = w.time_of_day || "--";
+        document.getElementById("s-time").textContent = "第" + day + "天 " + tod;
+      })
+      .catch(function () {});
+  }
+
+  // 初始欢迎语 + 首次拉取状态
+  addMessage("……（他靠在窗边，目光淡淡地落过来）", "ai");
+  refreshState();
+
+  // 每2秒自动刷新状态
+  setInterval(refreshState, 2000);
+
+  inputEl.focus();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人中心 · 冷旭帆的世界</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+  <!-- 顶部区域 -->
+  <header class="profile-header">
+    <a class="profile-back" href="index.html" title="返回世界入口">
+      <span class="profile-back-arrow">‹</span>
+      <span class="profile-back-text">返回</span>
+    </a>
+    <div class="profile-title">个人中心</div>
+    <div class="profile-header-right" id="profileHeaderRight"></div>
+  </header>
+
+  <!-- 主体 -->
+  <main class="profile-main">
+
+    <!-- 用户信息区 -->
+    <section class="profile-user" id="profileUser">
+      <div class="profile-avatar" id="profileAvatar">客</div>
+      <div class="profile-user-info">
+        <div class="profile-username" id="profileUsername">未登录旅人</div>
+        <div class="profile-usermeta">
+          <span class="profile-level" id="profileLevel">等级 --</span>
+          <span class="profile-trust-text" id="profileTrustText">信任值 0 / 100</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关系阶段区 -->
+    <section class="profile-section">
+      <div class="profile-section-title">关系阶段</div>
+      <div class="profile-relations" id="profileRelations">
+        <!-- 由 JS 注入角色节点 -->
+      </div>
+    </section>
+
+    <!-- 信任值进度条 -->
+    <section class="profile-section">
+      <div class="profile-section-title">信任值</div>
+      <div class="profile-trustbar">
+        <div class="profile-trustbar-track">
+          <div class="profile-trustbar-fill" id="profileTrustFill" style="width:0%"></div>
+        </div>
+        <div class="profile-trustbar-label">
+          <span id="profileTrustStage">陌生人</span>
+          <span id="profileTrustNum">0 / 100</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 回忆碎片时间线 -->
+    <section class="profile-section">
+      <div class="profile-section-title">回忆碎片</div>
+      <div class="profile-timeline" id="profileTimeline">
+        <div class="profile-timeline-empty">暂无回忆</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 底部导航 -->
+  <footer class="profile-footer">
+    <a class="profile-nav-item" href="index.html">
+      <span class="profile-nav-icon">◐</span>
+      <span class="profile-nav-label">世界</span>
+    </a>
+    <a class="profile-nav-item active" href="profile.html">
+      <span class="profile-nav-icon">◉</span>
+      <span class="profile-nav-label">我的</span>
+    </a>
+  </footer>
+
+  <!-- 回忆模态框（占位） -->
+  <div class="profile-modal" id="profileModal">
+    <div class="profile-modal-mask" id="profileModalMask"></div>
+    <div class="profile-modal-card">
+      <div class="profile-modal-title" id="profileModalTitle">回忆</div>
+      <div class="profile-modal-body" id="profileModalBody">一段尚未被书写的记忆……</div>
+      <button class="profile-modal-close" id="profileModalClose">关闭</button>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

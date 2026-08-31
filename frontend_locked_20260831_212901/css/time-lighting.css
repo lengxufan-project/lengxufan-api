@@ -1,0 +1,56 @@
+/* ============ 时段氛围光（场景光晕随时间变化） ============ */
+/* 默认 CSS 变量：由 [data-time-of-day] 选择器覆盖 */
+body {
+  --ambient-color: #58a6ff;
+  --ambient-opacity: 0.2;
+  --ambient-angle: 50% 50%;
+}
+
+/* 时段映射：颜色 / 强度 / 光源角度 */
+body[data-time-of-day="深夜"] {
+  --ambient-color: #1a1a3a;
+  --ambient-opacity: 0.15;
+  --ambient-angle: 70% 30%;
+}
+body[data-time-of-day="清晨"] {
+  --ambient-color: #4a7dbf;
+  --ambient-opacity: 0.25;
+  --ambient-angle: 30% 50%;
+}
+body[data-time-of-day="正午"] {
+  --ambient-color: #7fb8ff;
+  --ambient-opacity: 0.35;
+  --ambient-angle: 50% 10%;
+}
+body[data-time-of-day="黄昏"] {
+  --ambient-color: #e07b3a;
+  --ambient-opacity: 0.25;
+  --ambient-angle: 20% 40%;
+}
+body[data-time-of-day="夜晚"] {
+  --ambient-color: #3a4a8c;
+  --ambient-opacity: 0.2;
+  --ambient-angle: 60% 20%;
+}
+
+/* 场景区背景叠加一层动态氛围光晕（在最前），保留原有背景 */
+.scene {
+  background-image:
+    radial-gradient(circle at var(--ambient-angle),
+      var(--ambient-color) 0,
+      transparent 60%),
+    radial-gradient(circle at 50% 110%, rgba(88,166,255,0.12) 0%, transparent 60%),
+    radial-gradient(circle at 30% 40%, rgba(58,90,200,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(140,80,200,0.06) 0%, transparent 45%),
+    linear-gradient(180deg, #0f1220 0%, #0a0c15 100%);
+}
+
+/* ::before 作为氛围光晕层：opacity 随 --ambient-opacity 变化 */
+.scene::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--ambient-angle),
+    var(--ambient-color) 0, transparent 60%);
+  opacity: calc(var(--ambient-opacity) * 0.6);
+  /* CSS 自定义属性不可直接过渡，用背景/opacity 1s 模拟柔和切换 */
+  transition: opacity 1s ease-in-out, background 1s ease-in-out;
+}

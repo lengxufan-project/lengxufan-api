@@ -1,0 +1,129 @@
+/* ============ 背景动态渐变 ============ */
+@keyframes bgShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============ 全局粒子上浮 ============ */
+@keyframes floatUp {
+  0% { transform: translateY(100vh) scale(1); opacity: var(--p-opacity, 0.3); }
+  50% { opacity: calc(var(--p-opacity, 0.3) * 0.6); }
+  100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+
+/* ============ 所有 @keyframes / animation / transition ============ */
+
+/* 开场动画 */
+.intro { transition: opacity 0.6s ease-in-out; }
+.intro.hide { opacity: 0; pointer-events: none; }
+.intro-ball { animation: introBall 2.5s ease-in-out forwards; }
+@keyframes introBall {
+  0%   { transform: scale(1);   opacity: 1; }
+  14%  { transform: scale(1.22); }
+  28%  { transform: scale(1);   }
+  42%  { transform: scale(1.22); }
+  56%  { transform: scale(1);   }
+  70%  { transform: scale(1.22); }
+  82%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(4);   opacity: 0; }
+}
+.intro-skip { transition: all 0.3s ease-in-out; }
+
+/* 主界面淡入过渡（默认显示，保留过渡备用） */
+.app { transition: opacity 0.6s ease-in-out; }
+
+/* ============ 悬浮球：浮现过渡 + 呼吸脉动 ============ */
+.floating-ball { transition: opacity 0.8s ease-in-out; }
+.intro.hide ~ .floating-ball { animation: ballBreath 3s ease-in-out infinite; }
+@keyframes ballBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* 在线绿点脉冲（已柔化） */
+.green-dot { animation: pulse 2.8s ease-in-out infinite; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* 角色按钮 / 群聊开关 */
+.char-btn { transition: all 0.3s ease-in-out; }
+.group-toggle { transition: all 0.3s ease-in-out; }
+
+/* 场景光晕（强度已减弱、节奏放缓） */
+.scene::before { animation: glow 10s ease-in-out infinite; }
+.scene::after { animation: glow 13s ease-in-out infinite reverse; }
+@keyframes glow {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.12); }
+}
+
+/* 场景浮动粒子：双层视差漂移（transform，不触发 layout） */
+.scene-acts::before { animation: driftA 9s ease-in-out infinite; }
+.scene-acts::after { animation: driftB 14s ease-in-out infinite; }
+@keyframes driftA {
+  0%, 100% { transform: translate(0, 0); opacity: 0.85; }
+  50% { transform: translate(7px, -9px); opacity: 1; }
+}
+@keyframes driftB {
+  0%, 100% { transform: translate(0, 0); opacity: 0.7; }
+  50% { transform: translate(-9px, 7px); opacity: 0.95; }
+}
+
+/* 气泡弹入（transform + opacity，新消息创建时触发一次） */
+.bubble { animation: bubbleIn 0.3s ease-out; }
+@keyframes bubbleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 情绪进度条过渡 */
+.charinfo .ebar-fill { transition: width 0.6s ease-in-out, background 0.6s ease-in-out; }
+
+/* 打字机省略号 */
+.typing .bubble.ai::after {
+  content: ''; display: inline-block; width: 4px;
+  animation: dots 1.4s infinite steps(1);
+}
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* 输入区 / 发送按钮 */
+.composer textarea { transition: border-color 0.3s ease-in-out; }
+.composer button { transition: all 0.3s ease-in-out; }
+
+/* ============ 进度条流动光带 ============ */
+/* 光带为填充条的 ::after，沿 X 平移循环；渐变两端透明，尾部自然消失 */
+@keyframes flowShine {
+  0% { left: -50%; }
+  100% { left: 150%; }
+}
+
+/* 状态栏迷你进度条过渡 */
+.mini-bar-fill { transition: width 0.6s ease-in-out, background 0.6s ease-in-out; }
+
+/* ============ 情绪曲线图 ============ */
+/* 曲线端点球：光晕脉动 + 位置过渡 */
+.chart-ball {
+  transition: all 0.6s ease-in-out;
+  animation: chartBallPulse 2s ease-in-out infinite;
+}
+@keyframes chartBallPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(88,166,255,0.8), 0 0 30px rgba(88,166,255,0.4); }
+  50% { box-shadow: 0 0 15px rgba(88,166,255,1), 0 0 50px rgba(88,166,255,0.6); }
+}
+
+/* 折线描边生长动画（每次重建折线时触发一次） */
+.chart-line {
+  stroke-dasharray: 1000;
+  animation: lineDraw 1s ease-in-out;
+}
+@keyframes lineDraw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}

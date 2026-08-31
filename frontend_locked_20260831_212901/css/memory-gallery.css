@@ -1,0 +1,260 @@
+/* ============================================================
+   memory-gallery.css — 时光回廊（独立页面样式）
+   仅服务于 memory-gallery.html，类名前缀 mg- / gallery-
+   ============================================================ */
+
+/* ============ 页面骨架 ============ */
+.mg-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, #0c0f1a 0%, #05060a 80%);
+}
+
+/* ============ 顶部导航 ============ */
+.mg-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  border-bottom: 1px solid rgba(88, 166, 255, 0.15);
+  background: rgba(10, 12, 18, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10;
+}
+.mg-back {
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.06);
+  color: #bfe0ff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.mg-back:hover {
+  background: rgba(88, 166, 255, 0.18);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.4);
+}
+.mg-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  background: linear-gradient(90deg, #bfe0ff, #58a6ff, #bfe0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.mg-nav-spacer { width: 80px; }
+
+/* ============ 3D 透视视口 ============ */
+.gallery-view {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  perspective: 800px;
+  perspective-origin: 50% 45%;
+  background: linear-gradient(180deg, #05060a 0%, #0a0c12 100%);
+}
+
+/* 星点层：缓慢移动的星点 */
+.gallery-stars {
+  position: absolute;
+  inset: -50px;
+  pointer-events: none;
+  z-index: 0;
+}
+.mg-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #d8e6ff;
+  opacity: 0.5;
+  animation: starDrift 18s linear infinite;
+}
+@keyframes starDrift {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0.3; }
+  50%  { opacity: 0.8; }
+  100% { transform: translate3d(-60px, -40px, 0); opacity: 0.3; }
+}
+
+/* 卡片轨道：承载 6 张卡片，由 JS 平移 */
+.gallery-track {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-in-out;
+  will-change: transform;
+}
+
+/* ============ 记忆卡片 ============ */
+.memory-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 240px;
+  height: 160px;
+  margin: -80px 0 0 -120px;
+  padding: 18px 20px;
+  border: 1px solid rgba(88, 166, 255, 0.5);
+  border-radius: 14px;
+  background: rgba(20, 28, 48, 0.45);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 18px rgba(88, 166, 255, 0.15) inset;
+  color: #d8e0ee;
+  cursor: pointer;
+  transform-origin: center center;
+  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out, border-color 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform-style: preserve-3d;
+}
+.memory-card.mc-left  { transform: rotateY(15deg); }
+.memory-card.mc-right { transform: rotateY(-15deg); }
+
+.memory-card:hover {
+  transform: rotateY(0) scale(1.1);
+  border-color: rgba(88, 166, 255, 0.9);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.6),
+    0 0 28px rgba(88, 166, 255, 0.55),
+    0 0 14px rgba(88, 166, 255, 0.35) inset;
+  z-index: 5;
+}
+
+/* 卡片内：日期 + 对话片段 + 角色名 */
+.mc-date {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #7e95b8;
+  border-bottom: 1px dashed rgba(88, 166, 255, 0.25);
+  padding-bottom: 6px;
+}
+.mc-snippet {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #e4ecf8;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.mc-name {
+  font-size: 12px;
+  text-align: right;
+  color: #bfe0ff;
+  letter-spacing: 1px;
+}
+
+/* ============ 底部滚动指示 ============ */
+.mg-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px 18px;
+  border-top: 1px solid rgba(88, 166, 255, 0.15);
+  background: rgba(10, 12, 18, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10;
+}
+.mg-legend-hint {
+  font-size: 12px;
+  color: #7e95b8;
+  letter-spacing: 1px;
+}
+.mg-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(88, 166, 255, 0.25);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+.mg-dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: #58a6ff;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.7);
+}
+
+/* ============ 模态框：完整对话 ============ */
+.mg-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5, 6, 10, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+.mg-modal-mask.show { opacity: 1; }
+.mg-modal {
+  width: 460px;
+  max-width: 90vw;
+  padding: 26px 30px;
+  border: 1px solid rgba(88, 166, 255, 0.5);
+  border-radius: 16px;
+  background: rgba(18, 24, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 0 40px rgba(88, 166, 255, 0.25);
+  color: #e4ecf8;
+  transform: scale(0.92) translateY(10px);
+  transition: transform 0.4s ease-in-out;
+}
+.mg-modal-mask.show .mg-modal { transform: scale(1) translateY(0); }
+.mg-modal-date {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #7e95b8;
+  margin-bottom: 12px;
+}
+.mg-modal-body {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #e4ecf8;
+  margin-bottom: 18px;
+}
+.mg-modal-name {
+  font-size: 13px;
+  text-align: right;
+  color: #bfe0ff;
+  margin-bottom: 22px;
+}
+.mg-modal-close {
+  display: block;
+  margin: 0 auto;
+  padding: 7px 22px;
+  border-radius: 16px;
+  border: 1px solid rgba(88, 166, 255, 0.5);
+  background: rgba(88, 166, 255, 0.08);
+  color: #bfe0ff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.mg-modal-close:hover {
+  background: rgba(88, 166, 255, 0.2);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.45);
+}

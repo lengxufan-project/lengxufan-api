@@ -1,0 +1,169 @@
+/* ============ 登录页独立样式 ============ */
+
+html {
+  background: #000;
+}
+
+/* 覆盖 main.css 的 body 约束，保证全屏纯黑 */
+body {
+  max-width: none;
+  margin: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* ---- 中央巨大发光球 ---- */
+.login-ball {
+  position: absolute;
+  left: calc(50% - 200px);
+  top: calc(50% - 200px);
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, rgba(88,166,255,0.3) 0%, rgba(88,166,255,0.08) 40%, transparent 70%);
+  animation: ballBreath 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes ballBreath {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+/* 验证成功后的光晕爆发（一次性） */
+.login-ball.burst {
+  animation: ballBurst 1s ease-out forwards;
+}
+
+@keyframes ballBurst {
+  0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+  30% { transform: scale(1.7); opacity: 1; filter: brightness(2.2); }
+  100% { transform: scale(3.2); opacity: 0; filter: brightness(2.8); }
+}
+
+/* ---- 标题 ---- */
+.login-title {
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  letter-spacing: 0.15em;
+  font-size: 26px;
+  font-weight: 500;
+  color: #c9d6f0;
+  text-shadow: 0 0 24px rgba(88,166,255,0.45);
+  margin: 0 0 28px;
+  z-index: 10;
+}
+
+/* ---- 登录表单 ---- */
+.login-form {
+  position: relative;
+  z-index: 10;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  background: rgba(10,12,18,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(88,166,255,0.2);
+  border-radius: 16px;
+}
+
+.login-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(88,166,255,0.3);
+  border-radius: 10px;
+  color: #e6edf3;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  /* 冰蓝流光边框 */
+  animation: borderFlow 3s ease-in-out infinite;
+}
+
+@keyframes borderFlow {
+  0%, 100% { border-color: rgba(88,166,255,0.3); }
+  50% { border-color: rgba(140,200,255,0.65); }
+}
+
+.login-form input:focus {
+  animation: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88,166,255,0.25);
+}
+
+/* 登录失败：边框变红 */
+.login-form input.error {
+  animation: none;
+  border-color: #f85149;
+  box-shadow: 0 0 12px rgba(248,81,73,0.25);
+}
+
+.login-form button {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1c6df0, #2a4fb0);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.login-form button:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 20px rgba(88,166,255,0.4);
+}
+
+.login-form .guest-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #8fa0c0;
+  margin-top: 8px;
+}
+
+.login-form .guest-btn:hover {
+  filter: none;
+  border-color: #58a6ff;
+  color: #c9d6f0;
+}
+
+.login-form .link {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #5f6b80;
+}
+
+.login-form .link a {
+  color: #58a6ff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.login-form .link a:hover {
+  color: #8cc8ff;
+}
+
+/* ---- 错误消息 ---- */
+.login-error {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #f85149;
+  text-align: center;
+  min-height: 16px;
+}

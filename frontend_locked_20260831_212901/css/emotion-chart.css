@@ -1,0 +1,46 @@
+/* ============ 情绪曲线图（独立模块样式） ============ */
+.emotion-chart {
+  flex-shrink: 0;
+  background: rgba(22,26,41,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 0 22px 10px 22px;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.chart-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 8px;
+}
+.chart-title { font-size: 13px; color: #8fa0c0; font-weight: 300; }
+.chart-value {
+  font-size: 16px; color: #58a6ff; font-weight: 600;
+  text-shadow: 0 0 8px rgba(88,166,255,0.5);
+}
+.chart-body { position: relative; height: 120px; }
+#chartSvg { width: 100%; height: 100%; display: block; }
+.chart-ball {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%;
+  background: #58a6ff;
+  box-shadow: 0 0 10px rgba(88,166,255,0.8), 0 0 30px rgba(88,166,255,0.4);
+  transition: all 0.6s ease-in-out;
+  animation: chartBallPulse 2s ease-in-out infinite;
+  transform: translate(-50%, -50%); /* 以 left/top 坐标为中心 */
+  opacity: 0; pointer-events: none; /* 初始无数据隐藏，由 JS 控制 */
+}
+.chart-labels {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: #5f6b80; margin-top: 4px;
+}
+
+/* 光晕扩散动画 */
+@keyframes chartBallPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(88,166,255,0.8), 0 0 30px rgba(88,166,255,0.4); }
+  50% { box-shadow: 0 0 15px rgba(88,166,255,1), 0 0 50px rgba(88,166,255,0.6); }
+}
+
+/* 移动端 */
+@media (max-width: 768px) {
+  .emotion-chart { margin: 0 12px 8px; padding: 8px 12px; }
+  .chart-body { height: 80px; }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050608">
+    <title>演示模式 · PositiveCharacter</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/demo-mode.css">
+</head>
+<body>
+    <div class="demo-container" id="demoContainer">
+        <!-- 场景展示区 -->
+        <div class="demo-scene" id="demoScene">
+            <div class="demo-glow-orb" id="demoGlowOrb"></div>
+            <div class="demo-particles" id="demoParticles"></div>
+            <div class="demo-scene-title" id="demoSceneTitle">正在加载演示...</div>
+        </div>
+
+        <!-- 聊天演示区 -->
+        <div class="demo-chat" id="demoChat">
+            <div class="demo-chat-messages" id="demoChatMessages"></div>
+        </div>
+
+        <!-- 状态展示区 -->
+        <div class="demo-status" id="demoStatus">
+            <div class="demo-status-item">
+                <span class="demo-status-label">角色</span>
+                <span class="demo-status-value" id="statusCharacter">—</span>
+            </div>
+            <div class="demo-status-item">
+                <span class="demo-status-label">情绪</span>
+                <div class="demo-status-bar">
+                    <div class="demo-status-bar-fill emotion" id="statusEmotionBar" style="width: 0%"></div>
+                </div>
+                <span class="demo-status-value" id="statusEmotion">0</span>
+            </div>
+            <div class="demo-status-item">
+                <span class="demo-status-label">身体</span>
+                <div class="demo-status-bar">
+                    <div class="demo-status-bar-fill body" id="statusBodyBar" style="width: 0%"></div>
+                </div>
+                <span class="demo-status-value" id="statusBody">0</span>
+            </div>
+            <div class="demo-status-item">
+                <span class="demo-status-label">关系</span>
+                <div class="demo-status-bar">
+                    <div class="demo-status-bar-fill relation" id="statusRelationBar" style="width: 0%"></div>
+                </div>
+                <span class="demo-status-value" id="statusRelation">0</span>
+            </div>
+        </div>
+
+        <!-- 退出按钮 -->
+        <a class="demo-exit" href="index.html" id="demoExit" title="退出 (Esc)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span>退出</span>
+        </a>
+
+        <!-- 暂停/继续按钮 -->
+        <button class="demo-pause" id="demoPause" title="暂停/继续 (空格)">
+            <svg class="icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+                <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+            </svg>
+            <svg class="icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:none;">
+                <polygon points="6,4 20,12 6,20"></polygon>
+            </svg>
+            <span class="demo-pause-label">暂停</span>
+        </button>
+
+        <!-- 进度条 -->
+        <div class="demo-progress" id="demoProgress">
+            <div class="demo-progress-track">
+                <div class="demo-progress-fill" id="demoProgressFill"></div>
+                <div class="demo-progress-shine"></div>
+            </div>
+            <div class="demo-progress-text" id="demoProgressText">0%</div>
+        </div>
+    </div>
+
+    <script src="js/demo-mode.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+/* ===== 冷旭帆 · 世界入口主题增强 ===== */
+
+/* 场景区：使用 307 室背景图 */
+.scene-area {
+    background-image: url('/assets/bg-room.webp');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    min-height: 260px;
+    border-bottom: 1px solid #2d333b;
+}
+
+/* 场景区半透明遮罩，让文字和立绘更清晰 */
+.scene-area::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(13, 17, 23, 0.55);
+    backdrop-filter: blur(1px);
+    z-index: 1;
+}
+
+/* 场景内文字和立绘置于遮罩之上 */
+.scene-area .scene-placeholder,
+.scene-area .character-display {
+    position: relative;
+    z-index: 2;
+}
+
+/* 立绘占位框：加入微弱发光，更像角色卡片 */
+.character-display .char-item .sprite {
+    background: rgba(28, 35, 51, 0.75);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    box-shadow: 0 0 18px rgba(88, 166, 255, 0.15);
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.character-display .char-item .sprite:hover {
+    border-color: rgba(88, 166, 255, 0.7);
+    box-shadow: 0 0 26px rgba(88, 166, 255, 0.35);
+}
+
+/* 聊天消息区：半透明磨砂背景 */
+.chat-messages {
+    background: rgba(13, 17, 23, 0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(45, 51, 59, 0.8);
+}
+
+/* 冷旭帆的 AI 气泡：使用暗色金属质感 */
+.chat-messages .msg.ai {
+    background: rgba(28, 35, 51, 0.9);
+    border: 1px solid rgba(88, 166, 255, 0.25);
+    box-shadow: 0 0 12px rgba(88, 166, 255, 0.08);
+}
+
+/* 用户气泡：更鲜明的蓝色 */
+.chat-messages .msg.user {
+    background: #1f6feb;
+    box-shadow: 0 0 12px rgba(31, 111, 235, 0.3);
+}
+
+/* 状态栏：加入微弱顶部分隔光 */
+.status-bar {
+    background: rgba(28, 35, 51, 0.9);
+    backdrop-filter: blur(4px);
+    border-top: 1px solid rgba(88, 166, 255, 0.15);
+}
+
+/* 底部功能按钮：暗色悬浮 */
+.footer-actions button {
+    transition: all 0.2s ease;
+}
+.footer-actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}

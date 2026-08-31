@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冷旭帆 · 设置</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+<div class="settings-app" id="settingsApp">
+
+  <!-- 顶部栏 -->
+  <header class="settings-header">
+    <button class="back-btn" id="backBtn" type="button" title="返回">← 返回</button>
+    <h1 class="settings-title">设置</h1>
+  </header>
+
+  <main class="settings-list">
+
+    <!-- 1. 主题色 -->
+    <section class="setting-card">
+      <div class="setting-label">主题色</div>
+      <div class="swatch-row" id="swatchRow">
+        <button class="swatch" data-color="#58a6ff" style="--c:#58a6ff" title="冰蓝"></button>
+        <button class="swatch" data-color="#f0883e" style="--c:#f0883e" title="暖橙"></button>
+        <button class="swatch" data-color="#a371f7" style="--c:#a371f7" title="冷紫"></button>
+        <button class="swatch" data-color="#e6edf3" style="--c:#e6edf3" title="纯白"></button>
+      </div>
+    </section>
+
+    <!-- 2. 粒子密度 -->
+    <section class="setting-card">
+      <div class="setting-label">
+        <span>粒子密度</span>
+        <span class="setting-value" id="particleValue">50</span>
+      </div>
+      <input type="range" min="0" max="100" value="50" class="range" id="particleRange">
+    </section>
+
+    <!-- 3. 动画开关 -->
+    <section class="setting-card">
+      <div class="setting-label">
+        <span>动画效果</span>
+        <button class="toggle" id="animToggle" type="button" aria-pressed="true">
+          <span class="toggle-knob"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. 字体大小 -->
+    <section class="setting-card">
+      <div class="setting-label">字体大小</div>
+      <div class="seg-row" id="fontSeg">
+        <button class="seg" data-size="small" type="button">小</button>
+        <button class="seg active" data-size="medium" type="button">中</button>
+        <button class="seg" data-size="large" type="button">大</button>
+      </div>
+    </section>
+
+    <!-- 5. 世界时钟显示 -->
+    <section class="setting-card">
+      <div class="setting-label">
+        <span>世界时钟显示</span>
+        <button class="toggle" id="clockToggle" type="button" aria-pressed="true">
+          <span class="toggle-knob"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 6. 事件日志显示 -->
+    <section class="setting-card">
+      <div class="setting-label">
+        <span>事件日志显示</span>
+        <button class="toggle" id="logToggle" type="button" aria-pressed="true">
+          <span class="toggle-knob"></span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 底部重置 -->
+  <footer class="settings-footer">
+    <button class="reset-btn" id="resetBtn" type="button">重置为默认</button>
+  </footer>
+
+</div>
+
+<script src="js/settings.js"></script>
+</body>
+</html>

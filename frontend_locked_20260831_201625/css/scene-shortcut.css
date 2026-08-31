@@ -1,0 +1,37 @@
+.scene-hint {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 95;
+  font-size: 18px;
+  font-weight: 300;
+  color: #58a6ff;
+  letter-spacing: 0.3em;
+  text-shadow: 0 0 20px rgba(88, 166, 255, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.scene-hint.visible {
+  opacity: 1;
+}
+
+.scene-hint .arrow {
+  display: inline-block;
+  font-size: 22px;
+  margin: 0 8px;
+  animation: arrowPulse 1s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(6px);
+    opacity: 1;
+  }
+}
