@@ -1,4 +1,4 @@
-﻿"""对话流程引擎 v5.4 - 角色上下文版"""
+"""对话流程引擎 v5.4 - 角色上下文版"""
 import re, random
 from infra.logger import info
 from infra.persistence import save_full_state
@@ -50,6 +50,7 @@ class DialogueEngine:
         self.relationship_dynamics = relationship_dynamics
         self.event_bus = event_bus
         self.char_id = char_id or "unknown"
+        self.last_milestone = None
 
     def process(self, user_input):
         self.perception.advance_time()
@@ -85,12 +86,13 @@ class DialogueEngine:
             if self.working_memory: recent_ctx = self.working_memory.get_recent_context()
             context_result = self.context_analyzer.analyze(text, recent_ctx)
 
+        # 处理“我叫XXX”分支
         if "我叫" in text:
             name_part = (text.split("我叫")[-1].strip().split("，")[0].split("。")[0].split(" ")[0].split("、")[0].split(",")[0].strip())
             if name_part:
                 if self.trust_suspicion:
                     claim_result = self.trust_suspicion.handle_self_claim(name_part)
-                    if claim_result["claimed"]:
+                    if claim_result.get("claimed"):
                         self.memory.add_fact("user_claimed_wang")
                         self.perception.emotion = max(0, self.perception.emotion - 15)
                         if self.user_state: self.user_state.set_identity(claimed="陆华望")
@@ -99,23 +101,20 @@ class DialogueEngine:
                         self._sync_trust_systems()
                         self._save()
                         return f"{action} ……你说你是望仔。你证明给我看。"
-                    else:
-                        special = self.identity.handle_self_introduction(name_part, text)
-                        if not special:
-                            self.memory.add_fact(f"user_name_is_{name_part}")
-                            if self.user_state: self.user_state.set_identity(name=name_part)
-                            reply_text = f"……{name_part}。" if self.perception.emotion < 70 else f"{name_part}。"
-                            action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__)
-                            self.memory.add_episode(f"玩家自称{name_part}")
-                            if self.relationship_dynamics:
-                                self.relationship_dynamics.process_event("告知名字", trust_delta=10, description=f"用户说「我叫{name_part}」")
-                            self._save()
-                            return f"{action} {reply_text}"
-                        else:
-                            self.memory.add_fact("user_claimed_wang")
-                            self.perception.emotion = max(0, self.perception.emotion - 15)
-                            self._sync_trust_systems()
 
+                special = self.identity.handle_self_introduction(name_part, text)
+                if not special:
+                    self.memory.add_fact(f"user_name_is_{name_part}")
+                    if self.user_state: self.user_state.set_identity(name=name_part)
+                    reply_text = f"……{name_part}。" if self.perception.emotion < 70 else f"{name_part}。"
+                    action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__)
+                    self.memory.add_episode(f"玩家自称{name_part}")
+                    if self.relationship_dynamics:
+                        self.relationship_dynamics.process_event("告知名字", trust_delta=10, description=f"用户说「我叫{name_part}」")
+                    self._save()
+                    return f"{action} {reply_text}"
+
+        # 信任验证处理
         trust_result = {}
         if self.trust_suspicion and self.trust_suspicion.wang_claim:
             trust_result = self.trust_suspicion.process_turn(text)
@@ -128,6 +127,7 @@ class DialogueEngine:
             self._sync_trust_systems()
             if self.user_state: self.user_state.update_lxf_trust(self.trust_suspicion.trust_value)
 
+        # 关键词证据
         for kw in ["哥哥", "塑料刀", "护腕", "讨厌", "恨", "望仔"]:
             if kw in text:
                 delta = self.identity.apply_evidence(kw)
@@ -137,7 +137,9 @@ class DialogueEngine:
 
         self._apply_memory_rules(text)
 
+        # 日常对话持续增长关系（只调用一次）
         if self.relationship_dynamics:
+            self.relationship_dynamics.process_event('长时间陪伴', trust_delta=1, description='又来了一轮对话')
             if any(w in text for w in ["妈妈", "母亲", "四月"]):
                 self.relationship_dynamics.process_event("触发伤口", trust_delta=-10, description="问了妈妈的事")
 
@@ -154,11 +156,12 @@ class DialogueEngine:
 
         self.perception.emotion = max(0, min(100, self.perception.emotion))
         trust = self.identity.wang_belief if self.identity.wang_claim else self.identity.trust_level
-        for ms in self.memory.check_milestones(trust): info(f"里程碑: {ms}")
+        milestones = self.memory.check_milestones(trust)
+        if milestones:
+            self.last_milestone = milestones[-1]
+            for ms in milestones:
+                info(f"里程碑: {ms}")
         for mem in self.memory.check_scheduled(): info(f"记忆解锁: {mem}")
-
-        if self.relationship_dynamics:
-            self.relationship_dynamics.process_event("长时间陪伴", trust_delta=1, description="又来了一轮对话")
 
         self._sync_trust_systems()
 
@@ -227,7 +230,7 @@ class DialogueEngine:
             cap = min(wang_trust + 15, 100)
             if self.relationship_dynamics.trust_value > cap:
                 self.relationship_dynamics.trust_value = cap
-                from lengxufan_core.character_data.relationship_stages import get_relationship_stage
+                
                 self.relationship_dynamics.current_stage = get_relationship_stage(cap)["stage"]
 
     def _apply_memory_rules(self, text):
@@ -242,4 +245,4 @@ class DialogueEngine:
 
     def _save(self):
         state = {**self.perception.to_dict(), **self.memory.to_dict(), "identity_state": self.identity.to_dict(), "simulated_day": self.perception.simulated_day}
-        save_full_state(state)
+        save_full_state(state, char_id=self.char_id)

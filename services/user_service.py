@@ -1,18 +1,27 @@
-﻿"""用户服务：注册/登录/游客逻辑"""
+"""用户服务：注册/登录/游客逻辑"""
 from models import db
-from models.user import User
+from models import User
 import uuid
 
 class UserService:
     @staticmethod
+    def get_by_id(user_id):
+        return User.query.get(user_id)
+
+    @staticmethod
     def register(username, password):
         if User.query.filter_by(username=username).first():
             raise ValueError("用户名已存在")
-        user = User(username=username, is_guest=False)
+        role = 'developer' if username == 'yingying' else 'user'
+        user = User(username=username, is_guest=False, role=role)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
         return user
+
+    @staticmethod
+    def get_by_id(user_id):
+        return User.query.get(user_id)
 
     @staticmethod
     def login(username, password):
@@ -22,9 +31,13 @@ class UserService:
         return user
 
     @staticmethod
+    def get_by_id(user_id):
+        return User.query.get(user_id)
+
+    @staticmethod
     def create_guest():
         guest_name = f"游客_{uuid.uuid4().hex[:6]}"
-        user = User(username=guest_name, is_guest=True)
+        user = User(username=guest_name, is_guest=True, role='user')
         db.session.add(user)
         db.session.commit()
         return user

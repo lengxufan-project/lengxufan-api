@@ -1,4 +1,4 @@
-"""日志系统"""
+"""鏃ュ織绯荤粺"""
 import logging, os
 from datetime import datetime
 

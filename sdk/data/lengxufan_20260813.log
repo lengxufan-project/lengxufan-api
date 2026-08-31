@@ -1,4 +1,0 @@
-2026-08-13 20:38:07 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
-2026-08-13 20:38:07 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
-2026-08-13 20:38:07 | INFO    | logger          | 里程碑: 第一次递护腕给他。
-2026-08-13 20:38:07 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....

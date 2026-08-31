@@ -1,4 +1,4 @@
-﻿"""Prompt 工厂 - 从当前角色上下文读取数据"""
+"""Prompt 工厂 - 从当前角色上下文读取数据"""
 import time, random
 from .character_context import get_character_data
 

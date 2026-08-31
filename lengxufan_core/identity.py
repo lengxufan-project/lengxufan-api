@@ -1,4 +1,4 @@
-﻿"""身份模块 - 从当前角色上下文读取数据"""
+"""身份模块 - 从当前角色上下文读取数据"""
 from dataclasses import dataclass
 from .character_context import get_character_data
 

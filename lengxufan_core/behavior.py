@@ -1,4 +1,4 @@
-﻿"""行为模块 - 从当前角色上下文读取数据"""
+"""行为模块 - 从当前角色上下文读取数据"""
 import random, time
 from dataclasses import dataclass, field
 from infra.logger import debug

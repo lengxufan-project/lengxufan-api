@@ -1,4 +1,4 @@
-﻿EVENT_TEMPLATES = {
+EVENT_TEMPLATES = {
     "practice_dialect": {
         "description": "（用斯瓦希里语低声说了一个词，然后自己笑了。）",
         "emotion_change": 3,

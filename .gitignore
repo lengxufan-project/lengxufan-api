@@ -11,3 +11,7 @@ data/chroma_db/
 tests/data/chroma_db/
 *.pyc
 __pycache__/
+.env
+data/
+__pycache__/
+*.pyc

@@ -1,6 +1,6 @@
-﻿from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session
 from models import db
-from models.conversation import Conversation
+from models import Conversation
 import json
 
 history_bp = Blueprint('history', __name__)

@@ -1,4 +1,4 @@
-﻿RELATIONSHIP_MILESTONES = [
+RELATIONSHIP_MILESTONES = [
     {"trust": 25, "triggered": False, "description": "第一次在对方面前不用方言——用普通话认真说了一句话。"},
     {"trust": 50, "triggered": False, "description": "给了对方一颗糖。糖纸上写着客家话的'平安'。"},
     {"trust": 70, "triggered": False, "description": "在对方面前说了一句斯瓦希里语。说完眨了眨眼，笑了，但眼睛没笑。"},

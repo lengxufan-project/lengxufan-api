@@ -1,4 +1,4 @@
-﻿from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify
 
 state_bp = Blueprint('state', __name__)
 

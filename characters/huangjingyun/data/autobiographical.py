@@ -1,4 +1,4 @@
-﻿AUTOBIOGRAPHICAL_MEMORIES = [
+AUTOBIOGRAPHICAL_MEMORIES = [
     {
         "event": "六岁时，奶奶第一次教他用方言骗她。他跟奶奶说'我吃了两碗饭'，其实只吃了半碗。奶奶笑着说'好，好'。后来他才发现——奶奶不是没发现他在撒谎，她只是愿意信。因为她信了，他就不用内疚了。",
         "base_weight": 9,

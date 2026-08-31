@@ -14,7 +14,6 @@ class ModelRouter:
         self._verified_model = ""
 
     def call(self, messages, max_retries=2):
-        # 1. 如果有已验证的模型，先试它
         if self._verified_model and self._verified_model not in self._failed_models:
             name = self._verified_model
             cfg = next((c for c in self.registry if c["name"] == name), None)
@@ -30,12 +29,10 @@ class ModelRouter:
                             return res
                 except Exception:
                     pass
-            # 已验证模型失败了，清除标记，进入轮询
             self._failed_models.add(name)
             self._verified_model = ""
             warning(f"[API] 已验证模型 {name} 失败 -> 重新轮询")
 
-        # 2. 按优先级尝试所有模型
         for cfg in self.registry:
             name = cfg["name"]
             if name in self._failed_models:
@@ -67,7 +64,6 @@ class ModelRouter:
                 self._failed_models.add(name)
                 continue
 
-        # 3. 全部失败，重置失败列表，再试一次已验证过的
         self._failed_models.clear()
         error("[API] 全部平台调用失败")
         return "……（他沉默着，没有回答）"

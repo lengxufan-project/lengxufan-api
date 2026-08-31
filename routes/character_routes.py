@@ -1,4 +1,4 @@
-﻿from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify
 from characters import CharacterRegistry
 
 char_bp = Blueprint('characters', __name__)

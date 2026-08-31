@@ -1,4 +1,4 @@
-﻿"""事件总线 - 角色间消息传递"""
+"""事件总线 - 角色间消息传递"""
 from infra.logger import debug
 
 class EventBus:

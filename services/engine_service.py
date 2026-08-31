@@ -1,4 +1,4 @@
-﻿"""引擎服务：负责角色引擎的初始化与状态收集（v5.5 - 角色上下文版）"""
+"""引擎服务：负责角色引擎的初始化与状态收集（v5.5 - 角色上下文版）"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -55,7 +55,7 @@ class EngineService:
         self.relationship_dynamics = RelationshipDynamics()
 
         from infra.persistence import load_full_state
-        saved = load_full_state()
+        saved = load_full_state(char_id)
         if saved:
             self.perception = Perception.from_dict(saved)
             self.memory = Memory.from_dict(saved, saved.get("simulated_day", 1))
@@ -131,7 +131,9 @@ class EngineService:
                 "weather": world.get_weather(),
                 "weather_desc": world.get_weather_description()
             },
-            "recent_events": [e.get("type", "") for e in bus.get_recent_events(5)]
+            "recent_events": [e.get("type", "") for e in bus.get_recent_events(5)],
+            "dorm_activities": world.get_dorm_activities(),
+            "last_milestone": self.engine.last_milestone if hasattr(self.engine, "last_milestone") else None
         }
 
     @classmethod

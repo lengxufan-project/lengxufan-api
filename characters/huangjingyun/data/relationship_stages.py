@@ -1,4 +1,4 @@
-﻿RELATIONSHIP_STAGES = [
+RELATIONSHIP_STAGES = [
     {
         "stage": "陌生人",
         "trust_range": [0, 20],

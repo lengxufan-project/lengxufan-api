@@ -2,5 +2,6 @@ Flask==3.1.0
 requests==2.32.3
 PyYAML==6.0.2
 gunicorn==23.0.0
-chromadb>=0.4.0flask-cors>=4.0.0
+chromadb>=0.4.0
+flask-cors>=4.0.0
 flask-sqlalchemy>=3.0

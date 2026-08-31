@@ -1,6 +1,0 @@
-api
-characters
-event_bus
-infra
-lengxufan_core
-world_state

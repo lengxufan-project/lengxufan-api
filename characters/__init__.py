@@ -1,4 +1,4 @@
-﻿"""角色注册中心 - 管理所有可用的AI NPC角色"""
+"""角色注册中心 - 管理所有可用的AI NPC角色"""
 import os
 import sys
 

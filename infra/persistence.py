@@ -2,7 +2,6 @@
 import json, os, time
 
 SAVE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-SAVE_FILE = os.path.join(SAVE_DIR, "save.json")
 DEFAULT_STATE = {
     "emotion": 50.0, "memory": [], "episodic_memory": [],
     "autobiographical_memory": [], "relationship_milestones": [],
@@ -14,17 +13,29 @@ DEFAULT_STATE = {
     "pending_events": [], "pending_intents": [],
 }
 
-def save_full_state(state, filepath=SAVE_FILE):
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "w", encoding="utf-8") as f: json.dump(state, f, ensure_ascii=False, indent=2)
+def get_save_path(char_id):
+    return os.path.join(SAVE_DIR, f"save_{char_id}.json")
 
-def load_full_state(filepath=SAVE_FILE):
+def save_full_state(state, char_id=None):
+    filepath = get_save_path(char_id) if char_id else os.path.join(SAVE_DIR, "save.json")
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
+
+def load_full_state(char_id=None):
+    filepath = get_save_path(char_id) if char_id else os.path.join(SAVE_DIR, "save.json")
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             state = json.load(f)
         return {**DEFAULT_STATE, **state}
-    except: return None
+    except:
+        return None
 
-def state_exists(filepath=SAVE_FILE): return os.path.exists(filepath)
-def delete_state(filepath=SAVE_FILE):
-    if os.path.exists(filepath): os.remove(filepath)
+def state_exists(char_id=None):
+    filepath = get_save_path(char_id) if char_id else os.path.join(SAVE_DIR, "save.json")
+    return os.path.exists(filepath)
+
+def delete_state(char_id=None):
+    filepath = get_save_path(char_id) if char_id else os.path.join(SAVE_DIR, "save.json")
+    if os.path.exists(filepath):
+        os.remove(filepath)

@@ -1,4 +1,4 @@
-﻿"""记忆模块 - 从当前角色上下文读取数据"""
+"""记忆模块 - 从当前角色上下文读取数据"""
 import time
 import chromadb
 from dataclasses import dataclass, field

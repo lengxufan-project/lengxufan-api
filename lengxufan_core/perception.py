@@ -1,4 +1,4 @@
-﻿"""感知模块 - 从当前角色上下文读取数据"""
+"""感知模块 - 从当前角色上下文读取数据"""
 import random, time
 from dataclasses import dataclass, field
 from infra.time_utils import get_biorhythm_phase

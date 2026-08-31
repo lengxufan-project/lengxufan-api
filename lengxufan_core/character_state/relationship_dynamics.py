@@ -1,4 +1,4 @@
-﻿"""关系动态引擎 - 从当前角色上下文读取数据"""
+"""关系动态引擎 - 从当前角色上下文读取数据"""
 from infra.logger import debug
 from lengxufan_core.character_context import get_character_data
 

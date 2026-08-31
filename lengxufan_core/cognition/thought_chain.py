@@ -23,10 +23,14 @@ class ThoughtChain:
     
     def _perceive(self, perception, identity):
         e = perception.emotion
-        if e < 30: mood = "低落"
-        elif e < 50: mood = "平静"
-        elif e < 70: mood = "稍好"
-        else: mood = "高涨"
+        if e < 30:
+            mood = "低落"
+        elif e < 50:
+            mood = "平静"
+        elif e < 70:
+            mood = "稍好"
+        else:
+            mood = "高涨"
         body = []
         if perception.status.get("shoulder_pain"): body.append("左肩旧伤隐隐作痛")
         if perception.status.get("holding_knife"): body.append("握着塑料刀")
@@ -64,9 +68,12 @@ class ThoughtChain:
     def _decide(self, perception, identity, user_analysis):
         decision = {"strategy": "正常回应", "should_silence": False, "should_defend": False}
         e = perception.emotion
-        if e < 20: decision["should_silence"] = True
-        if user_analysis["intent"] == "表达负面情绪": decision["strategy"] = "保持距离"
-        if user_analysis["intent"] == "追问" and e < 40: decision["should_silence"] = True
+        if e < 20:
+            decision["should_silence"] = True
+        if user_analysis["intent"] == "表达负面情绪":
+            decision["strategy"] = "保持距离"
+        if user_analysis["intent"] == "追问" and e < 40:
+            decision["should_silence"] = True
         return decision
     
     def _summarize(self, perception_summary, user_analysis, decision):
@@ -74,5 +81,6 @@ class ThoughtChain:
         if perception_summary["body"]:
             parts.append("身体：" + "、".join(perception_summary["body"]))
         parts.append(f"用户意图：{user_analysis['intent']}")
-        if decision["should_silence"]: parts.append("倾向于沉默")
+        if decision["should_silence"]:
+            parts.append("倾向于沉默")
         return " | ".join(parts)

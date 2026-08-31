@@ -1,4 +1,4 @@
-﻿"""共享世界状态 - 所有角色共享的时间、天气、地点、室友活动"""
+"""共享世界状态 - 所有角色共享的时间、天气、地点、室友活动"""
 import random
 from datetime import datetime, timedelta
 

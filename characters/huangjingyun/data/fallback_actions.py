@@ -1,4 +1,4 @@
-﻿FALLBACK_ACTIONS = {
+FALLBACK_ACTIONS = {
     "very_low": [
         "（低头剥糖纸，手指很慢很慢）",
         "（靠在墙上，用客家话自言自语了一句什么）",

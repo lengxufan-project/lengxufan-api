@@ -1,4 +1,4 @@
-﻿from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session
 from services.user_service import UserService
 
 auth_bp = Blueprint('auth', __name__)
@@ -16,7 +16,7 @@ def register():
         user = UserService.register(username, password)
         session['user_id'] = user.id
         session['username'] = user.username
-        return jsonify({"message": "注册成功", "user_id": user.id, "username": user.username})
+        return jsonify({"message": "注册成功", "user_id": user.id, "username": user.username, "role": user.role})
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
@@ -29,7 +29,7 @@ def login():
         user = UserService.login(username, password)
         session['user_id'] = user.id
         session['username'] = user.username
-        return jsonify({"message": "登录成功", "user_id": user.id, "username": user.username})
+        return jsonify({"message": "登录成功", "user_id": user.id, "username": user.username, "role": user.role})
     except ValueError as e:
         return jsonify({"error": str(e)}), 401
 
@@ -38,7 +38,7 @@ def guest():
     user = UserService.create_guest()
     session['user_id'] = user.id
     session['username'] = user.username
-    return jsonify({"message": "游客登录成功", "user_id": user.id, "username": user.username})
+    return jsonify({"message": "游客登录成功", "user_id": user.id, "username": user.username, "role": user.role})
 
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
@@ -49,4 +49,5 @@ def logout():
 def me():
     if 'user_id' not in session:
         return jsonify({"error": "未登录"}), 401
-    return jsonify({"user_id": session['user_id'], "username": session['username']})
+    user = UserService.get_by_id(session['user_id'])
+    return jsonify({"user_id": user.id, "username": user.username, "role": user.role})

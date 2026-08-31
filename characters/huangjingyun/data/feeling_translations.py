@@ -1,4 +1,4 @@
-﻿FEELING_TRANSLATIONS = {
+FEELING_TRANSLATIONS = {
     "very_low": [
         "你今天不想说话。连方言都懒得切换。",
         "糖纸在指尖转了一圈，你没剥开。因为你怕剥开了，里面什么都没有。",

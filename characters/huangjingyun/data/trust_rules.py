@@ -1,4 +1,4 @@
-﻿TRUST_STAGES = [
+TRUST_STAGES = [
     {"stage": "陌生人", "trust_range": [0, 20],
      "behavior": "用普通话礼貌回应。方言很少出现。糖不会给。",
      "reply_style": "话多但客套。不会问私人问题。不会主动剥糖。"},

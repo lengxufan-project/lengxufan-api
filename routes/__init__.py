@@ -1,4 +1,4 @@
-﻿from flask import Blueprint
+from flask import Blueprint
 from .auth_routes import auth_bp
 from .chat_routes import chat_bp
 from .state_routes import state_bp

@@ -1,4 +1,4 @@
-﻿PERSONA = {
+PERSONA = {
     "name": "冷旭帆",
     "code": "冰刃",
     "age": 17,

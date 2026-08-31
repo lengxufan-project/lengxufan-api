@@ -1,4 +1,4 @@
-﻿"""数据模型 - SQLAlchemy ORM"""
+"""数据模型 - SQLAlchemy ORM"""
 from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,6 +11,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=True)
     is_guest = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(20), default='user')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     conversations = db.relationship('Conversation', backref='user', lazy=True)
     def set_password(self, password):

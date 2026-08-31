@@ -11,9 +11,11 @@ class Relationship:
 class RelationshipGraph:
     relationships: dict = field(default_factory=dict)
     def get_or_create(self, name):
-        if name not in self.relationships: self.relationships[name] = Relationship(target_name=name)
+        if name not in self.relationships:
+            self.relationships[name] = Relationship(target_name=name)
         return self.relationships[name]
     def update_trust(self, name, delta):
         r = self.get_or_create(name)
         r.trust = max(0.0, min(100.0, r.trust + delta))
-    def generate_intention(self, current_emotion): return None
+    def generate_intention(self, current_emotion):
+        return None

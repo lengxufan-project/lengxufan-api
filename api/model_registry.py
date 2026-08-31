@@ -1,8 +1,8 @@
-"""模型注册表 - 从 .env 文件读取 API Key"""
+"""妯″瀷娉ㄥ唽琛?- 浠?.env 鏂囦欢璇诲彇 API Key"""
 import os
 from pathlib import Path
 
-# 加载 .env 文件
+# 鍔犺浇 .env 鏂囦欢
 def _load_env_file():
     env_path = Path(__file__).parent.parent / '.env'
     if env_path.exists():
@@ -27,7 +27,7 @@ MODEL_REGISTRY = [
         "priority": 1,
         "max_tokens": 120,
         "temperature": 0.7,
-        "description": "阿里云百炼 qwen-plus",
+        "description": "闃块噷浜戠櫨鐐?qwen-plus",
     },
     {
         "name": "glm-free",
@@ -39,7 +39,7 @@ MODEL_REGISTRY = [
         "priority": 2,
         "max_tokens": 120,
         "temperature": 0.7,
-        "description": "智谱 GLM-4-Flash 免费",
+        "description": "鏅鸿氨 GLM-4-Flash 鍏嶈垂",
     },
     {
         "name": "deepseek-chat",
@@ -63,7 +63,7 @@ MODEL_REGISTRY = [
         "priority": 4,
         "max_tokens": 120,
         "temperature": 0.7,
-        "description": "Ollama本地",
+        "description": "Ollama鏈湴",
     },
     {
         "name": "siliconflow",
@@ -75,6 +75,6 @@ MODEL_REGISTRY = [
         "priority": 5,
         "max_tokens": 120,
         "temperature": 0.7,
-        "description": "硅基流动",
+        "description": "纭呭熀娴佸姩",
     },
 ]

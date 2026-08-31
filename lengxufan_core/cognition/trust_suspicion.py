@@ -1,4 +1,4 @@
-﻿"""信任怀疑状态机 - 从当前角色上下文读取数据"""
+"""信任怀疑状态机 - 从当前角色上下文读取数据"""
 import random
 from infra.logger import debug
 from lengxufan_core.character_context import get_character_data

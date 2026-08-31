@@ -1,4 +1,4 @@
-﻿import os, sys, argparse
+import os, sys, argparse
 from app import create_app
 from infra.logger import info
 

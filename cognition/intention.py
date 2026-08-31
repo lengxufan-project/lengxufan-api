@@ -1,4 +1,4 @@
-"""意图解析 (P1预置)"""
+"""鎰忓浘瑙ｆ瀽 (P1棰勭疆)"""
 from dataclasses import dataclass
 @dataclass
 class ParsedIntention:

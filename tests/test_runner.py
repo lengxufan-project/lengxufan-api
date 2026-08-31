@@ -95,7 +95,6 @@ def run_all_tests():
 
         speaker_label = f"[{speaker}]" if speaker else ""
 
-        # 说话人标注
         if speaker and speaker in ["陆华望", "黄景云", "向云舟", "秦狐戏", "陆华希", "冉昭然", "叶清辞"]:
             process_input = f"[发话人：{speaker}] {user_input}"
         else:
@@ -110,24 +109,19 @@ def run_all_tests():
         trust_after = identity.wang_belief if identity.wang_claim else identity.trust_level
         memory_after = len(memory.episodic)
 
-        # 状态变化
         print(f"  📊 状态:{emotion_status(emotion_before)}({emotion_before:.1f}→{emotion_after:.1f}) | 信任:{trust_before}→{trust_after} | 记忆:{memory_before}→{memory_after}条 | 模型:{route_status['current_model']}")
 
-        # 思考链
         if engine.thought_chain and engine.thought_chain.last_thought:
             print(f"  🧠 思考: {engine.thought_chain.last_thought}")
 
-        # 信任变化原因
         if trust_after != trust_before:
             print(f"  🔒 信任变化: {trust_before}→{trust_after}")
 
-        # 新记忆
         if memory_after > memory_before:
             latest = memory.episodic[-1] if memory.episodic else None
             if latest:
                 print(f"  💾 新记忆: {latest['summary']}")
 
-        # 身体状态
         body_parts = []
         if perception.status.get("shoulder_pain"): body_parts.append("左肩旧伤")
         if perception.status.get("holding_knife"): body_parts.append("握着塑料刀")

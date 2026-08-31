@@ -1,13 +1,9 @@
-﻿"""场景感知与推导引擎 - 使用共享世界状态"""
+"""场景感知与推导引擎 - 使用共享世界状态"""
 from datetime import datetime
 from typing import Optional
 from infra.logger import debug
 from world_state import world
-from lengxufan_core.character_data.scene_templates import (
-    TIME_ATMOSPHERE,
-    LOCATION_FEATURES,
-    DEFAULT_CHARACTER_ACTIVITIES,
-)
+from lengxufan_core.character_context import get_character_data
 
 
 class SceneEngine:
@@ -31,10 +27,8 @@ class SceneEngine:
             self._scene_changed = True
             self.time_of_day = new_time
 
-        time_data = TIME_ATMOSPHERE.get(self.time_of_day, TIME_ATMOSPHERE["夜晚"])
-        location_data = LOCATION_FEATURES.get(
-            self.current_location, LOCATION_FEATURES["307室"]
-        )
+        time_data = get_character_data("scene_templates", {}).get("time_atmosphere", {}).get(self.time_of_day, {})
+        location_data = get_character_data("scene_templates", {}).get("location_features", {}).get(self.current_location, {})
 
         # 从共享世界状态获取室友活动
         characters = []
@@ -64,9 +58,7 @@ class SceneEngine:
         for sense in ["visual", "audio", "tactile", "olfactory"]:
             result[sense] = result[sense].strip("。").strip()
 
-        debug(f"[SceneEngine] 时间段={self.time_of_day}, 天气={world.get_weather()}, "
-              f"地点={self.current_location}, 人物={len(characters)}人")
-
+        debug(f"[SceneEngine] 时间段={self.time_of_day}, 天气={world.get_weather()}, 地点={self.current_location}, 人物={len(characters)}人")
         return result
 
     def update(self, elapsed_seconds: float):
@@ -80,21 +72,17 @@ class SceneEngine:
             return f"你在{self.current_location}。{self.atmosphere}。"
 
         world_summary = world.get_world_summary()
-
         lines = [f"你靠在{self.current_location}靠门的床上。{world_summary}"]
 
-        preferred_order = ["向云舟", "冉昭然", "黄景云", "叶清辞",
-                           "陆华望", "秦狐戏", "陆华希"]
+        preferred_order = ["向云舟", "冉昭然", "黄景云", "叶清辞", "陆华望", "秦狐戏", "陆华希"]
         ordered = []
         for name in preferred_order:
             for char in self.nearby_characters:
                 if char["name"] == name:
                     ordered.append(char)
                     break
-
         for char in ordered:
             lines.append(f"{char['name']}{char['activity']}。")
-
         return "\n".join(lines)
 
     def get_character_activity(self, name: str) -> Optional[str]:

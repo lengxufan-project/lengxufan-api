@@ -53,7 +53,6 @@ EVENT_TEMPLATES = {
     }
 }
 
-# 因果链延续事件——基于上一次事件类型的延续
 CAUSAL_CHAIN = {
     "footsteps": [
         {"condition": ("lt", 40), "probability": 0.4,

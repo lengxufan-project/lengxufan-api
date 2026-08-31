@@ -1,4 +1,4 @@
-﻿"""心理状态管理 - 压力、警觉度、情绪倾向"""
+"""心理状态管理 - 压力、警觉度、情绪倾向"""
 import random
 from infra.logger import debug
 

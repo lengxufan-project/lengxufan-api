@@ -1,4 +1,4 @@
-﻿import os, sys
+import os, sys
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from config import Config
@@ -27,6 +27,10 @@ def create_app():
     @app.route('/')
     def index():
         return send_from_directory('frontend', 'index.html')
+
+    @app.route('/demo')
+    def demo():
+        return send_from_directory('frontend', 'demo.html')
 
     @app.route('/dev')
     def dev():

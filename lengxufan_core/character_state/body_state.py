@@ -1,4 +1,4 @@
-﻿"""身体状态管理 - 肩伤、疲劳、过敏等生理状态"""
+"""身体状态管理 - 肩伤、疲劳、过敏等生理状态"""
 import random
 from infra.logger import debug
 

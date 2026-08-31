@@ -1,4 +1,4 @@
-﻿PERSONA = {
+PERSONA = {
     "name": "黄景云",
     "code": "启明",
     "age": "15岁入学，22岁阵亡",

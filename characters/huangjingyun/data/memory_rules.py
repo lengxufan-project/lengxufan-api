@@ -1,4 +1,4 @@
-﻿MEMORY_RULES = [
+MEMORY_RULES = [
     (["奶奶", "阿嫲"], "user_mentioned_grandma", 10),
     (["叶清辞", "清辞"], "user_mentioned_qingci", 15),
     (["冷旭帆", "旭帆", "冰刃"], "user_mentioned_lxf", 5),
