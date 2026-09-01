@@ -48,21 +48,25 @@ body {
   background: linear-gradient(90deg, transparent, rgba(88,166,255,0.35) 50%, transparent);
 }
 
-/* 返回按钮：极简 ← 圆形 */
+/* 返回按钮：胶囊磨砂样式（带文字标识） */
 .cp-back {
   flex-shrink: 0;
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  color: #8fa0c0;
+  padding: 6px 14px 6px 12px;
+  height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 4px;
+  color: #bfe0ff;
   text-decoration: none;
-  font-size: 18px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.03);
-  transition: all 0.2s ease-in-out;
+  font-size: 13px;
+  border-radius: 20px;
+  border: 1px solid rgba(88,166,255,0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  transition: all 0.3s ease-in-out;
   line-height: 1;
+  box-shadow: 0 0 8px rgba(88,166,255,0.1);
 }
-.cp-back:hover { color: #fff; background: rgba(88,166,255,0.08); border-color: rgba(88,166,255,0.35); box-shadow: 0 0 10px rgba(88,166,255,0.2); }
+.cp-back:hover { color: #fff; background: rgba(88,166,255,0.14); border-color: rgba(140,200,255,0.7); box-shadow: 0 0 14px rgba(88,166,255,0.35); transform: translateY(-1px); }
 
 /* 角色信息：居中偏左 */
 .cp-char-info {
@@ -125,19 +129,21 @@ body {
 .cp-status-toggle:hover .status-icon::before,
 .cp-status-toggle:hover .status-icon::after { background: #fff; }
 
-/* ============ 聊天区：flex 1，大面积留白 ============ */
+/* ============/* 聊天区：flex 1，大面积留白 */
 .cp-chat-area {
   flex: 1; overflow-y: auto;
-  padding: 32px 28px;
-  display: flex; flex-direction: column; gap: 16px;
+  padding: 36px 28px 24px;
+  display: flex; flex-direction: column; gap: 20px;
   scrollbar-width: thin; scrollbar-color: rgba(88,166,255,0.25) transparent;
+  position: relative;
+  z-index: 2;
 }
 .cp-chat-area::-webkit-scrollbar { width: 5px; }
 .cp-chat-area::-webkit-scrollbar-thumb { background: rgba(88,166,255,0.25); border-radius: 3px; }
 .cp-chat-area::-webkit-scrollbar-track { background: transparent; }
 
 /* 消息行与气泡 */
-.cp-msg { display: flex; max-width: 65%; align-items: flex-end; gap: 8px; }
+.cp-msg { display: flex; max-width: 65%; align-items: flex-end; gap: 12px; position: relative; }
 .cp-msg.ai { align-self: flex-start; }
 .cp-msg.user { align-self: flex-end; flex-direction: row-reverse; }
 
@@ -182,6 +188,21 @@ body {
   border: 1px solid rgba(140,200,255,0.35);
   box-shadow: 0 0 12px rgba(88,166,255,0.2), 0 2px 8px rgba(0,0,0,0.25);
   border-bottom-right-radius: 4px;
+}
+
+/* 群聊消息气泡包裹：角色名标签 + 气泡 */
+.cp-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 100%;
+}
+.cp-msg-name {
+  font-size: 11px;
+  color: #58a6ff;
+  padding: 0 4px;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 
 /* 无 backdrop-filter 支持时降级 */
@@ -370,4 +391,206 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .cp-status-drawer, .cp-drawer-mask, .cp-back, .cp-status-toggle, .cp-send, .cp-input-wrap { transition: none; }
   .cp-caret { animation: none; }
+}
+
+/* ============================================================
+   沉浸感增强：背景氛围层 + 角色光晕 + 时间戳 + 输入工具
+   全部定位在 cp-page 内部，z-index 层级严格隔离
+   ============================================================ */
+
+/* ---------- CSS 变量：角色光晕色（由 JS init 注入） ---------- */
+.cp-page { --char-glow: 88, 166, 255; }   /* 兜底冰蓝 */
+
+/* ---------- 1. 背景氛围层：307 室夜晚极淡渐变 ---------- */
+.cp-atmosphere {
+  position: absolute; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 50%, rgba(var(--char-glow), 0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 80%, rgba(30, 40, 80, 0.08) 0%, transparent 60%),
+    linear-gradient(180deg, #080a12 0%, #0a0d18 45%, #090b14 100%);
+}
+
+/* ---------- 2. 顶部暗角：轻微压暗顶部区域 ---------- */
+.cp-top-vignette {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 160px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
+}
+
+/* ---------- 3. 背景漂浮粒子：CSS-only box-shadow 方案 ---------- */
+.cp-bg-particles {
+  position: absolute; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+/* 第一组粒子（大一点，靠近光晕区） */
+.cp-bg-particles::before {
+  content: "";
+  position: absolute; left: 30%; top: 45%;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: rgba(var(--char-glow), 0.55);
+  box-shadow:
+    60px  -40px 1px 0 rgba(var(--char-glow), 0.40),
+    130px -90px 1px 0 rgba(200, 220, 255, 0.28),
+    200px -30px 1px 0 rgba(var(--char-glow), 0.35),
+    -70px -110px 1px 0 rgba(200, 220, 255, 0.22),
+    -150px -50px 1px 0 rgba(var(--char-glow), 0.30),
+    320px -150px 1px 0 rgba(200, 220, 255, 0.25),
+    450px -70px 1px 0 rgba(var(--char-glow), 0.32),
+    -250px -140px 1px 0 rgba(200, 220, 255, 0.20),
+    520px -200px 1px 0 rgba(var(--char-glow), 0.28),
+    -380px -90px 1px 0 rgba(200, 220, 255, 0.18);
+  animation: cpBgFloatA 28s ease-in-out infinite;
+}
+/* 第二组粒子（小一点，散布全页） */
+.cp-bg-particles::after {
+  content: "";
+  position: absolute; left: 60%; top: 30%;
+  width: 1px; height: 1px;
+  border-radius: 50%;
+  background: rgba(var(--char-glow), 0.45);
+  box-shadow:
+    -80px  60px  0 0 rgba(200, 220, 255, 0.20),
+    150px  20px  0 0 rgba(var(--char-glow), 0.28),
+    -200px -40px 0 0 rgba(200, 220, 255, 0.18),
+    280px -120px 0 0 rgba(var(--char-glow), 0.25),
+    -340px  100px 0 0 rgba(200, 220, 255, 0.15),
+    420px  50px  0 0 rgba(var(--char-glow), 0.22),
+    -500px -180px 0 0 rgba(200, 220, 255, 0.12);
+  animation: cpBgFloatB 36s ease-in-out infinite;
+}
+@keyframes cpBgFloatA {
+  0%, 100% { transform: translate(0, 0); opacity: 0.9; }
+  50% { transform: translate(-12px, -8px); opacity: 0.6; }
+}
+@keyframes cpBgFloatB {
+  0%, 100% { transform: translate(0, 0); opacity: 0.7; }
+  50% { transform: translate(15px, 10px); opacity: 0.45; }
+}
+
+/* ---------- 4. 角色光晕：聊天区背景中央偏左 ---------- */
+.cp-char-glow {
+  position: absolute;
+  left: 12%;
+  top: 45%;
+  width: 420px;
+  height: 420px;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(var(--char-glow), 0.22) 0%,
+      rgba(var(--char-glow), 0.12) 30%,
+      rgba(var(--char-glow), 0.05) 55%,
+      transparent 72%);
+  filter: blur(4px);
+  animation: cpGlowBreath 6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+.cp-char-glow::after {
+  content: "";
+  position: absolute;
+  inset: 35%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(var(--char-glow), 0.08) 0%,
+      transparent 70%);
+  animation: cpGlowPulse 4s ease-in-out infinite;
+}
+@keyframes cpGlowBreath {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+  50%      { transform: translate(-8px, 4px) scale(1.06); opacity: 0.85; }
+}
+@keyframes cpGlowPulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.8; }
+}
+
+/* ---------- 5. 消息时间戳：气泡下方小字 ---------- */
+.cp-msg-time {
+  position: absolute;
+  bottom: -18px;
+  left: 36px;   /* 头像宽度对齐，user 消息会被 row-reverse 镜像 */
+  font-size: 10px;
+  color: rgba(143, 160, 192, 0.55);
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  user-select: none;
+}
+/* user 消息在 row-reverse 里，时间戳移到左侧（视觉上右侧气泡的下方时间在气泡左侧，左对齐） */
+.cp-msg.user .cp-msg-time {
+  left: auto;
+  right: 36px;
+}
+
+/* ---------- 6. 输入区工具按钮（表情 / 语音 占位） ---------- */
+.cp-input-bar {
+  position: relative;
+  z-index: 3;
+}
+.cp-input-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.cp-tool-btn {
+  width: 34px; height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(20, 24, 40, 0.4);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  cursor: default;    /* 占位：不可点击 */
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s ease-in-out;
+  opacity: 0.75;
+}
+.cp-tool-btn:hover { opacity: 1; border-color: rgba(88,166,255,0.3); }
+
+/* ---------- 7. 气泡发光强化：AI 气泡底部加角色色内发光 ---------- */
+.cp-msg.ai .cp-bubble {
+  box-shadow:
+    inset 0 0 15px rgba(255, 255, 255, 0.03),
+    0 0 18px rgba(var(--char-glow), 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+/* 角色头像光晕跟随角色颜色 */
+.cp-avatar {
+  box-shadow: 0 0 12px rgba(var(--char-glow), 0.5), 0 0 24px rgba(var(--char-glow), 0.2);
+}
+
+/* ---------- 8. 移动端沉浸感减弱（性能 + 视觉舒适度） ---------- */
+@media (max-width: 768px) {
+  .cp-char-glow {
+    left: -10%;
+    top: 40%;
+    width: 300px;
+    height: 300px;
+    opacity: 0.55;
+  }
+  .cp-bg-particles::before,
+  .cp-bg-particles::after { display: none; }
+  .cp-msg { max-width: 85%; gap: 10px; }
+  .cp-chat-area { padding: 24px 14px 20px; gap: 18px; }
+  .cp-input-tools { display: none; }   /* 移动端隐藏工具占位，输入区更紧凑 */
+  .cp-tool-btn { display: none; }
+  .cp-msg-time { bottom: -16px; font-size: 9px; }
+}
+
+/* ---------- 9. reduced-motion 兼容沉浸感动画 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .cp-bg-particles::before,
+  .cp-bg-particles::after { animation: none; }
+  .cp-char-glow { animation: none; opacity: 0.7; }
+  .cp-char-glow::after { animation: none; display: none; }
 }

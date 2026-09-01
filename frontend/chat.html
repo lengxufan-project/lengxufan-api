@@ -10,12 +10,18 @@
 <body>
   <!-- 聊天页主容器（fixed 视口矩形，A4 纸式布局，不受浏览器缩放影响） -->
   <div class="cp-page">
+    <!-- ===== 背景氛围层（极淡场景渐变 + 粒子 + 顶部暗角 + 角色光晕） ===== -->
+    <div class="cp-atmosphere" aria-hidden="true"></div>
+    <div class="cp-top-vignette" aria-hidden="true"></div>
+    <div class="cp-bg-particles" aria-hidden="true"></div>
+    <div class="cp-char-glow" id="charGlow" aria-hidden="true"></div>
+
     <!-- 状态抽屉遮罩（抽屉展开时显示，移动端全屏也需要） -->
     <div class="cp-drawer-mask" id="drawerMask"></div>
 
     <!-- 顶栏：返回 ← + 角色名 + 情绪标签 + 状态抽屉按钮 -->
     <header class="cp-topbar">
-      <a class="cp-back" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()" title="返回">&larr;</a>
+      <a class="cp-back" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()" title="返回">&larr; 返回</a>
       <div class="cp-char-info">
         <span class="cp-char-name" id="chatCharName">冷旭帆</span>
         <span class="cp-emotion-label" id="chatEmotionLabel">--</span>
@@ -28,8 +34,12 @@
     <!-- 聊天区 -->
     <main class="cp-chat-area" id="chatArea"></main>
 
-    <!-- 输入区：极大圆角 + 磨砂玻璃 -->
+    <!-- 输入区：极大圆角 + 磨砂玻璃 + 表情/语音占位 -->
     <footer class="cp-input-bar">
+      <div class="cp-input-tools" aria-hidden="true">
+        <button class="cp-tool-btn" type="button" title="表情（占位）">😊</button>
+        <button class="cp-tool-btn" type="button" title="语音（占位）">🎙️</button>
+      </div>
       <div class="cp-input-wrap">
         <textarea class="cp-input" id="chatInput" rows="1" placeholder="说点什么…（Enter 发送，Shift+Enter 换行）"></textarea>
       </div>

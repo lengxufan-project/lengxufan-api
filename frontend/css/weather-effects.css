@@ -228,3 +228,82 @@
   0% { transform: translate(-4%, -2%) scale(1); }
   100% { transform: translate(4%, 3%) scale(1.06); }
 }
+
+/* ============================================================
+   天气效果增强层（在原有纯 CSS 特效基础上增量增强）
+   所有增强只影响视觉质感，不改变 weather-effects.js 的切换逻辑
+   ============================================================ */
+
+/* --- 雨增强：整体斜向 12° + 雨丝更细 + 底部淡蓝光晕脉冲 --- */
+/* 关键：transform: rotate(-12deg) 由 splashPulse animation 统一承担，
+   避免静态 transform 与 animation transform 冲突覆盖 */
+#weatherLayer.active-rain .weather-rain {
+  /* 只过渡 opacity，transform 由 animation 控制 */
+  transition: opacity 1s ease-in-out;
+  /* 底部淡蓝光晕脉冲（雨落地时的水花微光） */
+  background: radial-gradient(ellipse 80% 12% at 50% 95%, rgba(100, 180, 255, 0.25), transparent 70%);
+  animation: splashPulse 2.4s ease-in-out infinite;
+}
+#weatherLayer.active-rain .weather-rain::before,
+#weatherLayer.active-rain .weather-rain::after {
+  width: 0.8px;                           /* 更细的雨丝 */
+  height: 16px;                           /* 更短，更有细密感 */
+  background: rgba(150, 190, 255, 0.35);  /* 稍强透明度 */
+  animation-duration: 0.9s;               /* 下落稍快 */
+}
+
+/* --- 雪增强：水平摆动幅度加大 + 下落更慢更柔 --- */
+#weatherLayer.active-snow .weather-snow::before,
+#weatherLayer.active-snow .weather-snow::after {
+  animation-duration: 6.5s;                /* 更慢更柔 */
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 3px rgba(200, 220, 255, 0.4);  /* 微弱光晕 */
+}
+/* 覆盖 snowFall 关键帧，加大水平摆动幅度 */
+#weatherLayer.active-snow .weather-snow::before,
+#weatherLayer.active-snow .weather-snow::after {
+  animation-name: snowFallWide;
+}
+@keyframes snowFallWide {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(22px, 25vh); }
+  50%  { transform: translate(-20px, 50vh); }
+  75%  { transform: translate(22px, 75vh); }
+  100% { transform: translate(0, 100vh); }
+}
+
+/* --- 晴增强：更暖的上边缘光晕 + 尘埃粒子加倍 --- */
+#weatherLayer.active-sun .weather-sun::before {
+  /* 增加第二道淡金色光晕，与原有的暖色渐变叠加 */
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(255,210,140,0.20) 0%, rgba(255,205,130,0.08) 30%, transparent 60%),
+    radial-gradient(ellipse at 30% -5%, rgba(255,190,120,0.10) 0%, transparent 45%);
+}
+#weatherLayer.active-sun .weather-sun::after {
+  animation-duration: 11s;  /* 尘埃漂浮更慢 */
+}
+
+/* --- 阴增强：整体亮度降低 + 更大范围的低频光斑漂移 --- */
+#weatherLayer.active-cloud .weather-cloud {
+  /* 整体压暗加深 */
+  background: rgba(0, 0, 0, 0.18);
+}
+#weatherLayer.active-cloud .weather-cloud::before {
+  /* 更大更柔的光斑 */
+  background:
+    radial-gradient(900px 550px at 25% 35%, rgba(130,140,165,0.22), transparent 70%),
+    radial-gradient(700px 480px at 75% 65%, rgba(110,120,145,0.18), transparent 70%),
+    radial-gradient(600px 420px at 55% 25%, rgba(140,150,170,0.12), transparent 65%);
+  animation: cloudDriftSlow 32s ease-in-out infinite;
+}
+
+/* --- 风增强：雨丝整体更陡更斜 + 流速加快 --- */
+/* 用 windPulse animation（rotate(-20deg) + 轻微 scaleX）替代静态 transform */
+#weatherLayer.active-rain.wind .weather-rain {
+  animation: windPulse 2.4s ease-in-out infinite;
+}
+#weatherLayer.active-rain.wind .weather-rain::before,
+#weatherLayer.active-rain.wind .weather-rain::after {
+  animation-duration: 0.55s;   /* 明显更快 */
+  height: 20px;                /* 稍长，被风吹得向后飘 */
+}

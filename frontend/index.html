@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -19,32 +19,31 @@
 </head>
 <body>
 <div id="loadingBar"></div>
-  <div id="globalParticles"></div>
+  <!-- 移动端独立汉堡按钮（放在 .app 外，避免被侧边栏定位影响） -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="菜单">☰</button>
+  <!-- 统一全局背景层（星空渐变 + 粒子，所有页面共享） -->
+  <div id="globalBg"></div>
 
-  <!-- 开场动画（非对称电影感构图：左侧文字 / 右下光球，点击"进入世界"后进入主界面） -->
+  <!-- 开场动画：世界苏醒 → 粒子汇聚成球 → 延伸曲线 → 移动衔接主页面 -->
   <div class="intro" id="intro">
-    <div class="intro-noise"></div>
-    <div class="intro-particles">
-      <div class="p-layer p-bg" id="introParticlesBg"></div>
-      <div class="p-layer p-mid" id="introParticlesMid"></div>
-      <div class="p-layer p-front" id="introParticlesFront"></div>
+    <div class="intro-stage" id="introStage">
+      <div class="intro-sphere" id="introSphere"></div>
+      <div class="intro-curves" id="introCurves"></div>
     </div>
-    <div class="intro-orb" id="introOrb">
-      <span class="orb-ripple r1"></span>
-      <span class="orb-ripple r2"></span>
-      <span class="orb-ripple r3"></span>
-    </div>
-    <div class="intro-text-block">
-      <h1 class="intro-title" id="introTitle">冷旭帆 · 世界入口</h1>
-      <div class="intro-sub" id="introSub">世界正在苏醒</div>
-    </div>
-    <button class="intro-enter" id="introEnter" type="button">进入世界</button>
   </div>
 
   <!-- 应用主容器（固定视口矩形，A4 纸式布局，不受浏览器缩放影响） -->
   <div class="app" id="app">
     <!-- 移动端遮罩（侧边栏展开时半透明背景，点击关闭） -->
     <div class="sidebar-mask" id="sidebarMask"></div>
+    <!-- 第一栏：领域导航（极窄图标列） -->
+    <div class="rail" id="rail">
+      <div class="rail-item active" data-view="world" title="世界">◆</div>
+      <div class="rail-item" data-view="roster" title="角色名册">◈</div>
+      <div class="rail-item" data-view="chat" title="对话">☰</div>
+      <div class="rail-item" data-view="memory" title="回忆">◉</div>
+      <div class="rail-item" data-view="settings" title="设置">⚙</div>
+    </div>
 
     <!-- 左侧可收起侧边栏（微信/QQ 式交互 + 暗黑磨砂） -->
     <div class="sidebar" id="sidebar">
@@ -54,7 +53,7 @@
         <span class="sidebar-title">世界入口</span>
         <button class="sidebar-notify" id="sidebarNotify" type="button" aria-label="通知">
           <span class="notify-bell"></span>
-          <span class="notify-dot"></span>
+          
         </button>
       </div>
 
@@ -64,28 +63,65 @@
         <input type="text" class="search-input" placeholder="搜索角色 / 场景 / 档案" readonly autocomplete="off" />
       </div>
 
-      <nav class="sidebar-nav">
-        <!-- 世界组 -->
-        <div class="nav-group-title">世界</div>
-        <a href="index.html?skipIntro=1" class="nav-link">世界入口</a>
-        <a href="world-map.html" class="nav-link">星图导航</a>
-
-        <!-- 档案组 -->
-        <div class="nav-group-title">档案</div>
-        <a href="character-gallery.html" class="nav-link">角色图鉴</a>
-        <a href="memory-gallery.html" class="nav-link">时光回廊</a>
-        <a href="relation-map.html" class="nav-link">关系图谱</a>
-
-        <!-- 观测组 -->
-        <div class="nav-group-title">观测</div>
-        <a href="observer-panel.html" class="nav-link">观察者之窗</a>
-
-        <!-- 系统组 -->
-        <div class="nav-group-title">系统</div>
-        <a href="settings.html" class="nav-link">设置</a>
-        <a href="about.html" class="nav-link">关于</a>
-      </nav>
-
+      <!-- 第二栏多面板：随第一栏 rail 切换显示（对话 / 当前角色 / 回忆 / 设置） -->
+      <div class="sb-body" id="sbBody">
+        <div class="sb-panel sb-panel-world" data-panel="world">
+          <div class="sb-panel-title">世界状态</div>
+          <div class="sb-world-summary">
+            <div class="sb-world-item">场景：307室</div>
+            <div class="sb-world-item">时段：夜晚</div>
+            <div class="sb-world-item">天气：晴</div>
+            <div class="sb-world-item">室友：3 人在活动</div>
+          </div>
+        </div>
+        <div class="sb-panel sb-panel-chat" data-panel="chat">
+          <div class="sb-panel-title">对话</div>
+          <div class="sb-list">
+            <a class="sb-entry-link" href="chat.html">进入单聊</a>
+            <a class="sb-entry-link" href="chat.html?group=1">进入群聊</a>
+          </div>
+        </div>
+        <div class="sb-panel sb-panel-characters active" data-panel="characters">
+          <div class="sb-panel-title">当前角色</div>
+          <div class="sb-list" id="sbCharList">
+            <div class="char-item" data-char="lengxufan">
+              <span class="char-dot"></span>
+              <span class="char-name">冷旭帆</span>
+              <span class="char-emotion">稍好</span>
+            </div>
+            <div class="char-item" data-char="huangjingyun">
+              <span class="char-dot"></span>
+              <span class="char-name">黄景云</span>
+              <span class="char-emotion">平静</span>
+            </div>
+            <div class="char-item" data-char="yeqingci">
+              <span class="char-dot"></span>
+              <span class="char-name">叶清辞</span>
+              <span class="char-emotion">低落</span>
+            </div>
+            <a class="sb-entry-link" href="character-gallery.html">查看全部角色 →</a>
+          </div>
+        </div>
+        <div class="sb-panel sb-panel-memory" data-panel="memory">
+          <div class="sb-panel-title">回忆</div>
+          <div class="sb-list">
+            <a class="sb-entry-link" href="memory-gallery.html">时光回廊</a>
+            <a class="sb-entry-link" href="relation-map.html">关系图谱</a>
+            <a class="sb-entry-link" href="observer-panel.html">观察者之窗</a>
+            <a class="sb-entry-link" href="journey.html">旅程时间线</a>
+          </div>
+        </div>
+        <div class="sb-panel sb-panel-settings" data-panel="settings">
+          <div class="sb-panel-title">设置</div>
+          <div class="sb-list">
+            <a class="sb-entry-link" href="settings.html">设置页面</a>
+            <a class="sb-entry-link" href="profile.html">个人中心</a>
+            <a class="sb-entry-link" href="export.html">导出对话</a>
+            <a class="sb-entry-link" href="about.html">关于</a>
+            <a class="sb-entry-link" href="help.html">帮助</a>
+          </div>
+        </div>
+      </div>
 
     </div>
 
@@ -141,13 +177,13 @@
         </div>
       </div>
 
+      <!-- 核心视觉：粒子聚合球 + 动态曲线 -->
+      <div class="core-visual" id="coreVisual"></div>
+
       <div class="scene-label" id="sceneLabel">307室 · --</div>
       <div class="scene-meta" id="sceneMeta">第--天 · --</div>
       <div class="scene-acts" id="sceneActs"></div>
     </div>
-
-    <!-- 悬浮球（开场动画终点，相对 #app 定位） -->
-    <div id="floatingBall" class="floating-ball"></div>
   </div>
 
   <script src="js/loading-bar.js"></script>

@@ -780,7 +780,7 @@
     function exitDemo() {
         S.runId++;
         cancelAllDelays();
-        window.location.href = 'index.html';
+        window.location.href = 'index.html?skipIntro=1';
     }
 
     // ============ 事件绑定 ============
@@ -798,7 +798,7 @@
 
         el.enter.addEventListener('click', (e) => {
             e.stopPropagation();
-            window.location.href = 'index.html';
+            window.location.href = 'index.html?skipIntro=1';
         });
 
         // 键盘：空格 = 暂停/继续；Esc = 退出

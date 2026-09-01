@@ -1,4 +1,4 @@
-/* ============ 基础重置 ============ */
+﻿﻿﻿/* ============ 基础重置 ============ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 /* html / body 占满视口，禁止滚动，避免浏览器缩放时布局错位 */
 html, body {
@@ -8,25 +8,30 @@ html, body {
   padding: 0;
   overflow: hidden;
 }
-/* 两侧黑色呼吸空间：html 提供深底，body 居中限宽（旧版固定视口：整体如固定矩形，缩放时不拉开） */
+/* 两侧黑色呼吸空间：html 深底 + 统一由 #globalBg 提供星空渐变背景 */
 html { background: #07080d; }
 body {
   max-width: 1200px;
   margin: 0 auto;
-  background: linear-gradient(135deg, #0a0c12 0%, #161a29 50%, #0a0c12 100%);
-  background-size: 400% 400%;
-  animation: bgShift 15s ease-in-out infinite;
+  background: #07080d;          /* 纯色深底，星空渐变由 #globalBg 提供 */
   color: #d8dde6;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
-/* ============ 全局粒子层 ============ */
-#globalParticles {
+/* ============ 统一全局背景层（星空渐变 + 全局粒子，所有页面共享） ============ */
+#globalBg {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  /* 3 层星空渐变：冰蓝 + 深蓝 + 淡紫，缓慢漂浮 */
+  background:
+    radial-gradient(ellipse 55% 45% at 30% 35%, rgba(88, 166, 255, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 70% 65%, rgba(42, 58, 140, 0.09) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 50% at 50% 25%, rgba(74, 58, 140, 0.07) 0%, transparent 50%);
+  animation: nebulaA 26s ease-in-out infinite alternate;
+  /* 注：天气特效层(z-index:1) / .app(z-index:1) 在上方叠加 */
 }
 .global-particle {
   position: fixed;
@@ -39,6 +44,23 @@ body {
   will-change: transform, opacity;
 }
 
+/* ============ #globalBg 碰撞微光光点（与 global-particle 区分） ============ */
+/* global-particle = 缓慢上浮（floatUp），global-spark = 随机位置闪烁后消失（sparkTwinkle） */
+.global-spark {
+  position: fixed;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity;
+  animation: sparkTwinkle var(--spark-duration, 5s) ease-out infinite;
+  /* 初始状态：隐藏 + 居中（keyframes 会覆盖） */
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.3);
+}
+
 /* 噪点纹理（胶片感），覆盖全页面，不响应鼠标 */
 body::after {
   content: "";
@@ -49,38 +71,21 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
 }
 
-/* ============ 开场动画（结构） ============ */
+/* ============ 开场动画（最终版基础结构） ============ */
 .intro {
   position: fixed; inset: 0; z-index: 1000;
   background: #000;
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  /* 黑幕淡出时用 JS 控制 opacity（rAF 精确插值），不用 CSS transition */
+  opacity: 1;
 }
-.intro-ball {
-  width: 90px; height: 90px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #bfe0ff 0%, #4a7fd9 35%, #2a3a8c 70%, #0a0c12 100%);
-  box-shadow: 0 0 40px 8px rgba(80,140,255,0.55), 0 0 90px 30px rgba(60,90,200,0.35);
+/* 跳过/结束时：整个 intro 黑幕淡出 */
+.intro.fade-out {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.intro-skip {
-  position: absolute; top: 24px; right: 28px;
-  padding: 6px 14px; border-radius: 16px;
-  border: 1px solid #2a3550; background: rgba(255,255,255,0.04);
-  color: #8fa0c0; font-size: 12px; cursor: pointer;
-}
-.intro-skip:hover { color: #d8e6ff; border-color: #4a6fa5; background: rgba(80,140,255,0.12); }
-
-/* ============ 悬浮球 ============ */
-/* position:absolute（相对 #app 定位，而非视口 fixed），避免浏览器缩放时错位 */
-.floating-ball {
-  position: absolute; bottom: 24px; right: 24px;
-  width: 40px; height: 40px; border-radius: 50%;
-  z-index: 900;
-  opacity: 0; pointer-events: none;
-  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #bfe0ff 18%, #58a6ff 45%, #2a3a8c 80%, #0a0c12 100%);
-  box-shadow: 0 0 10px rgba(88,166,255,0.6), 0 0 40px rgba(88,166,255,0.2);
-}
-/* 开场动画结束后（.intro.hide 出现）球体浮现并开始呼吸；
-   因 floatingBall 已移入 #app 容器，需改为后代选择器覆盖 animations.css 的旧 ~ 兄弟选择器 */
-.intro.hide ~ #app .floating-ball { opacity: 1; animation: ballBreath 3s ease-in-out infinite; }
 
 /* ============ 主界面 ============ */
 /* 主应用容器：随 body 居中限宽（A4 纸式固定矩形），flex 纵向布局，缩放时不拉伸/错位 */
@@ -571,9 +576,6 @@ button:hover:not(:disabled),
   .mini-bar { width: 70px; }
   /* 气泡最大宽度调整为 85% */
   .msg-stack { max-width: 85%; }
-  .typing { max-width: 85%; }
-  /* 悬浮球缩小 */
-  .floating-ball { width: 30px; height: 30px; bottom: 16px; right: 16px; }
   /* 情绪曲线图：卡片内边距适配小屏 */
   .emotion-chart { margin: 0 12px 12px; padding: 10px 12px; }
   .chart-body { height: 60px; }
@@ -584,11 +586,11 @@ button:hover:not(:disabled),
 
 /* ============================================================
    世界观察中心（index.html 重构）：全屏场景
-   .app 为唯一定位容器（relative，随 body 居中限宽）；sidebar / scene / floatingBall 全部用 absolute 相对 #app 定位
+   .app 为唯一定位容器（relative，随 body 居中限宽）；sidebar / scene 全部用 absolute 相对 #app 定位
    ============================================================ */
 /* ============ 星云光晕（叠加在场景全屏背景上，伪元素缓慢漂浮） ============ */
 .scene.fullscreen {
-  position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 1;
   width: auto; height: auto;   /* 由绝对定位四边撑开 */
   margin: 0; border: none; border-radius: 0;
   transition: left 0.3s ease-in-out;
@@ -621,16 +623,13 @@ button:hover:not(:disabled),
   z-index: 0;
 }
 
-/* 桌面端（sidebar 常驻左侧）：scene 默认 left:220px，collapsed 时收窄到 50px */
+/* 桌面端（sidebar 常驻左侧 220px + rail 56px = 276px） */
 @media (min-width: 769px) {
-  .scene.fullscreen { left: 220px; }
-  /* sidebar 收起态：场景左边界右移 50px（:has 联动，仅桌面生效避免移动端特异性冲突） */
-  #app:has(.sidebar.collapsed) .scene.fullscreen { left: 50px; }
+  .scene.fullscreen { left: 276px; }
 }
-/* 移动端：sidebar 从左滑入，场景默认全宽；展开时左移 220px */
+/* 移动端：场景全宽，sidebar 为抽屉式覆盖（不推挤场景） */
 @media (max-width: 768px) {
   .scene.fullscreen { left: 0; }
-  #app:has(.sidebar.open) .scene.fullscreen { left: 220px; }
 }
 
 /* 场景名：居中偏下，细字重大字距，冰蓝光晕 */
@@ -645,11 +644,14 @@ button:hover:not(:disabled),
 .scene.fullscreen .scene-label.transitioning,
 .scene.fullscreen .scene-label.transitioned { transform: translateX(-50%); }
 
-/* 元信息：右上角（位于世界时钟胶囊下方，避免重叠） */
+/* 元信息：右上角（已由 scene-topbar 统一承担，此处隐藏避免重复） */
 .scene.fullscreen .scene-meta {
-  top: 52px; right: 20px;
-  font-size: 12px; color: #8fa0c0;
-  text-shadow: 0 0 6px rgba(0,0,0,0.6), 0 0 8px rgba(88,166,255,0.35);
+  display: none;
+}
+
+/* 世界时钟组件（已由 scene-topbar 统一承担时间信息，隐藏避免重复） */
+body .world-clock {
+  display: none;
 }
 
 /* 室友活动：底部磨砂卡片，居中限宽 */
@@ -669,9 +671,69 @@ button:hover:not(:disabled),
 /* 移动端：场景全屏，文字缩小，无重叠 */
 @media (max-width: 768px) {
   .scene.fullscreen .scene-label { font-size: 16px; letter-spacing: 0.18em; bottom: 32vh; }
-  .scene.fullscreen .scene-meta { top: 40px; right: 14px; font-size: 11px; }   /* 位于时钟胶囊下方 */
+  .scene.fullscreen .scene-meta { top: 40px; right: 14px; font-size: 11px; display: none; }   /* 位于时钟胶囊下方 */
   .scene.fullscreen .scene-acts { width: calc(100% - 24px); padding: 10px 14px 14px; }
   .scene.fullscreen .scene-act { font-size: 11.5px; line-height: 1.7; }
+}
+
+/* ============================================================
+   核心视觉：粒子聚合球 + 动态曲线
+   位于 .scene.fullscreen 中央偏下（top:55%），z-index:2（星云之上、topbar/label 之下）
+   避免与 .scene-label（bottom:30vh）及 .scene-acts 底部卡片重叠
+   ============================================================ */
+.scene.fullscreen .core-visual {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+/* 移动端缩小 */
+@media (max-width: 768px) {
+  .scene.fullscreen .core-visual {
+    width: 150px;
+    height: 150px;
+    top: 55%;
+  }
+}
+
+/* 单个粒子基础样式（JS 动态生成，内联 left/top/size）
+   left/top 在 JS 初始化时一次性设为容器中心的像素值（避免每帧 calc） */
+.cv-particle,
+.cv-core-particle,
+.cv-flow-particle {
+  position: absolute;
+  /* left/top 由 JS 在初始化时设为 centerX/centerY 像素值 */
+  will-change: transform, opacity;
+}
+
+.cv-particle {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(88, 166, 255, 0.7);
+  box-shadow: 0 0 4px rgba(88, 166, 255, 0.6), 0 0 10px rgba(88, 166, 255, 0.3);
+}
+/* 球心亮核粒子：更大更亮 */
+.cv-core-particle {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(200, 230, 255, 0.95);
+  box-shadow: 0 0 6px rgba(180, 220, 255, 0.9), 0 0 16px rgba(88, 166, 255, 0.6);
+  animation: cvCorePulse 3s ease-in-out infinite;
+}
+/* 曲线流动粒子（沿贝塞尔曲线路径运动） */
+.cv-flow-particle {
+  width: 1.5px;
+  height: 1.5px;
+  border-radius: 50%;
+  background: rgba(140, 190, 255, 0.75);
+  box-shadow: 0 0 3px rgba(140, 190, 255, 0.55), 0 0 8px rgba(88, 166, 255, 0.25);
 }
 
 /* ============ 统一卡片质感：关系温度计容器 ============ */
@@ -751,9 +813,9 @@ body .relation-thermo {
   flex-shrink: 0;
 }
 
-/* 让 scene-meta 下移，避免与顶部信息条重叠 */
+/* 让 scene-meta 下移，避免与顶部信息条重叠（已隐藏，此处仅保留注释） */
 .scene.fullscreen .scene-meta {
-  top: 56px;
+  display: none;
 }
 
 /* ============================================================
@@ -774,5 +836,259 @@ body .relation-thermo {
   .scene.fullscreen .st-value { font-size: 11px; }
   .scene.fullscreen .st-divider { height: 12px; margin: 0 2px; }
   .scene.fullscreen .st-indicator { display: none; }
-  .scene.fullscreen .scene-meta { top: 40px; right: 14px; }
+  .scene.fullscreen .scene-meta { top: 40px; right: 14px; display: none; }
+}
+
+
+/* ============ 第一栏：领域导航（极窄图标列） ============ */
+.rail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 56px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 14px;
+  gap: 10px;
+  background: rgba(10, 12, 18, 0.75);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+.rail-item {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: #8fa0c0;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+.rail-item:hover {
+  color: #d8e6ff;
+  background: rgba(88, 166, 255, 0.08);
+}
+.rail-item.active {
+  color: #bfe0ff;
+  background: rgba(88, 166, 255, 0.12);
+  border-color: rgba(88, 166, 255, 0.35);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.18);
+}
+
+/* ============ 第二栏角色列表 ============ */
+.sidebar-characters {
+  margin-top: 12px;
+  padding: 0 12px;
+}
+.char-list-title {
+  font-size: 10px;
+  color: #5f6b80;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 4px 0 8px;
+}
+.char-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.char-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.char-item:hover {
+  background: rgba(88, 166, 255, 0.06);
+  border-color: rgba(88, 166, 255, 0.25);
+}
+.char-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #58a6ff;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+  flex-shrink: 0;
+}
+.char-name {
+  font-size: 14px;
+  color: #eaf0ff;
+}
+.char-emotion {
+  margin-left: auto;
+  font-size: 11px;
+  color: #8fa0c0;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ============ 第二栏多面板（rail 联动切换） ============ */
+.sb-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+.sb-panel {
+  display: none;
+}
+.sb-panel.active {
+  display: block;
+}
+.sb-panel-title {
+  font-size: 10px;
+  color: #5f6b80;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 4px 0 8px;
+}
+.sb-placeholder {
+  font-size: 13px;
+  color: #5f6b80;
+  text-align: center;
+  padding: 40px 0;
+}
+.sb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sb-entry-link {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #c9d6f0;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.sb-entry-link:hover {
+  background: rgba(88, 166, 255, 0.08);
+  border-color: rgba(88, 166, 255, 0.25);
+  color: #fff;
+}
+
+/* ============================================================
+   全局 z-index 层级覆盖（body 前缀提高特异性，覆盖其他样式表）
+   ============================================================ */
+/* 底层 */
+body #globalBg       { z-index: 0; }
+body .app            { z-index: 1; }
+body .scene.fullscreen { z-index: 1; }
+/* 主 UI 层 */
+body .rail           { z-index: 100; }
+body .sidebar        { z-index: 110; }
+body .sidebar-mask   { z-index: 109; }
+/* 浮层：抽屉 / 面板 */
+body .notify-mask    { z-index: 119; }
+body .notify-drawer  { z-index: 120; }
+body .sp-mask        { z-index: 120; }
+body .scp-mask       { z-index: 120; }
+body .mobile-menu-btn { z-index: 130; }
+/* 入场动画（遮罩全页面） */
+body .intro          { z-index: 1000; }
+/* 顶层 */
+body::after          { z-index: 9998; } /* 噪点 */
+body #loadingBar     { z-index: 9999; }
+/* ============ 重复时间信息统一：只保留顶部胶囊 ============ */
+.scene.fullscreen .scene-meta {
+  display: none !important;
+}
+/* ============ 移动端独立汉堡按钮 ============ */
+.mobile-menu-btn {
+  display: none;
+}
+@media (max-width: 768px) {
+  body .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 200;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(10, 12, 18, 0.85);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    color: #bfe0ff;
+    font-size: 20px;
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* ============================================================
+   独立页面统一样式（18个独立页面共享）
+   ============================================================ */
+
+/* 统一返回按钮：固定左上角磨砂胶囊 */
+body .page-back-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 90;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
+  font-family: inherit;
+  line-height: 1.4;
+}
+body .page-back-btn:hover {
+  color: #ffffff;
+  border-color: rgba(88, 166, 255, 0.7);
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
+}
+
+/* 统一页面标题：细字重、大字距、冰蓝光晕 */
+body .page-title {
+  font-weight: 200;
+  font-size: 24px;
+  letter-spacing: 0.15em;
+  color: #eaf0ff;
+  text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+  margin: 0;
+}
+
+/* 统一独立页面背景（仅对未定义背景的页面生效） */
+body .page-bg {
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
+  min-height: 100vh;
+}
+
+/* 移动端：统一返回按钮缩小、标题字号 18px */
+@media (max-width: 768px) {
+  body .page-back-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 16px;
+  }
+  body .page-title {
+    font-size: 18px;
+  }
 }

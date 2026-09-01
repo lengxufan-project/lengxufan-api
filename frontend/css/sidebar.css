@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    sidebar.css — 左侧可收起侧边栏（仅 index.html 加载）
    微信/QQ 式交互 + 暗黑磨砂风格
    结构依赖：index.html 中 #sidebar / #sidebarToggle / #sidebarNotify /
@@ -9,20 +9,22 @@
 /* 绝对定位（相对 .app 容器），不再用视口 fixed；
    这样浏览器 Ctrl+滚轮缩放时，sidebar 与 scene 保持相对位置，整体像一张固定 A4 纸 */
 .sidebar {
+  min-width: 220px;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: absolute;
-  left: 0; top: 0; bottom: 0;
+  left: 56px; top: 0; bottom: 0;
   width: 220px;
   background: rgba(10,12,18,0.85);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
   border-right: 1px solid rgba(88,166,255,0.15);
-  z-index: 100;
+  z-index: 110;
   transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* 收起态：仅保留开关（导航列表整体隐藏，避免文字被裁切） */
-.sidebar.collapsed { width: 50px; }
+/* 收起态（桌面端保留，但 sidebar 始终 220px 不折叠） */
 .sidebar.collapsed .sidebar-title,
 .sidebar.collapsed .sidebar-notify,
 .sidebar.collapsed .sidebar-search,
@@ -51,20 +53,8 @@
   font-size: 14px; font-weight: 300;
   color: #eaf0ff; letter-spacing: 0.1em;
   white-space: nowrap;
-  position: relative;
-  padding-left: 14px;
 }
-/* 发光小球 Logo（CSS 绘制，装饰侧边栏标题） */
-.sidebar-title::before {
-  content: "";
-  position: absolute;
-  left: 0; top: 50%;
-  transform: translateY(-50%);
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #bfe0ff, #58a6ff 45%, #1a2a4a 100%);
-  box-shadow: 0 0 6px rgba(88,166,255,0.7), 0 0 14px rgba(88,166,255,0.35);
-}
+
 
 /* ============ 通知图标（CSS 绘制小铃铛） ============ */
 .sidebar-notify {
@@ -180,7 +170,7 @@
 .nav-link::before {
   content: '';
   position: absolute;
-  left: 0; top: 50%;
+  left: 56px; top: 50%;
   transform: translateY(-50%);
   width: 2px; height: 0;
   background: #58a6ff;
@@ -224,7 +214,7 @@
   background: rgba(10,12,18,0.95);
   -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
   border-left: 1px solid rgba(88,166,255,0.15);
-  z-index: 110;
+  z-index: 120;
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
   overflow-y: auto;
@@ -266,55 +256,67 @@
   inset: 0;
   background: rgba(0,0,0,0.5);
   -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-  z-index: 99;
+  z-index: 109;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease-in-out;
 }
 .sidebar-mask.show { opacity: 1; visibility: visible; }
 
-/* ============ 悬浮球隐藏 ============ */
-/* 原右下角悬浮球改为侧边栏左下角呼吸指示灯，主界面不再出现突兀悬浮球 */
-/* #floatingBall 元素保留以维持开场动画逻辑（DOM id 不变），仅视觉隐藏 */
-#floatingBall { display: none; }
-
-/* ============ 主内容区偏移 ============ */
-/* .app 由 main.css 定义为 position:relative 的居中限宽容器（随 body max-width:1200px）；
-   .scene.fullscreen { left: 220px } 由绝对定位四边撑开。
-   sidebar.collapsed → scene left:50px 的联动由 main.css 中
-   #app:has(.sidebar.collapsed) .scene.fullscreen 实现 */
-
-/* ============ 移动端：默认隐藏，汉堡按钮呼出，抽屉滑入占屏 80% ============ */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 0;
-    overflow: hidden;
-  }
-  .sidebar.open {
-    width: 80%;
-    max-width: 280px;
-  }
-
-  /* 覆盖 main.css 的 push 行为：sidebar 改为 overlay（不推挤 scene），
-     配合 .sidebar-mask 半透明遮罩实现微信式抽屉交互 */
-  #app:has(.sidebar.open) .scene.fullscreen { left: 0 !important; }
-
-  /* 开关固定于视口左上角（fixed 脱离 sidebar 溢出裁剪，收起时仍可点击） */
-  .sidebar-toggle {
-    position: fixed; top: 8px; left: 8px; z-index: 120;
-    background: rgba(10,12,18,0.85);
-    border: 1px solid rgba(88,166,255,0.25);
-    border-radius: 10px;
-    padding: 6px 12px;
-  }
-  /* 展开时顶部条下移，避免与固定开关重叠 */
-  .sidebar.open .sidebar-topbar { padding-top: 44px; }
-
-  /* 通知抽屉全宽 */
-  .notify-drawer { width: 100%; max-width: 100%; }
-}
-
-/* 减弱动效偏好 */
+/* ============ 减弱动效偏好 ============ */
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .nav-link, .sidebar-toggle, .sidebar-search, .notify-drawer, .sidebar-mask { transition: none; }
+}
+
+/* ============ 移动端：抽屉式侧边栏（抽盒设计） ============ */
+@media (max-width: 768px) {
+  /* 侧边栏：默认隐藏在屏幕左侧，用 left 过渡滑出 */
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: -280px !important;
+    width: 80% !important;
+    max-width: 280px !important;
+    min-width: 0 !important;
+    z-index: 110 !important;
+    transition: left 0.3s ease-in-out !important;
+    transform: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: rgba(10, 12, 18, 0.95) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .sidebar.open {
+    left: 0 !important;
+  }
+
+  /* 遮罩：在 sidebar 下方、场景上方，点击关闭 */
+  .sidebar-mask {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 109 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    backdrop-filter: blur(4px) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out !important;
+  }
+  .sidebar-mask.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* 隐藏 sidebar 内部开关，使用独立汉堡按钮 */
+  .sidebar-toggle {
+    display: none !important;
+  }
+
+  /* 通知抽屉全宽 */
+  .notify-drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }

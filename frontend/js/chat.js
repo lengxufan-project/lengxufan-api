@@ -9,14 +9,16 @@
   "use strict";
 
   /* ---------- 角色预设（与 characters.js 命名保持一致） ---------- */
+  /* glow 字段：角色关联的光晕色（冷旭帆冰蓝 / 黄景云暖橙 / 叶清辞冷紫） */
   var CHARS = {
-    lengxufan:    { name: "冷旭帆", greeting: "……你来了。坐吧，我刚好也在想些事。" },
-    huangjingyun: { name: "黄景云", greeting: "哟，稀客啊。今天想聊点什么？" },
-    yeqingci:     { name: "叶清辞", greeting: "嗯，我在听。慢慢说。" }
+    lengxufan:    { name: "冷旭帆", greeting: "……你来了。坐吧，我刚好也在想些事。", glow: "88, 166, 255" },
+    huangjingyun: { name: "黄景云", greeting: "哟，稀客啊。今天想聊点什么？", glow: "255, 170, 90" },
+    yeqingci:     { name: "叶清辞", greeting: "嗯，我在听。慢慢说。",       glow: "180, 130, 255" }
   };
 
   var runtime = {
     charId: "lengxufan",
+    isGroup: false,
     sending: false,
     emotionHistory: [],     // 情绪数值历史（供曲线）
     pollTimer: null
@@ -29,6 +31,11 @@
     var params = new URLSearchParams(window.location.search);
     var v = params.get("char") || params.get("char_id") || "lengxufan";
     return CHARS[v] ? v : "lengxufan";   // 未知角色回退默认
+  }
+
+  function isGroupMode() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get("group") === "1";
   }
 
   /* ---------- 情绪曲线模块动态加载（迁移自旧版发光点效果） ----------
@@ -66,6 +73,12 @@
   }
 
   /* ---------- 消息渲染 ---------- */
+  function formatTime() {
+    var d = new Date();
+    var h = d.getHours();
+    var m = d.getMinutes();
+    return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+  }
   function addBubble(role, text) {
     var area = $("chatArea");
     if (!area) return null;
@@ -76,8 +89,12 @@
     var bubble = document.createElement("div");
     bubble.className = "cp-bubble";
     bubble.textContent = text || "";
+    var ts = document.createElement("span");
+    ts.className = "cp-msg-time";
+    ts.textContent = formatTime();
     row.appendChild(avatar);
     row.appendChild(bubble);
+    row.appendChild(ts);
     area.appendChild(row);
     area.scrollTop = area.scrollHeight;
     return { row: row, bubble: bubble };
@@ -176,6 +193,11 @@
     autosize(input);
     addBubble("user", text);
 
+    if (runtime.isGroup) {
+      sendGroupMessage(text);
+      return;
+    }
+
     var typing = addBubble("ai", "");
     if (typing) typing.bubble.textContent = "…";
 
@@ -203,6 +225,57 @@
     });
   }
 
+  /* ---------- 群聊发送 ---------- */
+  function sendGroupMessage(text) {
+    if (!window.fetch) {
+      runtime.sending = false;
+      var btn = $("sendBtn");
+      if (btn) btn.disabled = false;
+      return;
+    }
+    fetch("/api/group_chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); }).then(function (data) {
+      var replies = data.replies || [];
+      replies.forEach(function (r) {
+        var row = document.createElement("div");
+        row.className = "cp-msg ai";
+        var avatar = document.createElement("div");
+        avatar.className = "cp-avatar";
+        var wrap = document.createElement("div");
+        wrap.className = "cp-bubble-wrap";
+        var nameLabel = document.createElement("div");
+        nameLabel.className = "cp-msg-name";
+        nameLabel.textContent = r.name || r.char_id || "?";
+        var bubble = document.createElement("div");
+        bubble.className = "cp-bubble";
+        bubble.textContent = r.reply || "（没有回应）";
+        var ts = document.createElement("span");
+        ts.className = "cp-msg-time";
+        ts.textContent = formatTime();
+        wrap.appendChild(nameLabel);
+        wrap.appendChild(bubble);
+        row.appendChild(avatar);
+        row.appendChild(wrap);
+        row.appendChild(ts);
+        var area = $("chatArea");
+        if (area) {
+          area.appendChild(row);
+          area.scrollTop = area.scrollHeight;
+        }
+      });
+      refreshState();
+    }).catch(function () {
+      addBubble("ai", "（群聊似乎中断了……稍后再试。）");
+    }).then(function () {
+      runtime.sending = false;
+      var b = $("sendBtn");
+      if (b) b.disabled = !($("chatInput") && $("chatInput").value.trim());
+    });
+  }
+
   function autosize(el) {
     if (!el) return;
     el.style.height = "auto";
@@ -220,16 +293,40 @@
     if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
   }
 
+  /* ---------- 角色光晕：通过 CSS 变量将 glow 颜色注入角色光晕元素 ---------- */
+  function applyCharGlow(charId) {
+    var glow = "88, 166, 255";   // 兜底冰蓝
+    if (charId && CHARS[charId] && CHARS[charId].glow) {
+      glow = CHARS[charId].glow;
+    }
+    var page = document.querySelector(".cp-page");
+    if (page) {
+      page.style.setProperty("--char-glow", glow);
+    }
+  }
+
   /* ---------- 初始化 ---------- */
   function init() {
     runtime.charId = getCharId();
+    runtime.isGroup = isGroupMode();
 
-    // 角色名 + 初始消息
-    var conf = CHARS[runtime.charId];
-    var nameEl = $("chatCharName");
-    if (nameEl && conf) nameEl.textContent = conf.name;
-    document.title = (conf ? conf.name : "冷旭帆") + " · 对话";
-    addBubble("ai", conf ? conf.greeting : "……");
+    // 应用角色光晕颜色
+    applyCharGlow(runtime.isGroup ? null : runtime.charId);
+
+    if (runtime.isGroup) {
+      // 群聊模式：标题显示"307室多人对话"，不发初始问候
+      var nameEl = $("chatCharName");
+      if (nameEl) nameEl.textContent = "307室多人对话";
+      document.title = "群聊 · 对话";
+      addBubble("ai", "欢迎进入群聊，大家正在聊天……");
+    } else {
+      // 单聊模式：角色名 + 初始消息
+      var conf = CHARS[runtime.charId];
+      var nameEl = $("chatCharName");
+      if (nameEl && conf) nameEl.textContent = conf.name;
+      document.title = (conf ? conf.name : "冷旭帆") + " · 对话";
+      addBubble("ai", conf ? conf.greeting : "……");
+    }
 
     // 输入区事件
     var input = $("chatInput"), btn = $("sendBtn");
@@ -277,9 +374,9 @@
   window.ChatPage = { init: init };
 })();
 
-/* 统一返回逻辑：有同源来源页则回退，否则回主界面（导航闭环） */
+/* 统一返回逻辑：有历史记录则回退，否则回主界面（导航闭环） */
 window.goBack = function () {
-  if (document.referrer && document.referrer.includes(window.location.host)) {
+  if (history.length > 1) {
     history.back();
   } else {
     window.location.href = "index.html?skipIntro=1";

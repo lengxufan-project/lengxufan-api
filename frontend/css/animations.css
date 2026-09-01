@@ -12,211 +12,10 @@
   100% { transform: translateY(-110vh) scale(1.4); opacity: 0; }
 }
 
-/* ============ 开场动画：非对称电影感构图 ============ */
-/* 覆盖 main.css 基础样式：纯黑底；时间线（总 4s，JS 依次加类驱动）：
-   0-1s    粒子渐显 + 0.6s 光点出现(dot-in)
-   1-2.5s  光球膨胀呼吸(orb-in) + 标题逐字渐显(title-in)
-   2.5-3.5s "世界正在苏醒"淡入(sub-in)
-   3.5s起  右下角"进入世界"按钮浮现(enter-in)
-   点击按钮 → leaving → transparent → hide（进入主界面） */
-.intro { background: #010203; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
-.intro.transparent { background: transparent; }
-.intro.hide { opacity: 0; pointer-events: none; }
 
-/* 极暗噪点：SVG feTurbulence 平铺 */
-.intro-noise {
-  position: absolute; inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  opacity: 0.045;
-  pointer-events: none;
-}
-
-/* ---- 三层粒子（.ip 由 JS 动态创建，颜色统一冰蓝 rgba(88,166,255,0.4-0.7)） ---- */
-/* 入场聚拢：各层从外圈向中心 scale 收缩，营造从四周向中心缓慢聚拢的电影感 */
-.intro-particles { position: absolute; inset: 0; pointer-events: none; }
-.p-layer {
-  position: absolute; inset: 0; overflow: hidden; opacity: 0;
-  transform-origin: center center;
-  animation: layerGather 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-.p-layer.p-mid { animation-delay: 0.15s; }
-.p-layer.p-front { animation-delay: 0.3s; }
-@keyframes layerGather {
-  from { opacity: 0; transform: scale(1.3); }
-  to   { opacity: 1; transform: scale(1); }
-}
-.ip { position: absolute; border-radius: 50%; pointer-events: none; }
-
-/* 背景层：1px，极慢漂移呼吸（小粒子慢速，不产生方向性线条） */
-.p-bg .ip { animation: pBgDrift 30s ease-in-out infinite alternate; }
-@keyframes pBgDrift {
-  from { transform: translate3d(0, 0, 0); opacity: 0.5; }
-  to   { transform: translate3d(var(--dx, 4px), var(--dy, -6px), 0); opacity: 0.7; }
-}
-/* 中景层：2px，向中心聚拢的轻脉动（中粒子正常，仅 opacity/scale 呼吸，无方向性位移） */
-.p-mid .ip { animation: pMidPulse 24s ease-in-out infinite alternate; }
-@keyframes pMidPulse {
-  from { opacity: 0.4; transform: scale(0.92); }
-  to   { opacity: 0.8; transform: scale(1.08); }
-}
-/* 前景层：3-4px，模糊，从外围向中心聚拢的呼吸（大粒子模糊，无方向性线条） */
-.p-front .ip { filter: blur(2px); animation: pFrontGather 18s ease-in-out infinite alternate; }
-@keyframes pFrontGather {
-  from { opacity: 0.4; transform: scale(1.15); }
-  to   { opacity: 0.7; transform: scale(0.95); }
-}
-/* 点击进入后粒子层淡出 */
-.intro.leaving .intro-particles { opacity: 0; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-
-/* ---- 光球：偏右下（right 25% / bottom 30%），已弱化为朦胧氛围光（不再是视觉焦点） ---- */
-.intro-orb {
-  position: absolute; right: 25%; bottom: 30%;
-  width: 60px; height: 60px;
-  opacity: 0;
-  pointer-events: none;
-  filter: blur(8px);                  /* 弱化：模糊成氛围光 */
-}
-.intro-orb::before {
-  content: ""; position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.5) 0%, rgba(191,224,255,0.35) 28%, rgba(88,166,255,0.22) 62%, rgba(88,166,255,0) 100%);
-  box-shadow: 0 0 40px 8px rgba(88,166,255,0.22), 0 0 90px 30px rgba(60,90,200,0.12);
-  transform: scale(0.1);
-  opacity: 0.5;
-}
-/* 0.6s：光点出现（约 7px） */
-.intro.dot-in .intro-orb { opacity: 1; }
-.intro.dot-in .intro-orb::before { animation: dotIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-@keyframes dotIn {
-  from { opacity: 0; transform: scale(0.05); }
-  to   { opacity: 0.9; transform: scale(0.12); }
-}
-/* 1-2.2s：光点膨胀为 60px 光球（orbExpand），随后呼吸（orbBreath 接管 transform/box-shadow） */
-.intro.orb-in .intro-orb::before {
-  animation: orbExpand 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards,
-             orbBreath 3.2s ease-in-out 1.2s infinite;
-}
-@keyframes orbExpand {
-  from { opacity: 0.9; transform: scale(0.12); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes orbBreath {
-  0%, 100% { transform: scale(1);    box-shadow: 0 0 30px rgba(88,166,255,0.2), 0 0 80px rgba(88,166,255,0.12); }
-  50%      { transform: scale(1.06); box-shadow: 0 0 50px rgba(140,200,255,0.32), 0 0 120px rgba(88,166,255,0.2); }
-}
-/* 环状波纹：光球稳定后向外扩散 */
-.orb-ripple {
-  position: absolute; top: 50%; left: 50%;
-  width: 60px; height: 60px; margin: -30px 0 0 -30px;
-  border: 1px solid rgba(88,166,255,0.55);
-  border-radius: 50%;
-  opacity: 0;
-}
-.intro.orb-in .orb-ripple { animation: rippleOut 3s ease-out infinite; }
-.orb-ripple.r2 { animation-delay: 1s; }
-.orb-ripple.r3 { animation-delay: 2s; }
-@keyframes rippleOut {
-  0%   { transform: scale(0.55); opacity: 0.5; }
-  100% { transform: scale(3.4);  opacity: 0; }
-}
-
-/* ---- 文字块：左侧 1/3 处左对齐（非居中构图） ---- */
-.intro-text-block {
-  position: absolute; left: 33%; top: 50%;
-  transform: translateY(-50%);
-  text-align: left;
-  pointer-events: none;
-}
-.intro-title {
-  margin: 0;
-  font-family: 'Noto Serif SC', Georgia, serif;
-  font-weight: 200;
-  font-size: 30px;
-  letter-spacing: 0.3em;
-  color: #eef4ff;
-  text-shadow: 0 0 16px rgba(173,214,255,0.35), 0 0 44px rgba(88,166,255,0.22);
-  white-space: nowrap;
-}
-/* 逐字遮罩：JS 拆分为 .ch，按 --d 依次显现 */
-.intro-title .ch { display: inline-block; opacity: 0; }
-.intro.title-in .intro-title .ch { animation: chIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; animation-delay: var(--d, 0s); }
-@keyframes chIn {
-  from { opacity: 0; transform: translateY(12px); filter: blur(6px); }
-  to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
-}
-/* 副文字：2.5-3.5s 淡入 */
-.intro-sub {
-  margin-top: 18px;
-  font-weight: 200;
-  font-size: 12px;
-  letter-spacing: 0.5em;
-  color: rgba(255,255,255,0.4);
-  opacity: 0;
-  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.intro.sub-in .intro-sub { opacity: 1; }
-
-/* ---- "进入世界"按钮：3.5s 起右下角浮现；磨砂玻璃 + 冰蓝细边 + 24px 圆角 ---- */
-.intro-enter {
-  position: absolute; right: 6vw; bottom: 10vh;
-  padding: 12px 40px;
-  font-family: inherit; font-size: 14px; letter-spacing: 0.35em; text-indent: 0.35em;
-  color: #eaf0ff;
-  background: rgba(16,22,38,0.5);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  border: 1px solid rgba(88,166,255,0.45);
-  border-radius: 24px;
-  cursor: pointer;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease-in-out,
-              border-color 0.3s ease-in-out, background 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-.intro.enter-in .intro-enter { opacity: 1; pointer-events: auto; }
-.intro-enter:hover {
-  color: #fff;
-  background: rgba(28,40,66,0.72);
-  border-color: rgba(140,200,255,0.9);
-  box-shadow: 0 0 26px rgba(88,166,255,0.55), 0 0 60px rgba(88,166,255,0.3);
-  transform: translateY(-2px);
-}
-.intro-enter:active { transform: translateY(0) scale(0.97); }
-
-/* 点击进入后：光球爆发，波纹/文字/按钮快速淡出
-   （已删除白色 8 向放射光线 .intro::before / .burst-rays / rayExpand；
-   JS 仍会加 .burst-rays 类，但无对应 CSS 规则，无副作用） */
-.intro.leaving .intro-orb { animation: orbBurst 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-@keyframes orbBurst {
-  0%   { opacity: 1; transform: scale(1);   filter: brightness(1); }
-  100% { opacity: 0; transform: scale(2.6); filter: brightness(2.4); }
-}
-.intro.leaving .orb-ripple { animation: none; opacity: 0; }
-.intro.leaving .intro-text-block,
-.intro.leaving .intro-sub { opacity: 0; transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-.intro.leaving .intro-enter { opacity: 0; pointer-events: none; transition: opacity 0.25s ease-in-out; }
-
-/* 移动端：文字左移避开窄屏，按钮居中底部 */
-@media (max-width: 768px) {
-  .intro-text-block { left: 8vw; max-width: 84vw; }
-  .intro-title { font-size: 22px; letter-spacing: 0.22em; }
-  .intro-orb { right: 18%; bottom: 34%; }
-  .intro-enter {
-    right: 50%; transform: translateX(50%); bottom: 8vh;
-    min-width: 46vw; padding: 14px 0;
-    font-size: 15px; letter-spacing: 0.3em; text-indent: 0.3em;
-  }
-  .intro-enter:hover { transform: translateX(50%) translateY(-2px); }
-  .intro-enter:active { transform: translateX(50%) scale(0.97); }
-}
 
 /* 主界面淡入过渡（默认显示，保留过渡备用） */
 .app { transition: opacity 0.6s ease-in-out; }
-
-/* ============ 悬浮球：浮现过渡 + 呼吸脉动 ============ */
-.floating-ball { transition: opacity 0.8s ease-in-out; }
-.intro.hide ~ .floating-ball { animation: ballBreath 3s ease-in-out infinite; }
-@keyframes ballBreath {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-}
 
 /* 在线绿点脉冲（已柔化） */
 .green-dot { animation: pulse 2.8s ease-in-out infinite; }
@@ -318,4 +117,147 @@
 @keyframes nebulaC {
   0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
   50% { transform: translate(4%, 2%) scale(1.06); opacity: 0.7; }
+}
+
+/* ========================================================================
+   开场动画最终版：世界苏醒 → 粒子汇聚成球 → 延伸曲线 → 移动衔接主页面
+   总时长约 4s，单一 requestAnimationFrame 驱动四阶段时间线
+   核心：intro 内部粒子球在结束时物理移动到 .core-visual 位置，无缝衔接
+   ======================================================================== */
+
+/* 动画舞台：占据 intro 中心，作为所有粒子的坐标系原点（中心=0,0） */
+.intro-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* 球体粒子容器（JS 动态注入粒子） */
+.intro-sphere {
+  position: absolute;
+  left: 0; top: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* 曲线粒子容器 */
+.intro-curves {
+  position: absolute;
+  left: 0; top: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* 开场动画中的粒子（与 .cv-particle 同风格，JS 驱动 transform） */
+.intro-particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: rgba(88, 166, 255, 0.85);
+  box-shadow: 0 0 4px rgba(88, 166, 255, 0.6), 0 0 10px rgba(88, 166, 255, 0.3);
+  will-change: transform, opacity;
+}
+/* 汇聚前的漂浮态：较小较暗 */
+.intro-particle.drifting {
+  width: 1.5px; height: 1.5px;
+  background: rgba(140, 190, 255, 0.6);
+  box-shadow: 0 0 3px rgba(140, 190, 255, 0.4);
+}
+/* 球心亮核粒子 */
+.intro-core {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: rgba(200, 230, 255, 0.95);
+  box-shadow: 0 0 6px rgba(180, 220, 255, 0.9), 0 0 16px rgba(88, 166, 255, 0.6);
+  will-change: transform, opacity;
+}
+/* 曲线流动粒子 */
+.intro-flow {
+  position: absolute;
+  width: 1.5px; height: 1.5px;
+  border-radius: 50%;
+  background: rgba(140, 190, 255, 0.75);
+  box-shadow: 0 0 3px rgba(140, 190, 255, 0.55), 0 0 8px rgba(88, 166, 255, 0.25);
+  will-change: transform, opacity;
+}
+
+/* 移动端粒子缩小 */
+@media (max-width: 768px) {
+  .intro-particle { width: 1.5px; height: 1.5px; }
+  .intro-core { width: 2px; height: 2px; }
+  .intro-flow { width: 1px; height: 1px; }
+}
+
+/* ========================================================================
+   核心视觉：粒子球心脉冲（中心亮核的光晕呼吸）
+   球体聚散 & 曲线流动由 app.js 的 requestAnimationFrame 驱动
+   ======================================================================== */
+@keyframes cvCorePulse {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(180, 220, 255, 0.9), 0 0 16px rgba(88, 166, 255, 0.6);
+    opacity: 0.95;
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(200, 235, 255, 1), 0 0 24px rgba(88, 166, 255, 0.85);
+    opacity: 1;
+  }
+}
+
+/* ========================================================================
+   #globalBg 碰撞微光光点：随机闪烁 + 扩散 glow + 消失
+   完整闪烁持续约 0.55s，之后保持隐藏直到下一周期
+   animation-duration 由 JS 设为 3-8s 随机值（闪烁 + 静默期）
+   ======================================================================== */
+@keyframes sparkTwinkle {
+  /* 静默期：保持隐藏（占动画周期的大部分时间） */
+  0%, 85% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  /* 0.55s 内快速闪烁：点亮 → 发光 → 消失 */
+  88% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.4);
+  }
+  92% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  96% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+}
+
+/* ========================================================================
+   雨增强：斜向雨丝 + 底部淡蓝光晕脉冲
+   关键：splashPulse 只动画 transform（rotate + scaleX），
+   绝不能包含 opacity——否则会覆盖 .weather-mode { opacity: 1 } 激活态
+   ======================================================================== */
+@keyframes splashPulse {
+  0%, 100% { transform: rotate(-12deg) scaleX(1); }
+  50%      { transform: rotate(-12deg) scaleX(1.15); }
+}
+
+/* ========================================================================
+   风模式：与雨同结构但 rotate 更大（-20deg）+ 更轻微的 scaleX 脉冲
+   ======================================================================== */
+@keyframes windPulse {
+  0%, 100% { transform: rotate(-20deg) scaleX(1); }
+  50%      { transform: rotate(-20deg) scaleX(1.08); }
+}
+
+/* ========================================================================
+   阴增强：低频大光斑慢速漂移（比 cloudDrift 更柔和）
+   ======================================================================== */
+@keyframes cloudDriftSlow {
+  0%   { transform: translate(-3%, -1%) scale(1); opacity: 0.6; }
+  50%  { transform: translate(2%, 2%) scale(1.04); opacity: 0.85; }
+  100% { transform: translate(-3%, -1%) scale(1); opacity: 0.6; }
 }
