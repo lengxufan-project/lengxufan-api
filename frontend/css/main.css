@@ -1,6 +1,6 @@
 /* ============ 基础重置 ============ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-/* html / body 占满视口，禁止滚动，避免浏览器缩放时左右黑色边距导致布局错位 */
+/* html / body 占满视口，禁止滚动，避免浏览器缩放时布局错位 */
 html, body {
   width: 100%;
   height: 100%;
@@ -8,8 +8,11 @@ html, body {
   padding: 0;
   overflow: hidden;
 }
+/* 两侧黑色呼吸空间：html 提供深底，body 居中限宽（旧版固定视口：整体如固定矩形，缩放时不拉开） */
 html { background: #07080d; }
 body {
+  max-width: 1200px;
+  margin: 0 auto;
   background: linear-gradient(135deg, #0a0c12 0%, #161a29 50%, #0a0c12 100%);
   background-size: 400% 400%;
   animation: bgShift 15s ease-in-out infinite;
@@ -78,11 +81,10 @@ body::after {
 .intro.hide ~ #app .floating-ball { opacity: 1; animation: ballBreath 3s ease-in-out infinite; }
 
 /* ============ 主界面 ============ */
-/* 主应用容器：固定占满视口，flex 纵向布局，避免缩放时拉伸/错位 */
+/* 主应用容器：随 body 居中限宽（A4 纸式固定矩形），flex 纵向布局，缩放时不拉伸/错位 */
 .app {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
+  position: relative;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -543,6 +545,8 @@ button:hover:not(:disabled),
 
 /* 移动端 */
 @media (max-width: 768px) {
+  /* 内容不限制最大宽度（旧版固定视口：小屏取消居中限宽） */
+  body { max-width: none; }
   /* 区块间距收紧为 12px */
   .header, .charbar, .scene, .charinfo, .chat, .composer, .emotion-chart {
     margin-bottom: 12px;
@@ -578,7 +582,7 @@ button:hover:not(:disabled),
 
 /* ============================================================
    世界观察中心（index.html 重构）：全屏场景
-   .app 为唯一 fixed 容器；sidebar / scene / floatingBall 全部用 absolute 相对 #app 定位
+   .app 为唯一定位容器（relative，随 body 居中限宽）；sidebar / scene / floatingBall 全部用 absolute 相对 #app 定位
    ============================================================ */
 .scene.fullscreen {
   position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0;

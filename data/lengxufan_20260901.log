@@ -1,3 +1,24 @@
 2026-09-01 10:34:59 | INFO    | logger          | 世界状态: 开学第3天。上午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
 2026-09-01 10:34:59 | INFO    | logger          | 已加载角色: 冷旭帆
 2026-09-01 10:35:00 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-01 11:12:53 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 11:24:38 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 11:25:00 | INFO    | logger          | 世界状态: 开学第4天。上午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-01 11:25:00 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-01 11:25:00 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-01 11:29:38 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 11:29:38 | INFO    | logger          | 世界状态: 开学第4天。上午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-01 11:29:38 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-01 11:29:38 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-01 11:30:42 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 11:30:44 | INFO    | logger          | 世界状态: 开学第4天。上午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-01 11:30:44 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-01 11:30:44 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-01 11:31:51 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 11:31:54 | INFO    | logger          | 世界状态: 开学第4天。上午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-01 11:31:54 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-01 11:31:54 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-01 11:41:49 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 12:03:18 | INFO    | logger          | 世界状态: 开学第5天。中午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-01 12:03:18 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-01 12:03:18 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action

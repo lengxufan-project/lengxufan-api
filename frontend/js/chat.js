@@ -31,6 +31,40 @@
     return CHARS[v] ? v : "lengxufan";   // 未知角色回退默认
   }
 
+  /* ---------- 情绪曲线模块动态加载（迁移自旧版发光点效果） ----------
+     旧版 index.html 以 link/script 引入 emotion-chart 模块；
+     chat.html 未静态引用，此处运行时注入同等资源（不改动 HTML 结构），
+     样式注入到 head 末尾，级联顺序在 main.css / chat.css 之后，与旧版一致。
+     加载失败时保持原有文本兜底。 */
+  var chartAssetsRequested = false;
+  function initDrawerChart() {
+    if (!(window.EmotionChart && $("drawerChart"))) return;
+    try {
+      window.EmotionChart.init("drawerChart");
+      window.EmotionChart.update(runtime.emotionHistory);
+    } catch (err) { /* 组件异常时走数值兜底 */ }
+  }
+  function loadEmotionChartAssets() {
+    if (chartAssetsRequested) return;
+    chartAssetsRequested = true;
+    var head = document.head;
+    if (!head.querySelector('link[data-emotion-chart]')) {
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "css/emotion-chart.css";
+      link.setAttribute("data-emotion-chart", "1");
+      head.appendChild(link);
+    }
+    if (window.EmotionChart) { initDrawerChart(); return; }
+    if (head.querySelector('script[data-emotion-chart]')) return;   // 已在加载
+    var script = document.createElement("script");
+    script.src = "js/emotion-chart.js";
+    script.setAttribute("data-emotion-chart", "1");
+    script.onload = initDrawerChart;
+    script.onerror = function () { /* 加载失败：保持文本兜底 */ };
+    head.appendChild(script);
+  }
+
   /* ---------- 消息渲染 ---------- */
   function addBubble(role, text) {
     var area = $("chatArea");
@@ -222,9 +256,11 @@
       if (e.key === "Escape") toggleDrawer(false);
     });
 
-    // 情绪曲线：优先复用主页面组件
+    // 情绪曲线：优先复用主页面组件；缺失时动态加载模块（旧版发光点效果）
     if (window.EmotionChart && $("drawerChart")) {
-      try { window.EmotionChart.init("drawerChart"); } catch (err) { /* 组件异常时走数值兜底 */ }
+      initDrawerChart();
+    } else {
+      loadEmotionChartAssets();
     }
 
     // 状态轮询：立即 + 每 2s

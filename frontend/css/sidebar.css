@@ -353,7 +353,7 @@
 #floatingBall { display: none; }
 
 /* ============ 主内容区偏移 ============ */
-/* .app 已由 main.css 定义为 position:fixed 的视口级容器；
+/* .app 由 main.css 定义为 position:relative 的居中限宽容器（随 body max-width:1200px）；
    .scene.fullscreen { left: 220px } 由绝对定位四边撑开。
    sidebar.collapsed → scene left:50px 的联动由 main.css 中
    #app:has(.sidebar.collapsed) .scene.fullscreen 实现 */

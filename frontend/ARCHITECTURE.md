@@ -1,6 +1,6 @@
 # 冷旭帆·世界入口 前端架构文档
 
-> 本文档由 2026-09 全量扫描生成，覆盖 frontend/ 下全部 HTML/CSS/JS 文件。
+> 本文档由 2026-09-01 全量扫描生成，覆盖 frontend/ 下全部 HTML/CSS/JS 文件。
 > 阅读对象：不熟悉本项目的开发者。
 
 ---
@@ -13,15 +13,15 @@
 
 ### 技术栈
 - **原生 HTML / CSS / JavaScript**：无框架、无构建工具、无 npm 依赖，直接由 Flask 静态托管。
-- **模块模式**：每个 JS 文件为 ES5 风格 IIFE，通过 `window.XXX` 暴露全局单例模块（如 `window.API`、`window.Chat`）。
-- **数据流**：所有后端请求经 `js/api.js` 封装的 `window.API` 发起；各模块通过 `window.State` 保存/读取共享状态；模块间调用使用 `if (window.XXX && window.XXX.fn)` 守卫式判空。
+- **模块模式**：每个 JS 文件为 ES5 风格 IIFE，通过 `window.XXX` 暴露全局单例模块（如 `window.API`、`window.ChatPage`）。
+- **数据流**：所有后端请求经 `js/chat.js` 或独立页面自身的 `fetch` 发起；主页面通过 `window.State` 保存/读取共享状态；模块间调用使用 `if (window.XXX && window.XXX.fn)` 守卫式判空。
 - **后端**：Flask（见仓库根 `app.py` 与 `routes/` 蓝图），前端仅通过 `/api/*` JSON 接口通信。
 
 ### 文件统计
 | 类型 | 数量 | 说明 |
 |---|---|---|
-| HTML | 20 | 1 个主页面 + 18 个独立页面 + 1 个历史备份 |
-| CSS | 39 | `css/` 目录，按页面/组件一文件 |
+| HTML | 20 | 1 个主页面 + 19 个独立页面 |
+| CSS | 40 | `css/` 目录，按页面/组件一文件 |
 | JS | 43 | `js/` 目录，按页面/组件一文件 |
 
 ---
@@ -31,16 +31,17 @@
 ```
 frontend/
 ├─ index.html                  # 主页面（世界入口，唯一复杂页面）
-├─ index_working_backup.html   # 历史备份快照（无任何引用，可安全删除）
+├─ chat.html                   # 独立聊天页（动态注入情绪曲线组件）
 ├─ ARCHITECTURE.md             # 本文档
 │
-├─ css/                        # 39 个样式文件
+├─ css/                        # 40 个样式文件
 │  ├─ main.css                 # 全局基础 + 主页面布局（最重要）
 │  ├─ animations.css           # 全局 @keyframes + 开场动画
-│  ├─ sidebar.css              # 左侧可收起侧边栏（仅 index）
+│  ├─ sidebar.css              # 左侧侧边栏（一级导航 + 角色快捷区）
+│  ├─ chat.css                 # 独立聊天页样式（磨砂玻璃 + 冰蓝风格）
 │  ├─ skeleton.css             # 数据加载骨架屏（仅 index）
 │  ├─ loading-bar.css          # 顶部加载进度条
-│  ├─ emotion-chart.css        # 情绪折线图组件
+│  ├─ emotion-chart.css        # 情绪折线图组件（chat.html 动态注入）
 │  ├─ scene-transition.css     # 场景切换过渡
 │  ├─ character-display.css    # 角色立绘展示
 │  ├─ world-clock.css          # 世界时钟
@@ -65,17 +66,17 @@ frontend/
 │
 └─ js/                         # 43 个脚本文件
    ├─ app.js                   # 主页面启动器/编排器（最核心，必须最后加载）
+   ├─ chat.js                  # 独立聊天页启动器（window.ChatPage，自包含）
    ├─ api.js                   # window.API —— 所有后端 fetch 的唯一出口
    ├─ state.js                 # window.State —— 跨模块共享状态
    ├─ loading-bar.js           # window.LoadingBar —— 顶部进度条（api.js 依赖）
    ├─ skeleton.js              # window.Skeleton —— 骨架屏 show/hide
    ├─ ui.js                    # window.UI —— 消息气泡渲染、状态渲染
-   ├─ chat.js                  # window.Chat —— 发送消息/打字指示器
    ├─ scene.js                 # window.Scene —— 场景文案与切换
    ├─ characters.js            # window.Characters —— 角色注册/切换
    ├─ scene-transition.js      # window.SceneTransition
    ├─ character-display.js     # window.CharacterDisplay（依赖 State）
-   ├─ emotion-chart.js         # window.EmotionChart —— SVG 折线图
+   ├─ emotion-chart.js         # window.EmotionChart —— SVG 折线图（chat.html 动态注入）
    ├─ world-clock.js           # window.WorldClock
    ├─ relation-thermometer.js  # window.RelationThermometer
    ├─ status-dashboard.js      # window.StatusDashboard
@@ -90,6 +91,7 @@ frontend/
    ├─ choice-branch.js         # window.ChoiceBranch
    ├─ search-panel.js          # window.SearchPanel（依赖 State/UI）
    ├─ shortcuts-panel.js       # window.ShortcutsPanel（依赖 Chat/SearchPanel）
+   ├─ scene.js / state.js / ui.js / characters.js
    ├─ 404.js / about.js / character-gallery.js / character-profile.js
    ├─ demo-mode.js / exploration.js / export.js / help.js
    ├─ journey.js / login.js / memory-gallery.js / observer-panel.js
@@ -101,13 +103,23 @@ frontend/
 
 ## 三、页面清单与功能
 
+### 3.1 主页面
+
 | 文件 | 标题 | 核心功能 | 引用 CSS | 引用 JS | 后端 API |
 |---|---|---|---|---|---|
-| index.html | 冷旭帆 · 世界入口 | 主界面：开场动画、侧边栏、聊天、场景氛围、状态栏、情绪图表、搜索/快捷键面板 | main, sidebar, animations, loading-bar, emotion-chart, scene-transition, character-display, world-clock, time-lighting, emotion-particles, relation-thermometer, status-dashboard, character-tooltip, event-log, scene-shortcut, weather-effects, achievement-card, notification-center, choice-branch, search-panel, shortcuts-panel, skeleton（共 22） | loading-bar, api, skeleton, state, ui, chat, scene, characters, scene-transition, character-display, emotion-chart, world-clock, time-lighting, emotion-particles, relation-thermometer, status-dashboard, character-tooltip, event-log, scene-shortcut, weather-effects, achievement-card, notification-center, choice-branch, search-panel, shortcuts-panel, app（共 26，app.js 必须最后） | /api/state、/api/chat、/api/group_chat、/api/characters |
+| index.html | 冷旭帆 · 世界观察中心 | 主界面：开场动画、侧边栏、场景氛围、世界状态、搜索/快捷键面板 | main, sidebar, animations, scene-transition, world-clock, loading-bar, scene-shortcut, weather-effects, time-lighting, emotion-particles, search-panel（共 11） | loading-bar, api, ui, scene, scene-transition, world-clock, time-lighting, emotion-particles, scene-shortcut, weather-effects, search-panel, app（共 12，app.js 必须最后） | /api/state、/api/chat、/api/group_chat、/api/characters |
+
+> 注：index.html 近期已精简为纯粹的世界观察中心，聊天功能已迁移至 chat.html。引用 CSS/JS 数量较早期版本大幅减少。
+
+### 3.2 独立页面（19 个）
+
+| 文件 | 标题 | 核心功能 | 引用 CSS | 引用 JS | 后端 API |
+|---|---|---|---|---|---|
 | 404.html | 404 · 世界的缝隙 | 错误页，JS 延迟跳回主页（带 skipIntro=1） | main, 404 | 404 | - |
 | about.html | 世界入口 · 关于 | 项目介绍、返回主页（skipIntro=1） | main, about | about | - |
 | character-gallery.html | 群像画廊 | 角色网格展示，点击跳转人物典籍 | main, character-gallery | character-gallery | GET /api/characters |
 | character-profile.html | 人物典籍 | 角色档案卡片（预设数据） | main, character-profile | character-profile | - |
+| chat.html | 冷旭帆 · 对话 | 独立聊天页：单角色对话、情绪曲线抽屉、状态轮询 | main, chat（动态注入 emotion-chart） | chat（动态注入 emotion-chart） | POST /api/chat、GET /api/state |
 | demo-mode.html | 演示模式 · 预告片 | 演示模式（后端路由 /demo），纯前端模拟对话 | main, demo-mode | demo-mode | - |
 | exploration.html | 暗夜拾遗 | 探索发现页（预设内容） | main, exploration | exploration | - |
 | export.html | 导出对话 · 时光档案馆 | 拉取会话历史并展示/导出 | main, export | export | GET /api/conversations |
@@ -122,7 +134,6 @@ frontend/
 | settings.html | 冷旭帆 · 设置 | 粒子密度等本地偏好（history.back() 返回） | main, settings | settings | - |
 | world-guide.html | 世界导览 | 分屏滚动世界观介绍（宿舍/天台/防空洞） | main, world-guide | world-guide | - |
 | world-map.html | 星图导航 | 场景星图，读取世界状态 | main, world-map | world-map | GET /api/state |
-| index_working_backup.html | 冷旭帆 | 历史备份快照，无引用、无资源 | （无） | （无） | - |
 
 > 所有独立页面的"返回"链接均为 `index.html?skipIntro=1`，避免回主页重播开场动画。
 
@@ -133,37 +144,31 @@ frontend/
 ### 4.1 全局基础（被多个页面引用）
 | 文件 | 作用 | 主要类名/选择器 | 依赖 |
 |---|---|---|---|
-| main.css | 全局变量级基础样式、body 限宽居中（max-width 1200px）、主页面 .app/.header/.chat/.statusbar/.scene 布局、聊天气泡 .bubble | .app .header .chat .bubble .statusbar .scene .floating-ball | 无（最先加载） |
+| main.css | 全局变量级基础样式、body 限宽居中（max-width 1200px）、主页面 .app 相对定位布局、.header/.scene 布局、聊天气泡 .bubble 等 | .app .header .scene .bubble .floating-ball | 无（最先加载） |
 | animations.css | 全部 @keyframes 集中地 + 开场动画（#intro 时序 4s） | .intro .intro-ball .intro-text .intro-particle .floating-ball | ballBreath 被 index/login 使用 |
 | loading-bar.css | 顶部加载进度条 | #loadingBar | - |
-| sidebar.css | 左侧可收起侧边栏（桌面 220px/50px，移动端抽屉） | .sidebar .sidebar-toggle .nav-link | ballBreath（animations.css） |
+| sidebar.css | 左侧侧边栏（桌面固定 220px，移动端抽屉） | .sidebar .sidebar-toggle .nav-link .char-link .sidebar-search | ballBreath（animations.css） |
 | skeleton.css | 骨架屏（光带 shimmer） | .skeleton-block .sk-box .sk-bubble .sk-hidden/.sk-fade | - |
+| chat.css | 独立聊天页全量样式（磨砂玻璃、冰蓝风格） | .cp-page .cp-topbar .cp-chat-area .cp-input-bar .cp-status-drawer | - |
 
 ### 4.2 主页面组件（仅 index.html 加载）
 | 文件 | 作用 | 主要类名 |
 |---|---|---|
-| emotion-chart.css | 情绪折线图（SVG） | .emotion-chart .chart-ball .chart-line |
 | scene-transition.css | 场景切换淡入淡出 | .scene-transition |
-| character-display.css | 角色立绘增强（有意层叠覆盖 main.css 的 .charinfo/.avatar） | .charinfo .avatar .elabel |
 | world-clock.css | 世界时钟胶囊 | .world-clock |
-| relation-thermometer.css | 关系温度计（index 内嵌 + relations.html 独立复用） | .relation-thermo .relation-value |
-| status-dashboard.css | 状态仪表盘 | #statusDashboard .st-* |
-| character-tooltip.css | 角色悬浮卡 | .char-tooltip |
-| event-log.css | 事件日志列表 | .event-log |
 | scene-shortcut.css | ←/→ 场景切换浮层 | .scene-hint |
 | weather-effects.css | 雨/雪/风/阴粒子层 | #weatherLayer .rain .snow |
 | time-lighting.css | 时段氛围光（data-time-of-day 驱动 .scene 渐变） | .scene[data-time-of-day] |
 | emotion-particles.css | 情绪粒子层 | #emotionParticles .emotion-particle |
-| achievement-card.css | 成就弹卡 | #achievementCard .ach-* |
-| notification-center.css | 通知中心抽屉 | #notificationDrawer .nc-* |
-| choice-branch.css | 分支选择按钮组 | .choice-branch |
 | search-panel.css | Ctrl+K 搜索模态 | .sp-mask .sp-panel |
-| shortcuts-panel.css | ？快捷键面板模态 | .scp-mask .scp-panel .kbd |
 
 ### 4.3 独立页面样式（main.css + 自身 css 一一对应）
-`404 / about / character-gallery / character-profile / demo-mode / exploration / export / help / journey / login / memory-gallery / observer-panel / profile / relation-map / settings / world-guide / world-map` 各有一个同名 css，仅定义本页私有类（普遍使用页面前缀如 `.wg-` `.sp-` `.scp-` `.sk-` 避免冲突）。其中 `login.css` 自带一份 `ballBreath`（login.html 不加载 animations.css，故不冲突）。
+`404 / about / character-gallery / character-profile / chat / demo-mode / exploration / export / help / journey / login / memory-gallery / observer-panel / profile / relation-map / settings / world-guide / world-map` 各有一个同名 css，仅定义本页私有类（普遍使用页面前缀如 `.wg-` `.cp-` 避免冲突）。其中 `login.css` 自带一份 `ballBreath`（login.html 不加载 animations.css，故不冲突）。
 
-### 4.4 跨文件同名 @keyframes（潜在冲突，详见第七章）
+### 4.4 特殊：chat.html 动态注入 emotion-chart.css/js
+chat.html 的 HTML 结构未静态引用 `emotion-chart.css` 和 `emotion-chart.js`。`chat.js` 在运行时检测 `window.EmotionChart` 是否存在，若不存在则通过 `document.createElement` 动态创建 `<link>` 和 `<script>` 标签注入到 `<head>` 末尾。这保证了情绪曲线在抽屉中的发光点效果与主页面一致，同时不增加 chat.html 的静态依赖。
+
+### 4.5 跨文件同名 @keyframes（潜在冲突，详见第七章）
 - `flowShine`：animations.css（-50%→150%）与 relation-thermometer.css（-30%→130%）定义不同，index.html 上后者加载靠后而生效。
 - `chartBallPulse`：animations.css（弱光晕）与 emotion-chart.css（强光晕）定义不同，index.html 上前者加载靠后而生效。
 - `ballBreath`：animations.css 与 login.css 定义不同，但无任何页面同时加载两者，实际不冲突。
@@ -177,37 +182,22 @@ frontend/
 |---|---|---|---|---|
 | 1 | loading-bar.js | LoadingBar | start() / finish() | - |
 | 2 | api.js | API | getState / getCharacters / chat(message,charId) / groupChat(message) | LoadingBar、UI（错误提示） |
-| 3 | skeleton.js | Skeleton | show(selector) / hide(selector) | - |
-| 4 | state.js | State | get / set / subscribe 等共享状态读写 | - |
-| 5 | ui.js | UI | addMessage / updateState / renderEmotionChart / showTyping | - |
-| 6 | chat.js | Chat | send() / toggleGroup() | ChoiceBranch |
-| 7 | scene.js | Scene | update(state) | - |
-| 8 | characters.js | Characters | 初始化角色 / switchCurrent(id) | - |
-| 9 | scene-transition.js | SceneTransition | 过渡动画 | - |
-| 10 | character-display.js | CharacterDisplay | 立绘/说话状态 | State |
-| 11 | emotion-chart.js | EmotionChart | init(containerId) / update(history)（动态创建 #chartSvg 等） | - |
-| 12 | world-clock.js | WorldClock | update(timeOfDay, day) | - |
-| 13 | time-lighting.js | TimeLighting | init() / update(timeOfDay)（.scene[data-time-of-day]） | WorldClock |
-| 14 | emotion-particles.js | EmotionParticles | init()（自建 #emotionParticles）/ update(emotion) | - |
-| 15 | relation-thermometer.js | RelationThermometer | init(containerId)（动态建 #relationRows）/ update | - |
-| 16 | status-dashboard.js | StatusDashboard | init(containerId)（动态建 #statusDashboard）/ update | - |
-| 17 | character-tooltip.js | CharacterTooltip | init() | - |
-| 18 | event-log.js | EventLog | init() / push(event) | - |
-| 19 | scene-shortcut.js | SceneShortcut | ←/→ 键盘切换场景 | SceneTransition |
-| 20 | weather-effects.js | WeatherEffects | init()（自建 #weatherLayer）/ update(weather) | - |
-| 21 | achievement-card.js | AchievementCard | init()（自建）/ show(...) | - |
-| 22 | notification-center.js | NotificationCenter | init()（自建抽屉）/ push | - |
-| 23 | choice-branch.js | ChoiceBranch | init() / render(branches) | - |
-| 24 | search-panel.js | SearchPanel | init() / open() / close()（Ctrl+K，自建模态） | State、UI |
-| 25 | shortcuts-panel.js | ShortcutsPanel | init() / open() / close()（? 键，自建模态） | Chat、SearchPanel |
-| 26 | app.js | （编排器，无全局导出） | init() / refreshState()（2s 轮询）/ endIntro() / 侧边栏 toggle | 上述全部（守卫式调用） |
+| 3 | ui.js | UI | addMessage / updateState / renderEmotionChart / showTyping | - |
+| 4 | scene.js | Scene | update(state) | - |
+| 5 | scene-transition.js | SceneTransition | 过渡动画 | - |
+| 6 | world-clock.js | WorldClock | update(timeOfDay, day) | - |
+| 7 | time-lighting.js | TimeLighting | init() / update(timeOfDay)（.scene[data-time-of-day]） | WorldClock |
+| 8 | emotion-particles.js | EmotionParticles | init()（自建 #emotionParticles）/ update(emotion) | - |
+| 9 | scene-shortcut.js | SceneShortcut | ←/→ 键盘切换场景 | SceneTransition |
+| 10 | weather-effects.js | WeatherEffects | init()（自建 #weatherLayer）/ update(weather) | - |
+| 11 | search-panel.js | SearchPanel | init() / open() / close()（Ctrl+K，自建模态） | State、UI |
+| 12 | app.js | （编排器，无全局导出） | init() / refreshState()（2s 轮询）/ endIntro() / 侧边栏 toggle | 上述全部（守卫式调用） |
 
 **app.js 职责细节**：
-- 开场动画编排：1000ms 膨胀 → 2500ms 爆发+粒子散落+8 向光线（`.intro.burst-rays`）→ 3500ms 收缩至右下角+3 球拖尾 → 4000ms 移除 #intro；总时长 4s，缓动统一 cubic-bezier(0.4,0,0.2,1)。
+- 开场动画编排：非对称电影感构图，4s 时序（粒子聚拢 → 光球呼吸 → 文字淡入 → 按钮脉冲），点击"进入世界"按钮后移除 #intro。
 - `skipIntro=1` URL 参数：初始化即调用 `endIntro()` 跳过动画。
-- 骨架屏：init 时对 .chat/.statusbar/.scene 调 `Skeleton.show`，首次 /api/state 成功后 `hide`。
-- 侧边栏：#sidebarToggle 点击按端别切换 `.collapsed`（桌面）/`.open`（移动）；底部时间/天气取自 `s.world`；按 pathname 高亮 `.nav-link.active`。
-- 轮询：每 2s `API.getState()` → 派发到 Scene/UI/WorldClock/TimeLighting/WeatherEffects/EmotionChart/EmotionParticles/RelationThermometer/StatusDashboard/EventLog 等。
+- 侧边栏：`#sidebarToggle` 点击切换 `.collapsed`（桌面）/`.open`（移动）；按 pathname 高亮 `.nav-link.active`；角色快捷区 `.char-link` 高亮当前角色。
+- 轮询：每 2s `API.getState()` → 派发到 Scene/WorldClock/TimeLighting/WeatherEffects 等。
 
 ### 5.2 独立页面脚本（每页一个，自包含）
 | 文件 | 全局对象 | 说明 | 后端依赖 |
@@ -216,6 +206,7 @@ frontend/
 | about.js | - | 拦截返回按钮跳转（preventDefault 后 location.href） | - |
 | character-gallery.js | - | 拉取 /api/characters 渲染网格（失败用预设兜底） | GET /api/characters |
 | character-profile.js | CharacterProfile | 静态档案渲染 | - |
+| chat.js | ChatPage | 独立聊天页：自包含 fetch 方案，不依赖 api.js/ui.js；动态注入 emotion-chart 组件；2s 轮询状态；打字机效果 | POST /api/chat、GET /api/state |
 | demo-mode.js | - | 演示模式对话模拟（纯前端） | - |
 | exploration.js | Exploration | 探索内容渲染 | - |
 | export.js | - | 拉取 /api/conversations（需登录 session） | GET /api/conversations |
@@ -234,8 +225,8 @@ frontend/
 
 ## 六、全局状态与 API 契约
 
-### 6.1 window 全局对象清单（35 个）
-`API, LoadingBar, Skeleton, State, UI, Chat, Scene, Characters, SceneTransition, CharacterDisplay, EmotionChart, WorldClock, TimeLighting, EmotionParticles, RelationThermometer, StatusDashboard, CharacterTooltip, EventLog, SceneShortcut, WeatherEffects, AchievementCard, NotificationCenter, ChoiceBranch, SearchPanel, ShortcutsPanel, CharacterProfile, Exploration, HelpPage, Journey, MemoryGallery, ObserverPanel, RelationMap, WorldGuide, WorldMap, WorldSettings`
+### 6.1 window 全局对象清单（36 个）
+`API, LoadingBar, Skeleton, State, UI, Chat, Scene, Characters, SceneTransition, CharacterDisplay, EmotionChart, WorldClock, TimeLighting, EmotionParticles, RelationThermometer, StatusDashboard, CharacterTooltip, EventLog, SceneShortcut, WeatherEffects, AchievementCard, NotificationCenter, ChoiceBranch, SearchPanel, ShortcutsPanel, ChatPage, CharacterProfile, Exploration, HelpPage, Journey, MemoryGallery, ObserverPanel, RelationMap, WorldGuide, WorldMap, WorldSettings`
 
 附加全局变量：`window._emotionHistory`（app.js 维护的情绪历史数组，供 EmotionChart 使用）。
 
@@ -243,7 +234,7 @@ frontend/
 
 ### 6.2 API 端点契约（前端视角）
 
-#### GET /api/state（调用方：api.js / observer-panel.js / world-map.js）
+#### GET /api/state（调用方：api.js / chat.js / observer-panel.js / world-map.js）
 响应 `get_engine_snapshot()`：
 ```json
 {
@@ -260,7 +251,7 @@ frontend/
 ```
 前端高频使用字段：`emotion`、`world.day`、`world.time_of_day`、`world.weather`。
 
-#### POST /api/chat（调用方：api.js → Chat）
+#### POST /api/chat（调用方：api.js → Chat、chat.js → ChatPage）
 请求：`{ "message": "...", "char_id": "lengxufan", "group_context": "" }`
 响应：`{ "reply": "...", "state": {…同 /api/state…} }`
 
@@ -285,7 +276,79 @@ frontend/
 
 ---
 
-## 七、已知问题与优化建议
+## 七、布局体系
+
+### 7.1 固定视口方案（A4 纸式布局）
+
+整个应用采用"固定视口矩形"方案，保证浏览器缩放（Ctrl+滚轮）时布局不拉伸错位：
+
+```
+html { background: #07080d; }
+body {
+  max-width: 1200px;          /* 居中限宽 */
+  margin: 0 auto;
+  overflow: hidden;            /* 禁止 body 滚动，所有滚动在内部容器处理 */
+  height: 100%;                /* 固定高度 */
+}
+.app {
+  position: relative;          /* 相对于 body 定位，非 fixed */
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+```
+
+原理：html 提供深色背景作为呼吸空间，body 居中限宽（1200px），内部 #app 相对定位铺满 body。所有固定定位元素（悬浮球、通知按钮、搜索面板等）都放在 #app 容器内，避免浏览器缩放时与视口基准错位。
+
+### 7.2 侧边栏布局（一级导航 + 角色快捷区）
+
+侧边栏结构（`sidebar.css`）：
+- **顶部条**：汉堡菜单按钮（☰）、标题"世界入口"、通知铃铛图标
+- **搜索框**：胶囊形磨砂玻璃，点击触发全局搜索面板（Ctrl+K）
+- **一级导航**（`.sidebar-nav`）：按"世界/档案/观测/系统"分组，每组有 `.nav-group-title` 标题，下方为 `.nav-link` 链接项
+- **角色快捷区**（`.sidebar-characters`）：三个活跃角色（冷旭帆/黄景云/叶清辞）的圆形头像快捷链接，点击跳转 `chat.html?char=xxx`；底部"查看全部角色 →"链接
+- **底部**：呼吸指示灯 + 当前时间/天气
+
+侧边栏样式参数：
+- 桌面：`position: fixed; left: 0; top: 0; bottom: 0; width: 220px; z-index: 100`
+- 移动端（max-width: 768px）：默认隐藏（`width: 0; transform: translateX(-100%)`），展开时 `width: 80%; max-width: 280px`
+
+### 7.3 主页面布局（index.html）
+
+```
+body(max-width:1200px)
+  └─ .app(relative, flex-column)
+       ├─ .sidebar(fixed, left:0, width:220px, z-index:100)
+       │    ├─ .sidebar-topbar: 汉堡菜单 + 标题 + 通知铃铛
+       │    ├─ .sidebar-search: 胶囊搜索框（触发 Ctrl+K 面板）
+       │    ├─ .sidebar-nav: 一级导航分组
+       │    ├─ .sidebar-characters: 角色快捷区
+       │    └─ .sidebar-footer: 呼吸灯 + 时间/天气
+       ├─ .scene(fullscreen, margin-left:220px): 场景氛围
+       ├─ #floatingBall: 开场动画终点球
+       └─ (通知抽屉、搜索面板等覆盖层)
+```
+
+### 7.4 聊天页布局（chat.html）
+
+```
+body(max-width:1200px)
+  └─ .cp-page(fixed 视口矩形)
+       ├─ .cp-topbar: 返回 ← + 角色名 + 情绪标签 + 状态抽屉按钮
+       ├─ .cp-chat-area: 消息列表（可滚动）
+       ├─ .cp-input-bar: 磨砂玻璃输入区（24px 圆角）
+       │    ├─ .cp-input-wrap: 文本框容器
+       │    └─ .cp-send: 发送按钮（冰蓝发光）
+       ├─ .cp-status-drawer: 右侧状态抽屉（300px / 移动端全屏）
+       └─ .cp-drawer-mask: 抽屉遮罩层
+```
+
+---
+
+## 八、已知问题与优化建议
 
 ### 已确认的潜在冲突（本次未修改，避免视觉变化）
 1. **同名 @keyframes 定义不同**（跨文件）：
@@ -293,44 +356,54 @@ frontend/
    - `chartBallPulse`：emotion-chart.css（强光晕）与 animations.css（弱光晕）定义不同，index.html 上 animations.css 靠后胜出。建议重命名其一。
    - `ballBreath`：login.css 与 animations.css 定义不同，但无页面同时加载两者，当前无实际冲突。
 2. **层叠依赖**：main.css 尾部有意覆盖 emotion-chart.css（透明化图表容器）与 character-display.css（.charinfo 增强）。调整加载顺序会改变视觉，勿轻易重排 index.html 的 CSS 顺序。
-3. **index_working_backup.html**：无引用的历史备份快照，可安全删除（本次保守起见保留）。
-4. **重复结构**：各独立页面各自实现"返回"按钮（17 处跳主页链接），为独立页面设计使然；如需统一可抽公共小部件，但会引入共享 JS 依赖。
-5. **window._emotionHistory**：挂在全局的临时情绪历史（上限 20 条），更规范做法是纳入 `window.State`。
-6. **demo-mode**：纯前端模拟，未接 /api/chat；若要接入需复用 api.js。
-7. **导出页登录态**：/api/conversations 需要登录 session，未登录时 export.html 拿到 401，目前仅静默展示空态。
-8. **移动端媒体查询覆盖**：world-guide / search-panel / shortcuts-panel / sidebar / skeleton / demo-mode 等较新文件已有 768px 适配；memory-gallery / observer-panel / world-map / exploration 等页面尚无移动端查询（窄屏体验待优化）。
-9. **未接入后端的功能**：login 为前端模拟（未调 /api/auth/guest），如需真实登录态（影响 export/profile），应改调后端。
+3. **重复结构**：各独立页面各自实现"返回"按钮（17 处跳主页链接），为独立页面设计使然；如需统一可抽公共小部件，但会引入共享 JS 依赖。
+4. **window._emotionHistory**：挂在全局的临时情绪历史（上限 20 条），更规范做法是纳入 `window.State`。
+5. **demo-mode**：纯前端模拟，未接 /api/chat；若要接入需复用 api.js。
+6. **导出页登录态**：/api/conversations 需要登录 session，未登录时 export.html 拿到 401，目前仅静默展示空态。
+7. **移动端媒体查询覆盖**：world-guide / search-panel / shortcuts-panel / sidebar / skeleton / demo-mode 等较新文件已有 768px 适配；memory-gallery / observer-panel / world-map / exploration 等页面尚无移动端查询（窄屏体验待优化）。
+8. **未接入后端的功能**：login 为前端模拟（未调 /api/auth/guest），如需真实登录态（影响 export/profile），应改调后端。
+9. **chat.js 自包含 fetch**：chat.js 不依赖 api.js/ui.js，独立实现 fetch 调用和消息渲染（打字机效果、分段解析）。这避免了跨文件依赖，但若后端 API 契约变更需同步修改两处。
 
 ---
 
-## 八、维护指南
+## 九、维护指南
 
-### 8.1 修改功能 → 文件映射
+### 9.1 修改功能 → 文件映射
 | 想改什么 | 改哪个文件 |
 |---|---|
-| 全局配色 / body 布局 / 聊天气泡 / 状态栏 | css/main.css |
-| 开场动画（时间轴/粒子/光线/拖尾/文字） | css/animations.css + js/app.js（intro 区块） |
+| 全局配色 / body 布局 / 聊天气泡 | css/main.css |
+| 开场动画（时间轴/粒子/光球/文字/按钮） | css/animations.css + js/app.js（intro 区块） |
 | 侧边栏外观与偏移 | css/sidebar.css；切换逻辑在 js/app.js「侧边栏」区块 |
 | 骨架屏形状 | css/skeleton.css（样式）+ js/skeleton.js（DOM 生成） |
 | 后端请求（URL/字段/错误处理） | js/api.js（唯一出口，勿在其他文件直接 fetch） |
-| 聊天发送逻辑 / 打字指示器 | js/chat.js + js/ui.js |
+| 主页面聊天发送逻辑 / 打字指示器 | js/chat.js + js/ui.js |
+| 独立聊天页（chat.html）逻辑 | js/chat.js（自包含，不依赖 api.js 等） |
+| 独立聊天页样式 | css/chat.css |
+| 情绪曲线（发光点效果） | css/emotion-chart.css + js/emotion-chart.js |
 | 状态轮询间隔 / 数据派发 | js/app.js 的 refreshState() |
 | 场景文案 / 场景切换 | js/scene.js + js/scene-transition.js |
 | 天气 / 时段光照 / 情绪粒子 | js/weather-effects.js / time-lighting.js / emotion-particles.js |
 | 搜索面板 / 快捷键面板 | js/search-panel.js / shortcuts-panel.js（+ 同名 css） |
 | 某独立页面内容 | 该页面 html + 同名 css/js 三件套 |
+| 侧边栏导航链接 / 角色快捷区 | index.html 的 `.sidebar-nav` / `.sidebar-characters` 区块 |
 
-### 8.2 新增页面步骤
+### 9.2 新增页面步骤
 1. 在 frontend/ 根新建 `xxx.html`，结构参考任一独立页面：`<meta charset="UTF-8">` → 引用 `css/main.css` → 引用本页 `css/xxx.css` → body 末尾引用 `js/xxx.js`。
 2. 返回链接一律使用 `index.html?skipIntro=1`（避免重播开场动画）。
 3. 新建 `css/xxx.css`（推荐给本页类名加统一前缀）与 `js/xxx.js`（如需全局对象则 `window.XxxPage = {...}`，并在 DOM 就绪后调用 init）。
-4. 如页面需要加入导航：在 index.html 的 `#sidebar .sidebar-nav` 增加一条 `.nav-link`（active 高亮由 pathname 自动匹配）。
+4. 如页面需要加入导航：在 index.html 的 `.sidebar-nav` 增加一条 `.nav-link`（active 高亮由 pathname 自动匹配），或在 `.sidebar-characters` 增加角色快捷链接。
 5. 若由后端路由托管，在 app.py 增加对应 `@app.route`（前端文件本身无需改动）。
 
-### 8.3 新增功能组件（主页面）步骤
+### 9.3 新增功能组件（主页面）步骤
 1. 新建 `css/xxx.css` 与 `js/xxx.js`；JS 采用 IIFE + `window.Xxx = { init, update }` 模式。
 2. 若组件容器需要静态占位：在 index.html 对应位置加 `<div id="xxx">`；若组件自建 DOM（参考 StatusDashboard / EmotionParticles），则无需改 HTML。
 3. index.html：`<head>` 中 main.css 之后加入 css 引用；body 末尾 **app.js 之前** 加入 js 引用。
 4. js/app.js 的 init() 中以守卫方式调用 `if (window.Xxx) window.Xxx.init(...)`；需要随状态刷新则在 refreshState() 成功回调里调用 `Xxx.update(s)`。
 5. 涉及键盘/全局快捷键时，注意在 INPUT/TEXTAREA 聚焦时短路（参考 shortcuts-panel.js）。
 6. 完成后运行一次全量引用检查：确认 index.html 引用的每个 css/js 文件都存在、app.js 仍是最后一个 script。
+
+### 9.4 chat.html 情绪曲线注入维护说明
+chat.html 的情绪曲线通过 `chat.js` 的 `loadEmotionChartAssets()` 函数动态注入 `emotion-chart.css` 和 `emotion-chart.js`。若修改情绪曲线组件（发光点效果），需注意：
+- 修改 `css/emotion-chart.css` 和 `js/emotion-chart.js` 后，index.html（静态引用）和 chat.html（动态注入）均会生效。
+- 若新增 emotion-chart 的依赖 API 或数据结构，需同步检查 `chat.js` 的 `refreshState()` 中的情绪历史更新逻辑。
+- 若 emotion-chart.js 的全局对象名 `window.EmotionChart` 变更，需同步更新 `chat.js` 中的检测和调用代码。

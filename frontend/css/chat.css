@@ -340,6 +340,9 @@ body {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 6px; font-size: 11px; color: #8fa0c0;
 }
+/* 抽屉块已有 h4 标题，隐藏组件内重复标题，数值靠右 */
+.cp-chart-host .chart-title { display: none; }
+.cp-chart-host .chart-header { justify-content: flex-end; }
 .cp-chart-host .chart-value { color: #58a6ff; }
 .cp-chart-host svg { width: 100%; height: 90px; display: block; }
 .cp-fallback-chart { font-size: 13px; color: #58a6ff; }

@@ -1,6 +1,6 @@
 ## 更新后的《冷旭帆项目 · 完整工程化导向手册（v6.0）》
 
-> 最后更新：2026-08-31  
+> 最后更新：2026-09-01  
 > 用途：修改任意功能时，先查本文件定位到唯一应修改的文件。  
 > 原则：一个功能对应一个文件，尽量只改一个文件。
 
@@ -24,7 +24,7 @@
 | `characters/`               | 角色数据（单一数据源）                     |
 | `routes/`                   | API 路由层                                 |
 | `services/`                 | 业务服务层                                 |
-| `frontend/`                 | 前端页面（20 HTML + 39 CSS + 43 JS）       |
+| `frontend/`                 | 前端页面（20 HTML + 40 CSS + 43 JS）       |
 | `tests/`                    | 测试套件                                   |
 | `tools/`                    | 工具脚本                                   |
 | `data/`                     | 运行时数据（SQLite、状态文件、ChromaDB）   |
@@ -51,13 +51,13 @@
 
 | 类型 | 数量 | 说明                                      |
 | ---- | ---- | ----------------------------------------- |
-| HTML | 20   | 1 个主页面 + 18 个独立页面 + 1 个历史备份 |
-| CSS  | 39   | `css/` 目录，按页面/组件一文件            |
+| HTML | 20   | 1 个主页面 + 19 个独立页面               |
+| CSS  | 40   | `css/` 目录，按页面/组件一文件            |
 | JS   | 43   | `js/` 目录，按页面/组件一文件             |
 
 ### 3.2 前端架构文档
 
-完整的前端架构说明见 `frontend/ARCHITECTURE.md`（24,770 bytes，包含文件树、页面清单、CSS/JS 模块说明、API 契约、已知问题、维护指南）。
+完整的前端架构说明见 `frontend/ARCHITECTURE.md`（包含文件树、页面清单、CSS/JS 模块说明、API 契约、布局体系、已知问题、维护指南）。
 
 **修改任何前端文件前，先查 `frontend/ARCHITECTURE.md`。**
 
@@ -66,12 +66,10 @@
 `index.html` 中 script 标签必须严格按以下顺序：
 
 ```
-loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js → scene.js
-→ characters.js → scene-transition.js → character-display.js → emotion-chart.js
-→ world-clock.js → time-lighting.js → emotion-particles.js → relation-thermometer.js
-→ status-dashboard.js → character-tooltip.js → event-log.js → scene-shortcut.js
-→ weather-effects.js → achievement-card.js → notification-center.js
-→ choice-branch.js → search-panel.js → shortcuts-panel.js → app.js（最后）
+loading-bar.js → api.js → ui.js → scene.js → scene-transition.js
+→ world-clock.js → time-lighting.js → emotion-particles.js
+→ scene-shortcut.js → weather-effects.js → search-panel.js
+→ app.js（最后）
 ```
 
 ---
@@ -111,18 +109,22 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 | 侧边栏外观与偏移                         | `frontend/css/sidebar.css` + `frontend/js/app.js`（侧边栏区块） |
 | 骨架屏形状                               | `frontend/css/skeleton.css` + `frontend/js/skeleton.js`      |
 | 后端请求（URL/字段/错误处理）            | `frontend/js/api.js`（唯一出口，勿在其他文件直接 fetch）     |
-| 聊天发送逻辑 / 打字指示器                | `frontend/js/chat.js` + `frontend/js/ui.js`                  |
+| 主页面聊天发送逻辑 / 打字指示器          | `frontend/js/chat.js` + `frontend/js/ui.js`                  |
+| 独立聊天页（chat.html）逻辑              | `frontend/js/chat.js`（自包含，不依赖 api.js/ui.js）         |
+| 独立聊天页样式                           | `frontend/css/chat.css`                                      |
+| 情绪曲线组件（发光点效果）               | `frontend/css/emotion-chart.css` + `frontend/js/emotion-chart.js` |
 | 状态轮询间隔 / 数据派发                  | `frontend/js/app.js` 的 `refreshState()`                     |
 | 场景文案 / 场景切换                      | `frontend/js/scene.js` + `frontend/js/scene-transition.js`   |
 | 天气 / 时段光照 / 情绪粒子               | `frontend/js/weather-effects.js` / `time-lighting.js` / `emotion-particles.js` |
 | 搜索面板 / 快捷键面板                    | `frontend/js/search-panel.js` / `shortcuts-panel.js`（+ 同名 CSS） |
 
-### 4.3 前端独立页面（18 个）
+### 4.3 前端独立页面（19 个）
 
 | 页面                   | 修改文件（三件套）                                           | 依赖 API                 |
 | ---------------------- | ------------------------------------------------------------ | ------------------------ |
 | 404.html               | `404.html` + `css/404.css` + `js/404.js`                     | -                        |
 | about.html             | `about.html` + `css/about.css` + `js/about.js`               | -                        |
+| chat.html              | `chat.html` + `css/chat.css` + `js/chat.js`                  | `POST /api/chat`、`GET /api/state` |
 | character-gallery.html | `character-gallery.html` + `css/character-gallery.css` + `js/character-gallery.js` | `GET /api/characters`    |
 | character-profile.html | `character-profile.html` + `css/character-profile.css` + `js/character-profile.js` | -                        |
 | demo-mode.html         | `demo-mode.html` + `css/demo-mode.css` + `js/demo-mode.js`   | -                        |
@@ -157,8 +159,9 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 
 | 文件                                     | 作用                                                         |
 | ---------------------------------------- | ------------------------------------------------------------ |
-| `frontend/ARCHITECTURE.md`               | 前端架构文档（文件树、页面清单、模块说明、API 契约、维护指南） |
-| `frontend/css/sidebar.css`               | 左侧可收起侧边栏样式                                         |
+| `frontend/ARCHITECTURE.md`               | 前端架构文档（文件树、页面清单、模块说明、API 契约、布局体系、维护指南） |
+| `frontend/css/sidebar.css`               | 左侧侧边栏样式（一级导航 + 角色快捷区）                       |
+| `frontend/css/chat.css`                  | 独立聊天页样式（磨砂玻璃 + 冰蓝风格）                         |
 | `frontend/css/skeleton.css`              | 数据加载骨架屏样式                                           |
 | `frontend/css/weather-effects.css`       | 雨/雪/风/阴天气特效                                          |
 | `frontend/css/time-lighting.css`         | 时段氛围光（深夜/清晨/正午/黄昏/夜晚）                       |
@@ -170,6 +173,7 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 | `frontend/css/shortcuts-panel.css`       | ? 快捷键面板                                                 |
 | `frontend/css/404.css` ~ `world-map.css` | 18 个独立页面各对应一个 CSS                                  |
 | `frontend/js/skeleton.js`                | 骨架屏 show/hide                                             |
+| `frontend/js/chat.js`                    | 独立聊天页启动器（自包含 fetch，不依赖 api.js）               |
 | `frontend/js/weather-effects.js`         | 天气粒子渲染                                                 |
 | `frontend/js/time-lighting.js`           | 时段光照切换                                                 |
 | `frontend/js/emotion-particles.js`       | 情绪粒子动态                                                 |
@@ -200,12 +204,12 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 ## 七、已知问题与注意事项
 
 1. **同名 @keyframes 冲突**：`flowShine`、`chartBallPulse` 在两个 CSS 中有不同定义，加载顺序靠后者生效。未来需重命名。
-2. **`index_working_backup.html`**：无引用的历史备份，可安全删除。
-3. **`window._emotionHistory`**：全局临时变量，未来应纳入 `window.State`。
-4. **demo-mode**：纯前端模拟，未接 `/api/chat`。
-5. **export.html**：需要登录 session，未登录时静默展示空态。
-6. **login.html**：前端模拟，未真正调用 `/api/auth/guest`，影响真实登录态功能（export/profile）。
-7. **部分独立页面缺少移动端媒体查询**：memory-gallery、observer-panel、world-map、exploration 等。
+2. **`window._emotionHistory`**：全局临时变量，未来应纳入 `window.State`。
+3. **demo-mode**：纯前端模拟，未接 `/api/chat`。
+4. **export.html**：需要登录 session，未登录时静默展示空态。
+5. **login.html**：前端模拟，未真正调用 `/api/auth/guest`，影响真实登录态功能（export/profile）。
+6. **部分独立页面缺少移动端媒体查询**：memory-gallery、observer-panel、world-map、exploration 等。
+7. **chat.js 自包含 fetch**：chat.js 不依赖 api.js/ui.js，独立实现 fetch 调用和消息渲染。若后端 API 契约变更需同步修改两处（api.js 和 chat.js）。
 
 ---
 
@@ -429,8 +433,8 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 
 #### frontend 根目录 HTML（20 个）
 
-- `frontend/index.html`：主页面（世界入口，唯一复杂页面）
-- `frontend/index_working_backup.html`：历史备份快照（无引用，可安全删除）
+- `frontend/index.html`：主页面（世界观察中心，已精简）
+- `frontend/chat.html`：独立聊天页（单角色对话 + 情绪曲线抽屉）
 - `frontend/404.html`：错误页
 - `frontend/about.html`：关于页面
 - `frontend/character-gallery.html`：角色画廊
@@ -450,13 +454,14 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 - `frontend/world-guide.html`：世界观介绍
 - `frontend/world-map.html`：星图导航
 
-#### frontend/css/（39 个）
+#### frontend/css/（40 个）
 
 主页面核心：
 
 - `frontend/css/main.css`：全局基础 + 主页面布局
 - `frontend/css/animations.css`：全局 @keyframes + 开场动画
-- `frontend/css/sidebar.css`：左侧侧边栏
+- `frontend/css/sidebar.css`：左侧侧边栏（一级导航 + 角色快捷区）
+- `frontend/css/chat.css`：独立聊天页样式（磨砂玻璃 + 冰蓝风格）
 - `frontend/css/skeleton.css`：加载骨架屏
 - `frontend/css/loading-bar.css`：顶部加载进度条
 - `frontend/css/emotion-chart.css`：情绪折线图
@@ -503,33 +508,20 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 
 - `frontend/js/loading-bar.js`
 - `frontend/js/api.js`
-- `frontend/js/skeleton.js`
-- `frontend/js/state.js`
 - `frontend/js/ui.js`
-- `frontend/js/chat.js`
 - `frontend/js/scene.js`
-- `frontend/js/characters.js`
 - `frontend/js/scene-transition.js`
-- `frontend/js/character-display.js`
-- `frontend/js/emotion-chart.js`
 - `frontend/js/world-clock.js`
 - `frontend/js/time-lighting.js`
 - `frontend/js/emotion-particles.js`
-- `frontend/js/relation-thermometer.js`
-- `frontend/js/status-dashboard.js`
-- `frontend/js/character-tooltip.js`
-- `frontend/js/event-log.js`
 - `frontend/js/scene-shortcut.js`
 - `frontend/js/weather-effects.js`
-- `frontend/js/achievement-card.js`
-- `frontend/js/notification-center.js`
-- `frontend/js/choice-branch.js`
 - `frontend/js/search-panel.js`
-- `frontend/js/shortcuts-panel.js`
 - `frontend/js/app.js`（最后加载）
 
 独立页面：
 
+- `frontend/js/chat.js`（独立聊天页，自包含 fetch，不依赖 api.js）
 - `frontend/js/404.js`
 - `frontend/js/about.js`
 - `frontend/js/character-gallery.js`
@@ -560,5 +552,5 @@ loading-bar.js → api.js → skeleton.js → state.js → ui.js → chat.js →
 ## 手册维护说明
 
 1. 每次新增/删除前端页面、修改 API 契约、新增后端模块时，同步更新本手册“附录”和 `frontend/ARCHITECTURE.md`。
-2. 本附录基于 2026-08-31 实际仓库文件生成，已移除 v5.5 中已删除的文件（如 `demo.html`、`dev.html`、`manifest.json`、`sw.js`、`icons/`、`theme-override.css`、`*.bak_dynamic` 等）。
+2. 本附录基于 2026-09-01 实际仓库文件生成，已移除 v5.5 中已删除的文件（如 `index_working_backup.html`、`demo.html`、`dev.html`、`manifest.json`、`sw.js`、`icons/`、`theme-override.css`、`*.bak_dynamic` 等）。
 3. 若后续重新引入 PWA、Service Worker 等能力，需在附录中同步补回。
