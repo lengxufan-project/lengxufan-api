@@ -51,21 +51,26 @@ body {
   padding: 16px 20px 14px;
   background: linear-gradient(180deg, rgba(5, 6, 10, 0.85) 0%, transparent 100%);
 }
+/* 统一返回按钮：磨砂胶囊 */
 .back-btn {
-  padding: 6px 14px;
-  border-radius: 16px;
-  border: 1px solid #2a3550;
-  background: rgba(255, 255, 255, 0.04);
-  color: #8fa0c0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
   font-size: 12px;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
 .back-btn:hover {
-  color: #d8e6ff;
-  border-color: #4a6fa5;
-  background: rgba(80, 140, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(88, 166, 255, 0.7);
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
 .ex-title {
   font-family: 'Noto Serif SC', Georgia, serif;

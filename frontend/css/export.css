@@ -5,11 +5,8 @@
 
 .export-page {
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 20% 0%, rgba(88,166,255,0.14), transparent 55%),
-    radial-gradient(ellipse at 80% 100%, rgba(136,95,255,0.12), transparent 55%),
-    linear-gradient(135deg, #060812 0%, #0b1024 60%, #070a1a 100%);
-  padding: 32px 20px 80px;
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
+  padding: 100px 20px 40px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -31,24 +28,29 @@
 
 .export-page > * { position: relative; z-index: 2; }
 
-/* ---------- 返回按钮 ---------- */
+/* ---------- 返回按钮（统一：固定左上角磨砂胶囊） ---------- */
 .return-btn {
-  align-self: flex-start;
-  margin-bottom: 4px;
-  padding: 6px 14px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: #8fa0c0;
-  font-size: 13px;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 90;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
+  font-size: 12px;
   text-decoration: none;
+  cursor: pointer;
   transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
 .return-btn:hover {
-  color: #c9d6f0;
-  border-color: rgba(88,166,255,0.4);
-  background: rgba(88,166,255,0.08);
-  transform: translateX(-2px);
+  color: #ffffff;
+  border-color: rgba(88, 166, 255, 0.7);
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
 
 /* ---------- 标题 ---------- */
@@ -401,7 +403,9 @@
    移动端：单列布局
    ============================================================ */
 @media (max-width: 680px) {
-  .export-page { padding: 20px 14px 60px; }
+  .export-page { padding: 80px 16px 32px; }
+  /* 移动端返回按钮缩小 */
+  .return-btn { padding: 6px 12px; font-size: 11px; border-radius: 16px; }
 
   .page-title { font-size: 22px; letter-spacing: 0.5px; }
   .page-subtitle { font-size: 12px; text-align: center; }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="css/weather-effects.css">
 <link rel="stylesheet" href="css/time-lighting.css">
 <link rel="stylesheet" href="css/emotion-particles.css">
+<link rel="stylesheet" href="css/notification-center.css">
 </head>
 <body>
 <div id="loadingBar"></div>
@@ -85,49 +86,61 @@
         <a href="about.html" class="nav-link">关于</a>
       </nav>
 
-      <!-- 活跃角色快捷区：小卡片 + 28px 圆形头像，当前角色冰蓝发光 -->
-      <div class="sidebar-characters" id="sidebarCharacters">
-        <div class="nav-group-title">活跃角色</div>
-        <a href="chat.html?char=lengxufan" class="char-link" data-char-id="lengxufan">
-          <div class="char-avatar">冷</div>
-          <span class="char-name">冷旭帆</span>
-        </a>
-        <a href="chat.html?char=huangjingyun" class="char-link" data-char-id="huangjingyun">
-          <div class="char-avatar">黄</div>
-          <span class="char-name">黄景云</span>
-        </a>
-        <a href="chat.html?char=yeqingci" class="char-link" data-char-id="yeqingci">
-          <div class="char-avatar">叶</div>
-          <span class="char-name">叶清辞</span>
-        </a>
-        <a href="character-gallery.html" class="char-link all">
-          <span>查看全部角色 →</span>
-        </a>
-      </div>
 
-      <!-- 底部：呼吸指示灯 + 时间 / 天气 -->
-      <div class="sidebar-footer">
-        <div class="sidebar-indicator" title="世界在线"></div>
-        <div class="sidebar-footer-text">
-          <span id="sidebarWeather">--</span>
-          <span id="sidebarTime">--</span>
-        </div>
-      </div>
     </div>
 
-    <!-- 通知抽屉（点击通知图标展开，右侧滑入） -->
+    <!-- 通知抽屉遮罩（抽屉打开时显示，点击关闭） -->
+    <div class="notify-mask" id="notifyMask"></div>
+
+    <!-- 通知抽屉（点击通知图标展开，右侧滑入，磨砂玻璃） -->
     <div class="notify-drawer" id="notifyDrawer">
       <div class="notify-drawer-head">
         <span class="notify-drawer-title">通知</span>
+        <button class="notify-drawer-markall" id="notifyMarkAll" type="button">全部标为已读</button>
         <button class="notify-drawer-close" id="notifyClose" type="button" aria-label="关闭">×</button>
       </div>
       <div class="notify-drawer-body" id="notifyList">
-        <div class="notify-empty">暂无新通知</div>
+        <!-- 未读分组 -->
+        <div class="notify-section notify-unread" id="notifyUnread">
+          <div class="notify-section-title">未读</div>
+          <div class="notify-section-list" data-group="unread"></div>
+        </div>
+        <!-- 已读分组 -->
+        <div class="notify-section notify-read" id="notifyRead">
+          <div class="notify-section-title">已读</div>
+          <div class="notify-section-list" data-group="read"></div>
+        </div>
+        <!-- 空状态兜底 -->
+        <div class="notify-empty" id="notifyEmpty" style="display:none">暂无通知</div>
       </div>
     </div>
 
     <!-- 世界观察中心：全屏场景（相对 #app 定位，左侧让给 sidebar） -->
     <div class="scene fullscreen" id="scene">
+      <!-- 场景区顶部磨砂信息条：世界日 / 时段 / 天气 / 时间 -->
+      <div class="scene-topbar" id="sceneTopbar">
+        <div class="st-item">
+          <span class="st-indicator"></span>
+          <span class="st-label">世界日</span>
+          <span class="st-value" id="stDay">--</span>
+        </div>
+        <div class="st-divider"></div>
+        <div class="st-item">
+          <span class="st-label">时段</span>
+          <span class="st-value" id="stPhase">--</span>
+        </div>
+        <div class="st-divider"></div>
+        <div class="st-item">
+          <span class="st-label">天气</span>
+          <span class="st-value" id="stWeather">--</span>
+        </div>
+        <div class="st-divider"></div>
+        <div class="st-item">
+          <span class="st-label">时间</span>
+          <span class="st-value" id="stTime">--:--</span>
+        </div>
+      </div>
+
       <div class="scene-label" id="sceneLabel">307室 · --</div>
       <div class="scene-meta" id="sceneMeta">第--天 · --</div>
       <div class="scene-acts" id="sceneActs"></div>
@@ -149,5 +162,6 @@
   <script src="js/weather-effects.js"></script>
   <script src="js/search-panel.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/notification-center.js"></script>
 </body>
 </html>

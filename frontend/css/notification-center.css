@@ -1,102 +1,321 @@
-/* ============ 通知中心（右上角触发按钮 + 右侧抽屉） ============ */
+/* ============================================================
+   通知中心抽屉（右侧滑入 · 磨砂玻璃）
+   覆盖 sidebar.css 中的基础 .notify-drawer / .notify-mask 样式
+   结构依赖：index.html 中 #notifyMask / #notifyDrawer /
+   #notifyMarkAll / #notifyClose / #notifyList / .notify-section
+   ============================================================ */
 
-/* ---- 触发按钮 ---- */
-#notificationTrigger {
+/* ---- 遮罩层（fixed 全屏半透明） ---- */
+.notify-mask {
   position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 90;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(22,26,41,0.6);
-  border: 1px solid rgba(88,166,255,0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease-in-out, visibility 0.35s ease-in-out;
+}
+.notify-mask.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ---- 抽屉容器（fixed 右侧滑入 · 磨砂玻璃） ---- */
+.notify-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  max-width: none;               /* 覆盖 sidebar.css max-width:80% */
+  background: rgba(10, 12, 18, 0.85);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(88, 166, 255, 0.2);
+  z-index: 201;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+}
+.notify-drawer.open {
+  transform: translateX(0);
+}
+
+/* ---- 抽屉头部 ---- */
+.notify-drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.notify-drawer-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #eaf0ff;
+  letter-spacing: 0.12em;
+  position: relative;
+  padding-left: 12px;
+  flex: 1;
+}
+.notify-drawer-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  background: linear-gradient(180deg, #58a6ff, rgba(88, 166, 255, 0.3));
+  border-radius: 2px;
+}
+/* "全部标为已读"：冰蓝文字，hover 发光 */
+.notify-drawer-markall {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #58a6ff;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.25s ease-in-out;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.notify-drawer-markall:hover {
+  color: #bfe0ff;
+  background: rgba(88, 166, 255, 0.08);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+}
+.notify-drawer-markall:disabled {
+  color: #4a5468;
+  cursor: default;
+  box-shadow: none;
+  background: transparent;
+}
+.notify-drawer-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #8fa0c0;
+  font-size: 22px;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: all 0.25s ease-in-out;
+  flex-shrink: 0;
+}
+.notify-drawer-close:hover {
+  color: #fff;
+  background: rgba(88, 166, 255, 0.12);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.25);
 }
 
-#notificationTrigger .mail-icon {
-  font-size: 18px;
+/* ---- 抽屉 Body ---- */
+.notify-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 0 30px;
+}
+.notify-drawer-body::-webkit-scrollbar { width: 4px; }
+.notify-drawer-body::-webkit-scrollbar-thumb {
+  background: rgba(88, 166, 255, 0.15);
+  border-radius: 2px;
+}
+
+/* ---- 分组 ---- */
+.notify-section {
+  margin-bottom: 6px;
+}
+.notify-section-title {
+  font-size: 10px;
+  color: #5f6b80;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 14px 20px 6px;
+  font-weight: 500;
+}
+.notify-read .notify-section-title {
+  opacity: 0.7;
+}
+.notify-section-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+/* ---- 通知条目 ---- */
+.notify-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.25s ease-in-out, transform 0.25s ease-in-out;
+}
+.notify-item:hover {
+  background: rgba(88, 166, 255, 0.06);
+  transform: translateX(-1px);
+}
+
+/* 头像小圆点 */
+.notify-avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.25), rgba(88, 166, 255, 0.08));
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8fa0c0;
+  letter-spacing: 0;
+  margin-top: 1px;
+}
+.notify-item.unread .notify-avatar {
+  color: #58a6ff;
+  border-color: rgba(88, 166, 255, 0.5);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.15);
+}
+
+/* 文本区 */
+.notify-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.notify-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.notify-sender {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9aa6bd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notify-item.unread .notify-sender {
+  color: #c9d6f0;
+}
+.notify-time {
+  font-size: 11px;
+  color: #4a5468;
+  flex-shrink: 0;
+}
+.notify-item.unread .notify-time {
+  color: #7a889f;
+}
+.notify-preview {
+  font-size: 12px;
+  color: #5f6b80;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
+}
+.notify-item.unread .notify-preview {
   color: #8fa0c0;
 }
 
-#notificationTrigger.unread {
-  border-color: #58a6ff;
-  box-shadow: 0 0 15px rgba(88,166,255,0.4);
+/* 未读高亮（冰蓝左边框 + 淡背景） */
+.notify-item.unread {
+  background: rgba(88, 166, 255, 0.04);
 }
-
-#notificationTrigger.unread::after {
+.notify-item.unread::before {
   content: "";
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #58a6ff;
-  animation: pulse 2s infinite; /* 复用 animations.css 的 pulse */
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  background: linear-gradient(180deg, #58a6ff, rgba(88, 166, 255, 0.3));
+  border-radius: 2px;
 }
 
-/* ---- 抽屉 ---- */
-#notificationDrawer {
-  position: fixed;
-  top: 0;
-  right: -360px;
-  width: 340px;
-  height: 100vh;
-  background: rgba(10,12,18,0.95);
-  border-left: 1px solid rgba(88,166,255,0.2);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  z-index: 95;
-  transition: right 0.5s ease-in-out;
-  overflow-y: auto;
-}
-
-#notificationDrawer.open {
-  right: 0;
-}
-
-/* ---- 通知项 ---- */
-.notification-item {
-  padding: 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.notification-item:hover {
-  background: rgba(88,166,255,0.05);
-}
-
-.notification-item.unread {
-  background: rgba(88,166,255,0.03);
-}
-
-.notification-item .sender {
-  font-size: 13px;
-  font-weight: 600;
-  color: #58a6ff;
-  margin-bottom: 4px;
-}
-
-.notification-item .time {
-  font-size: 11px;
-  color: #5f6b80;
-  margin-bottom: 6px;
-}
-
-.notification-item .preview {
+/* ---- 空状态 ---- */
+.notify-empty {
+  color: #4a5468;
   font-size: 12px;
-  color: #9aa6bd;
-  line-height: 1.5;
+  text-align: center;
+  padding: 60px 20px;
+  letter-spacing: 0.08em;
 }
 
-.notification-item.expanded .preview {
-  color: #c9d6f0;
+/* ---- 已读分组在无已读通知时隐藏 ---- */
+.notify-section.hidden { display: none; }
+
+/* ============================================================
+   移动端适配（覆盖 sidebar.css 中的移动端抽屉样式）
+   ============================================================ */
+@media (max-width: 768px) {
+  .notify-drawer {
+    width: 85%;
+    max-width: 280px;
+  }
+  .notify-drawer-head {
+    padding: 14px 16px 12px;
+    gap: 8px;
+  }
+  .notify-drawer-title {
+    font-size: 14px;
+  }
+  .notify-drawer-markall {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+  .notify-section-title {
+    padding: 12px 16px 6px;
+    font-size: 9px;
+  }
+  .notify-section-list {
+    padding: 0 8px;
+  }
+  .notify-item {
+    padding: 10px 10px;
+    gap: 10px;
+  }
+  .notify-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  .notify-sender { font-size: 12px; }
+  .notify-preview { font-size: 11px; }
+}
+
+/* 减弱动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .notify-drawer,
+  .notify-mask,
+  .notify-item,
+  .notify-drawer-close,
+  .notify-drawer-markall {
+    transition: none !important;
+  }
 }

@@ -142,16 +142,7 @@
     });
   }
 
-  function renderPager() {
-    var dots = $("pagerDots");
-    dots.innerHTML = "";
-    PAGE_CHARS.forEach(function (id, i) {
-      var dot = document.createElement("button");
-      dot.className = "pager-dot" + (PAGE_CHARS[currentPage()] === id ? " active" : "");
-      dot.setAttribute("aria-label", "第 " + (i + 1) + " 页");
-      dot.addEventListener("click", function () { switchTo(id); });
-      dots.appendChild(dot);
-    });
+  function updatePagerText() {
     $("pagerText").textContent = (currentPage() + 1) + " / " + PAGE_CHARS.length;
   }
 
@@ -170,6 +161,11 @@
       window.history.replaceState({}, "", url);
     } catch (e) { /* 忽略 */ }
     loadAndRender();
+  }
+
+  function cyclePrev() {
+    var idx = (currentPage() - 1 + PAGE_CHARS.length) % PAGE_CHARS.length;
+    switchTo(PAGE_CHARS[idx]);
   }
 
   function cycleNext() {
@@ -221,7 +217,7 @@
       }
 
       renderCharacter(char, stateInfo);
-      renderPager();
+      updatePagerText();
     });
   }
 
@@ -232,6 +228,10 @@
 
       // 左侧形象区域点击 = 翻页（循环切换 3 个角色）
       $("profileFigure").addEventListener("click", cycleNext);
+
+      // 上一页 / 下一页按钮
+      $("pagerPrev").addEventListener("click", cyclePrev);
+      $("pagerNext").addEventListener("click", cycleNext);
 
       loadAndRender();
     }

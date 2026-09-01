@@ -1,115 +1,128 @@
 /* ============================================================
-   search-panel.js — 全局搜索面板（Ctrl+K / 顶部 🔍 唤起）
-   仅操作本文件创建的 #spMask / .sp-* 元素与 #searchTrigger
-   数据来源：/api/conversations 与 /api/characters（失败时占位兜底）
+   search-panel.js — 全局命令面板（Ctrl+K / 顶部 🔍 唤起）
+   类似 VSCode / ChatGPT Command Palette
+   分类：全部 / 聊天记录 / 角色 / 场景
+   仅操作本文件动态创建的 #spMask / .sp-* 元素与 #searchTrigger
+   数据：硬编码预设（不依赖后端 API，避免乱码）
    ============================================================ */
 (function () {
   "use strict";
 
-  // ===== 占位数据：接口缺失或为空时兜底 =====
-  var PLACEHOLDER_CONVERSATIONS = [
-    { type: "对话", title: "第 1 天 · 黄昏", snippet: "第一次见面，冷旭帆没说话，只是看了你一眼", scene: "307室" },
-    { type: "对话", title: "第 3 天 · 深夜", snippet: "深夜，黄景云用粤语说了一句什么", scene: "307室" },
-    { type: "对话", title: "第 7 天 · 雨后", snippet: "叶清辞摘下手表，秒针在走", scene: "天台" },
-    { type: "对话", title: "第 18 天 · 雪夜", snippet: "窗外有雪，室内很安静", scene: "307室" }
-  ];
-  var PLACEHOLDER_SCENES = [
-    { type: "场景", title: "307室 · 宿舍", snippet: "暖光 · 台灯 · 回来时亮着的房间" },
-    { type: "场景", title: "天台", snippet: "冰蓝月光 · 风 · 没说完的话" },
-    { type: "场景", title: "防空洞", snippet: "深灰绿 · 应急灯 · 很久以前的回声" }
+  /* ============ 硬编码预设数据 ============ */
+  var PRESETS = {
+    chat: [
+      { type: "chat",  title: "第 1 天 · 黄昏",   target: "index.html" },
+      { type: "chat",  title: "第 3 天 · 深夜",   target: "index.html" },
+      { type: "chat",  title: "第 7 天 · 雨后",   target: "index.html" },
+      { type: "chat",  title: "第 12 天 · 清晨",  target: "index.html" },
+      { type: "chat",  title: "第 18 天 · 雪夜",  target: "index.html" }
+    ],
+    char: [
+      { type: "char",  title: "冷旭帆",  target: "character-profile.html?char=lengxufan",   avatar: "冷" },
+      { type: "char",  title: "黄景云",  target: "character-profile.html?char=huangjingyun", avatar: "黄" },
+      { type: "char",  title: "叶清辞",  target: "character-profile.html?char=yeqingci",     avatar: "叶" }
+    ],
+    scene: [
+      { type: "scene", title: "307室",   target: "index.html" },
+      { type: "scene", title: "天台",    target: "index.html" },
+      { type: "scene", title: "训练场",  target: "index.html" }
+    ]
+  };
+
+  var TABS = [
+    { key: "all",   label: "全部" },
+    { key: "chat",  label: "聊天记录" },
+    { key: "char",  label: "角色" },
+    { key: "scene", label: "场景" }
   ];
 
-  var els = { mask: null, panel: null, input: null, results: null };
-  var sources = null;      // 全量搜索源（对话 / 角色 / 场景）
-  var filtered = [];       // 当前过滤结果
-  var activeIndex = -1;    // 当前高亮项
+  /* ============ 状态 ============ */
+  var els = { mask: null, panel: null, input: null, tabs: null, results: null };
+  var activeTab = "all";      // 默认"全部"
+  var filtered = [];          // 当前结果
+  var activeIndex = -1;       // 当前高亮
   var isOpen = false;
 
-  // ===== 工具 =====
-  function fetchJSON(url) {
-    return fetch(url)
-      .then(function (r) { return r.json(); })
-      .catch(function () { return null; });
-  }
-
-  // 兼容数组与 {value:[...]} 两种返回
-  function asList(data) {
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.value)) return data.value;
-    return [];
-  }
-
+  /* ============ 工具 ============ */
   function escapeHtml(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
-  // ===== 数据源加载与归一化 =====
-  function loadSources() {
-    return Promise.all([fetchJSON("/api/conversations"), fetchJSON("/api/characters")])
-      .then(function (res) {
-        var list = [];
-
-        // 对话历史
-        var convItems = asList(res[0]).map(function (c) {
-          if (!c) return null;
-          var title = c.title || c.name || (c.day != null ? "第 " + c.day + " 天" : "");
-          var snippet = c.snippet || c.summary || c.content || c.preview || "";
-          if (!title && !snippet) return null;
-          return { type: "对话", title: title || "(无标题)", snippet: snippet, scene: c.scene || c.location || "" };
-        }).filter(Boolean);
-        if (convItems.length === 0) convItems = PLACEHOLDER_CONVERSATIONS;
-        list = list.concat(convItems);
-
-        // 角色
-        var charItems = asList(res[1])
-          .filter(function (c) { return c && c.id && c.name; })
-          .map(function (c) {
-            return { type: "角色", title: c.name, snippet: c.role || c.desc || "角色 · 点击切换对话", charId: c.id };
-          });
-        if (charItems.length === 0) {
-          charItems = [{ type: "角色", title: "冷旭帆", snippet: "角色 · 点击切换对话", charId: "lengxufan" }];
-        }
-        list = list.concat(charItems);
-
-        // 场景（占位）
-        list = list.concat(PLACEHOLDER_SCENES);
-
-        sources = list;
-        return list;
-      });
+  /* ============ 数据获取 ============ */
+  function allItems() {
+    return PRESETS.chat.concat(PRESETS.char, PRESETS.scene);
   }
 
-  // ===== 过滤 =====
+  function getItems(tabKey) {
+    if (tabKey === "all") return allItems();
+    return PRESETS[tabKey] || [];
+  }
+
+  function typeLabel(t) {
+    return t === "chat" ? "聊天" : t === "char" ? "角色" : "场景";
+  }
+
+  function typeIconClass(t) {
+    return t === "chat" ? "chat" : t === "char" ? "char" : "scene";
+  }
+
+  /* ============ 过滤 ============ */
   function filterItems(query) {
-    var all = sources || [];
-    if (!query) return all.slice(0, 12);
-    return all.filter(function (it) {
-      var hay = (it.title + " " + (it.snippet || "") + " " + (it.scene || "") + " " + it.type).toLowerCase();
-      return hay.indexOf(query) !== -1;
-    }).slice(0, 12);
+    var items = getItems(activeTab);
+    var q = (query || "").trim().toLowerCase();
+    if (!q) return items.slice(0, 8);
+    return items.filter(function (it) {
+      return (it.title || "").toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 8);
   }
 
-  // ===== 渲染结果 =====
+  /* ============ 渲染 Tab ============ */
+  function renderTabs() {
+    if (!els.tabs) return;
+    els.tabs.innerHTML = "";
+    TABS.forEach(function (t) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sp-tab" + (t.key === activeTab ? " active" : "");
+      btn.textContent = t.label;
+      btn.dataset.tab = t.key;
+      btn.addEventListener("click", function () {
+        activeTab = t.key;
+        renderTabs();
+        render(els.input.value);
+      });
+      els.tabs.appendChild(btn);
+    });
+  }
+
+  /* ============ 渲染结果 ============ */
   function render(query) {
-    filtered = filterItems((query || "").trim().toLowerCase());
+    filtered = filterItems(query);
 
     if (filtered.length === 0) {
-      els.results.innerHTML = '<div class="sp-empty">没有找到与「' + escapeHtml(query) + '」相关的结果</div>';
+      els.results.innerHTML =
+        '<div class="sp-empty">没有找到与「' + escapeHtml(query) + '」相关的结果</div>';
       activeIndex = -1;
       return;
     }
 
     var html = "";
     filtered.forEach(function (it, i) {
-      html += '<div class="sp-item" data-index="' + i + '">' +
-        '<span class="sp-badge">' + escapeHtml(it.type) + '</span>' +
-        '<span class="sp-item-main">' +
-          '<span class="sp-item-title">' + escapeHtml(it.title) + '</span>' +
-          (it.snippet ? '<span class="sp-item-snippet">' + escapeHtml(it.snippet) + '</span>' : '') +
-        '</span>' +
-      '</div>';
+      var iconClass = typeIconClass(it.type);
+      var iconContent = "";
+      if (iconClass === "char") {
+        iconContent = '<div class="sp-icon char">' + escapeHtml(it.avatar || (it.title && it.title.charAt(0)) || "?") + '</div>';
+      } else {
+        iconContent = '<div class="sp-icon ' + iconClass + '"></div>';
+      }
+      html +=
+        '<div class="sp-item" data-index="' + i + '">' +
+          iconContent +
+          '<div class="sp-item-main">' + escapeHtml(it.title) + '</div>' +
+          '<div class="sp-type-label ' + iconClass + '">' + typeLabel(it.type) + '</div>' +
+        '</div>';
     });
     els.results.innerHTML = html;
 
@@ -121,7 +134,7 @@
     setActive(0);
   }
 
-  // ===== 高亮项：上下键移动 =====
+  /* ============ 高亮项 ============ */
   function setActive(i) {
     var items = els.results.querySelectorAll(".sp-item");
     if (items.length === 0) { activeIndex = -1; return; }
@@ -133,42 +146,23 @@
     });
   }
 
-  // ===== 回车跳转 =====
+  /* ============ 跳转 ============ */
   function jump(item) {
     if (!item) return;
     close();
-
-    // 角色：切换当前对话角色
-    if (item.type === "角色" && item.charId) {
-      if (window.State && window.State.setCurrentChar) {
-        window.State.setCurrentChar({ id: item.charId, name: item.title });
-        if (window.UI && window.UI.updateCharInfo) window.UI.updateCharInfo();
-        if (window.UI && window.UI.addSysMsg) window.UI.addSysMsg("你转向了" + item.title);
-      }
-      return;
-    }
-
-    // 对话 / 场景：定位到聊天区（不在主页则跳回主页）
-    var chat = document.getElementById("chat");
-    if (chat) {
-      chat.scrollIntoView({ behavior: "smooth", block: "start" });
-      if (window.UI && window.UI.addSysMsg) window.UI.addSysMsg("已定位：" + item.title);
-    } else {
-      location.href = "index.html";
+    if (item.target) {
+      location.href = item.target;
     }
   }
 
-  // ===== 打开 / 关闭 =====
+  /* ============ 打开 / 关闭 ============ */
   function open() {
     if (!els.mask) return;
     isOpen = true;
     els.mask.classList.add("show");
     els.input.value = "";
+    renderTabs();
     render("");
-    // 拉取搜索源（失败时由 loadSources 内部占位兜底），完成后刷新结果
-    loadSources().then(function () {
-      if (isOpen) render(els.input.value);
-    });
     els.input.focus();
   }
 
@@ -179,7 +173,7 @@
     els.input.blur();
   }
 
-  // ===== 模态框 HTML（动态创建，注入 body）=====
+  /* ============ 构建模态框 ============ */
   function buildModal() {
     els.mask = document.createElement("div");
     els.mask.id = "spMask";
@@ -187,30 +181,36 @@
     els.mask.innerHTML =
       '<div class="sp-panel" id="spPanel" role="dialog" aria-label="全局搜索">' +
         '<div class="sp-head">' +
-          '<input type="text" class="sp-input" id="spInput" placeholder="搜索对话 / 角色 / 场景…" autocomplete="off">' +
-          '<button type="button" class="sp-close" id="spClose" aria-label="关闭">×</button>' +
+          '<div class="sp-input-wrap">' +
+            '<span class="sp-search-icon">🔍</span>' +
+            '<input type="text" class="sp-input" id="spInput" placeholder="搜索对话、角色、场景..." autocomplete="off">' +
+          '</div>' +
+          '<span class="sp-esc-tag">Esc</span>' +
         '</div>' +
+        '<div class="sp-tabs" id="spTabs"></div>' +
         '<div class="sp-results" id="spResults"></div>' +
-        '<div class="sp-foot">↑ ↓ 选择 · Enter 跳转 · Esc 关闭 · Ctrl+K 唤起</div>' +
+        '<div class="sp-foot">' +
+          '<span>↑↓ 选择 · Enter 跳转 · Esc 关闭</span>' +
+        '</div>' +
       '</div>';
     document.body.appendChild(els.mask);
 
-    els.input = els.mask.querySelector("#spInput");
+    els.input   = els.mask.querySelector("#spInput");
+    els.tabs    = els.mask.querySelector("#spTabs");
     els.results = els.mask.querySelector("#spResults");
 
-    // 输入时实时过滤
+    // 输入实时过滤
     els.input.addEventListener("input", function () {
       render(els.input.value);
     });
 
-    // 点击遮罩空白处关闭
+    // 点击遮罩关闭
     els.mask.addEventListener("mousedown", function (e) {
       if (e.target === els.mask) close();
     });
-    els.mask.querySelector("#spClose").addEventListener("click", close);
   }
 
-  // ===== 全局键盘：Ctrl+K 唤起 / 上下选择 / 回车跳转 / Esc 关闭 =====
+  /* ============ 键盘 ============ */
   function onDocumentKeydown(e) {
     if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
       e.preventDefault();
@@ -234,9 +234,9 @@
     }
   }
 
-  // ===== 初始化：创建模态框 + 绑定触发器 =====
+  /* ============ 初始化 ============ */
   function init() {
-    if (els.mask) return;  // 防重复初始化
+    if (els.mask) return;
     buildModal();
     document.addEventListener("keydown", onDocumentKeydown);
 
@@ -244,6 +244,5 @@
     if (trigger) trigger.addEventListener("click", open);
   }
 
-  // ===== 导出 =====
   window.SearchPanel = { init: init, open: open, close: close };
 })();

@@ -1,11 +1,12 @@
 /* ============================================================
-   群像画廊 —— 独立页面样式
-   卡片 3:4 · CSS 立绘抽象剪影 · 环境色分角色
+   角色图鉴 —— 独立页面样式
+   自适应网格 · 磨砂玻璃卡片 · 可搜索/标签筛选/分页
    ============================================================ */
 
 /* ---------- 页面骨架 ---------- */
 .cg-page {
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   background:
@@ -20,25 +21,30 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 18px 28px;
+  padding: 14px 28px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   background: rgba(10,12,18,0.5);
+  flex-shrink: 0;
 }
 
 .cg-back {
   padding: 7px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(88,166,255,0.35);
-  background: rgba(88,166,255,0.08);
-  color: #9fc0f0;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
 .cg-back:hover {
-  background: rgba(88,166,255,0.16);
-  box-shadow: 0 0 14px rgba(88,166,255,0.25);
-  color: #cfe0ff;
+  background: rgba(88, 166, 255, 0.14);
+  border-color: rgba(88, 166, 255, 0.7);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
+  color: #ffffff;
 }
 
 .cg-title {
@@ -54,35 +60,109 @@
 
 .cg-nav-spacer { flex: 1; }
 
-/* ---------- 全屏网格 ---------- */
+/* ============================================================
+   搜索与标签筛选
+   ============================================================ */
+.cg-filter {
+  padding: 16px 28px 8px;
+  flex-shrink: 0;
+}
+
+/* 搜索框：胶囊形磨砂 */
+.cg-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.3s ease-in-out;
+  max-width: 400px;
+}
+.cg-search:focus-within {
+  border-color: rgba(88,166,255,0.5);
+  box-shadow: 0 0 12px rgba(88,166,255,0.2), inset 0 0 8px rgba(88,166,255,0.08);
+}
+
+.cg-search-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.cg-search-input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  color: #dbe4f5;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+.cg-search-input::placeholder {
+  color: #5e6d8c;
+}
+
+/* 标签行 */
+.cg-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.cg-tag {
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: #8fa0c0;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.cg-tag:hover {
+  border-color: rgba(88,166,255,0.35);
+  background: rgba(88,166,255,0.08);
+  color: #bfe0ff;
+}
+.cg-tag.active {
+  border-color: #58a6ff;
+  background: rgba(88,166,255,0.15);
+  color: #d8e6ff;
+  box-shadow: 0 0 8px rgba(88,166,255,0.2);
+}
+
+/* ---------- 角色网格 ---------- */
 .cg-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 28px;
-  padding: 36px clamp(20px, 6vw, 80px) 24px;
-  align-content: center;
-  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px 28px 12px;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
+  align-content: start;
 }
 
-/* ---------- 角色卡片（3:4）---------- */
+/* ---------- 角色卡片（磨砂玻璃） ---------- */
 .cg-card {
-  width: 100%;
-  max-width: 300px;
   aspect-ratio: 3 / 4;
-  border-radius: 18px;
+  border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(14,17,26,0.75);
-  transition:
-    transform 0.4s ease-in-out,
-    box-shadow 0.4s ease-in-out,
-    border-color 0.4s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(22, 26, 41, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
 }
 .cg-card:active { transform: scale(0.98); }
 
@@ -124,7 +204,6 @@
   transition: transform 0.4s ease-in-out;
 }
 .cg-silhouette::before {
-  /* 头部 */
   content: "";
   position: absolute;
   left: 50%;
@@ -135,7 +214,6 @@
   border-radius: 50%;
 }
 .cg-silhouette::after {
-  /* 肩身 */
   content: "";
   position: absolute;
   left: 50%;
@@ -145,7 +223,6 @@
   height: 200%;
   border-radius: 46% 46% 12px 12px / 60% 60% 8px 8px;
 }
-/* 剪影本体尺寸锚点 */
 .cg-silhouette {
   width: 58%;
   padding-top: 88%;
@@ -154,20 +231,20 @@
 /* ---------- 底部信息 ---------- */
 .cg-meta {
   position: relative;
-  padding: 14px 18px 16px;
+  padding: 12px 14px 14px;
   background: linear-gradient(180deg, transparent, rgba(5,7,12,0.85) 40%);
   border-top: 1px solid rgba(255,255,255,0.05);
 }
 .cg-name {
-  margin: 0 0 4px;
-  font-size: 17px;
+  margin: 0 0 3px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 2px;
   color: #eaf1ff;
 }
 .cg-identity {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 1px;
   color: #8fa0c0;
 }
@@ -213,49 +290,91 @@
    ============================================================ */
 @media (hover: hover) {
   .cg-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-6px);
+    border-color: rgba(88,166,255,0.3);
     box-shadow:
-      0 18px 40px rgba(0,0,0,0.55),
-      0 0 24px rgba(88,166,255,0.18);
+      0 12px 32px rgba(0,0,0,0.5),
+      0 0 20px rgba(88,166,255,0.15);
   }
   .cg-card:hover .cg-silhouette { transform: translateX(-50%) scale(1.05); }
   .cg-card:hover .cg-glow { opacity: 0.65; }
 }
 
 /* ============================================================
-   移动端：单列卡片流，可滑动切换
+   分页控制
    ============================================================ */
-@media (max-width: 640px) {
-  .cg-nav { padding: 14px 16px; }
-  .cg-title { font-size: 17px; letter-spacing: 3px; }
-
-  .cg-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 24px 16px 20px;
-    overflow-y: auto;
-    scroll-snap-type: y proximity;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .cg-card {
-    max-width: none;
-    width: 100%;
-    scroll-snap-align: center;
-  }
-
-  .cg-footer { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+.cg-pager {
+  flex-shrink: 0;
+  padding: 12px 28px 20px;
 }
 
-/* ---------- 底部提示 ---------- */
-.cg-footer {
-  text-align: center;
-  padding: 10px 0 16px;
+.cg-pager-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
-.cg-hint {
+
+.cg-pager-btn {
+  padding: 7px 18px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(88, 166, 255, 0.08);
+  color: #bfe0ff;
   font-size: 12px;
   letter-spacing: 1px;
-  color: #5e6d8c;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.cg-pager-btn:hover {
+  border-color: #58a6ff;
+  background: rgba(88, 166, 255, 0.18);
+  box-shadow: 0 0 18px rgba(88, 166, 255, 0.4);
+  color: #d8e6ff;
+  transform: translateY(-1px);
+}
+.cg-pager-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+}
+.cg-pager-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.cg-pager-text {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #7f95c4;
+  font-variant-numeric: tabular-nums;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ============================================================
+   移动端适配
+   ============================================================ */
+@media (max-width: 640px) {
+  .cg-nav { padding: 12px 16px; }
+  .cg-title { font-size: 17px; letter-spacing: 3px; }
+
+  .cg-filter { padding: 12px 16px 4px; }
+  .cg-search { max-width: none; }
+
+  .cg-grid {
+    gap: 14px;
+    padding: 12px 16px 8px;
+  }
+
+  .cg-pager { padding: 8px 16px 16px; }
+
+  .cg-pager-btn {
+    padding: 5px 14px;
+    font-size: 11px;
+  }
 }

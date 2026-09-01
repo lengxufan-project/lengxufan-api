@@ -4,11 +4,12 @@
   50% { background-position: 100% 50%; }
 }
 
-/* ============ 全局粒子上浮 ============ */
+/* ============ 全局粒子上浮（底部 → 顶部，透明度渐隐） ============ */
 @keyframes floatUp {
-  0% { transform: translateY(100vh) scale(1); opacity: var(--p-opacity, 0.3); }
-  50% { opacity: calc(var(--p-opacity, 0.3) * 0.6); }
-  100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  0%   { transform: translateY(0)    scale(0.8); opacity: calc(var(--p-opacity, 0.4) * 0.2); }
+  15%  { opacity: var(--p-opacity, 0.4); }
+  85%  { opacity: calc(var(--p-opacity, 0.4) * 0.6); }
+  100% { transform: translateY(-110vh) scale(1.4); opacity: 0; }
 }
 
 /* ============ 开场动画：非对称电影感构图 ============ */
@@ -67,19 +68,20 @@
 /* 点击进入后粒子层淡出 */
 .intro.leaving .intro-particles { opacity: 0; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-/* ---- 光球：偏右下（right 25% / bottom 30%），60px，呼吸 + 环状波纹 ---- */
+/* ---- 光球：偏右下（right 25% / bottom 30%），已弱化为朦胧氛围光（不再是视觉焦点） ---- */
 .intro-orb {
   position: absolute; right: 25%; bottom: 30%;
   width: 60px; height: 60px;
   opacity: 0;
   pointer-events: none;
+  filter: blur(8px);                  /* 弱化：模糊成氛围光 */
 }
 .intro-orb::before {
   content: ""; position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #bfe0ff 28%, #58a6ff 62%, rgba(88,166,255,0) 100%);
-  box-shadow: 0 0 16px rgba(88,166,255,0.6), 0 0 44px rgba(88,166,255,0.3);
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.5) 0%, rgba(191,224,255,0.35) 28%, rgba(88,166,255,0.22) 62%, rgba(88,166,255,0) 100%);
+  box-shadow: 0 0 40px 8px rgba(88,166,255,0.22), 0 0 90px 30px rgba(60,90,200,0.12);
   transform: scale(0.1);
-  opacity: 0;
+  opacity: 0.5;
 }
 /* 0.6s：光点出现（约 7px） */
 .intro.dot-in .intro-orb { opacity: 1; }
@@ -98,8 +100,8 @@
   to   { opacity: 1; transform: scale(1); }
 }
 @keyframes orbBreath {
-  0%, 100% { transform: scale(1);    box-shadow: 0 0 16px rgba(88,166,255,0.65), 0 0 44px rgba(88,166,255,0.32); }
-  50%      { transform: scale(1.08); box-shadow: 0 0 24px rgba(140,200,255,0.9), 0 0 70px rgba(88,166,255,0.5); }
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 30px rgba(88,166,255,0.2), 0 0 80px rgba(88,166,255,0.12); }
+  50%      { transform: scale(1.06); box-shadow: 0 0 50px rgba(140,200,255,0.32), 0 0 120px rgba(88,166,255,0.2); }
 }
 /* 环状波纹：光球稳定后向外扩散 */
 .orb-ripple {
@@ -302,4 +304,18 @@
 @keyframes lineDraw {
   from { stroke-dashoffset: 1000; }
   to { stroke-dashoffset: 0; }
+}
+
+/* ============ 场景星云光晕（缓慢漂浮，增强深度感） ============ */
+@keyframes nebulaA {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  50% { transform: translate(3%, -2%) scale(1.08); opacity: 0.85; }
+}
+@keyframes nebulaB {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  50% { transform: translate(-2%, 3%) scale(1.1); opacity: 0.9; }
+}
+@keyframes nebulaC {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  50% { transform: translate(4%, 2%) scale(1.06); opacity: 0.7; }
 }

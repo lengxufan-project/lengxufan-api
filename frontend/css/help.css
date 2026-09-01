@@ -1,56 +1,66 @@
 /* ============ 帮助中心（独立页面） ============ */
-/* 覆盖 main.css 的全局 body 设定：深色背景，双栏布局居中 */
+/* 统一外壳：全局背景 + 全屏容器 */
 body {
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   min-height: 100vh;
   overflow-y: auto;
-  background: linear-gradient(135deg, #0a0c12 0%, #10131d 50%, #0a0c12 100%);
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
 }
 
 .help-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 0 24px 32px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 100px 20px 40px;
+  box-sizing: border-box;
 }
 
-/* ---------- 顶部：返回 + 标题 ---------- */
+/* ---------- 顶部 header（返回按钮已 fixed，仅保留标题/sub 居中） ---------- */
 .hp-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 4px 14px;
+  justify-content: center;
+  padding: 0 4px 14px;
   position: relative;
   flex-shrink: 0;
 }
-/* 标题下方渐变细线（与主界面 header 一致） */
 .hp-header::after {
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: 0;
+  left: 10%; right: 10%; bottom: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, #58a6ff, transparent);
 }
+/* 统一返回按钮：固定左上角磨砂胶囊 */
 .back-btn {
-  padding: 6px 14px;
-  border-radius: 16px;
-  border: 1px solid #2a3550;
-  background: rgba(255, 255, 255, 0.04);
-  color: #8fa0c0;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 90;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
   font-size: 12px;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
 .back-btn:hover {
-  color: #d8e6ff;
-  border-color: #4a6fa5;
-  background: rgba(80, 140, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(88, 166, 255, 0.7);
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
 .hp-title {
   font-family: 'Noto Serif SC', Georgia, serif;
-  font-size: 17px;
+  font-size: 24px;
   font-weight: 200;
   letter-spacing: 0.15em;
   color: #eaf0ff;
@@ -259,7 +269,10 @@ kbd {
 
 /* ---------- 移动端：左侧导航折叠为顶部下拉 ---------- */
 @media (max-width: 760px) {
-  .help-page { padding: 0 14px 24px; }
+  .help-page { padding: 80px 16px 32px; }
+  /* 移动端返回按钮缩小 */
+  .back-btn { padding: 6px 12px; font-size: 11px; border-radius: 16px; }
+  .hp-title { font-size: 20px; }
   .hp-layout { flex-direction: column; gap: 16px; padding-top: 16px; }
 
   .hp-nav {

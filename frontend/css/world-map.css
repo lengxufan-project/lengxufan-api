@@ -1,9 +1,9 @@
 /* ============================================================
-   world-map.css — 星图导航（独立页面样式）
-   仅服务于 world-map.html，类名前缀 wm- / map-
+   world-map.css — 星图导航（星系图风格）
+   独立页面，类名前缀 wm- / map-
    ============================================================ */
 
-/* ============ 页面骨架 ============ */
+/* ============ 页面骨架：深空背景 + 星云 ============ */
 .wm-page {
   position: relative;
   width: 100%;
@@ -12,14 +12,15 @@
   flex-direction: column;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(40, 60, 120, 0.25) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 75%, rgba(70, 40, 120, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 12% 20%, rgba(120, 80, 200, 0.14) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 80%, rgba(88, 166, 255, 0.12) 0%, transparent 48%),
+    radial-gradient(ellipse at 50% 45%, rgba(40, 80, 160, 0.08) 0%, transparent 55%),
     radial-gradient(ellipse at 50% 50%, #0a0f1e 0%, #04060d 85%);
 }
 
-/* ============ 全屏星图背景：多层渐变 + 随机星点 ============ */
+/* ============ 全屏星图背景 ============ */
 .wm-stars {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
@@ -32,10 +33,12 @@
     radial-gradient(1px 1px at 92% 78%, #bfe0ff 50%, transparent 51%),
     radial-gradient(1.5px 1.5px at 8% 84%, #ffffff 50%, transparent 51%),
     radial-gradient(1px 1px at 55% 88%, #8fa0c0 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 38% 8%, #d8e6ff 50%, transparent 51%);
+    radial-gradient(1.5px 1.5px at 38% 8%, #d8e6ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 75% 32%, #ffffff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 22% 45%, #bfe0ff 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 60% 70%, #8fa0c0 50%, transparent 51%);
   animation: starTwinkle 6s ease-in-out infinite;
 }
-/* JS 注入的额外随机星点 */
 .wm-star {
   position: absolute;
   border-radius: 50%;
@@ -44,15 +47,15 @@
   animation: starBlink ease-in-out infinite;
 }
 @keyframes starTwinkle {
-  0%, 100% { opacity: 0.7; }
+  0%, 100% { opacity: 0.75; }
   50%      { opacity: 1; }
 }
 @keyframes starBlink {
-  0%, 100% { opacity: 0.25; }
-  50%      { opacity: 0.9; }
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50%      { opacity: 0.9;  transform: scale(1.4); }
 }
 
-/* ============ 顶部导航 ============ */
+/* ============ 顶部导航：磨砂玻璃 ============ */
 .wm-nav {
   position: relative;
   z-index: 10;
@@ -62,22 +65,27 @@
   padding: 14px 28px;
   border-bottom: 1px solid rgba(88, 166, 255, 0.15);
   background: rgba(10, 12, 18, 0.55);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 .wm-back {
-  padding: 6px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(88, 166, 255, 0.4);
-  background: rgba(88, 166, 255, 0.06);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   color: #bfe0ff;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
 .wm-back:hover {
-  background: rgba(88, 166, 255, 0.18);
-  box-shadow: 0 0 12px rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.14);
+  border-color: rgba(88, 166, 255, 0.7);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
 .wm-title {
   font-size: 22px;
@@ -90,7 +98,7 @@
 }
 .wm-nav-spacer { width: 80px; }
 
-/* ============ 中央星图舞台 ============ */
+/* ============ 中央舞台 ============ */
 .wm-stage {
   position: relative;
   flex: 1;
@@ -113,93 +121,149 @@
   pointer-events: none;
 }
 
-/* ============ 连线 ============ */
+/* ============ 连线（SVG） ============ */
 .map-line {
   fill: none;
-  stroke: #58a6ff;
+  stroke: url(#lineGrad);
   stroke-width: 1.2;
-  stroke-opacity: 0.4;
-  stroke-dasharray: 6 8;
-  animation: lineFlow 4s linear infinite;
+  stroke-opacity: 0.65;
+  stroke-linecap: round;
+  stroke-dasharray: 4 6;
+  animation: lineFlow 5s linear infinite;
+}
+.map-line.inner {
+  stroke-opacity: 0.35;
+  stroke-dasharray: 3 10;
+  animation-duration: 7s;
+}
+.map-line.radial {
+  /* 从中心节点辐射出去的线 */
+  stroke: #58a6ff;
+  stroke-opacity: 0.55;
+  stroke-width: 0.9;
+  stroke-dasharray: none;
+  animation: radialPulse 3s ease-in-out infinite;
 }
 @keyframes lineFlow {
   to { stroke-dashoffset: -56; }
 }
-.map-line.inner { stroke-opacity: 0.18; }
+@keyframes radialPulse {
+  0%, 100% { stroke-opacity: 0.3; }
+  50%      { stroke-opacity: 0.7; }
+}
 
-/* ============ 场景节点：发光球体 ============ */
+/* ============ 场景节点：发光球体（14px 规格） ============ */
 .map-node {
   position: absolute;
-  width: 26px;
-  height: 26px;
-  margin: -13px 0 0 -13px;   /* 以坐标为中心 */
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #e8f3ff 0%, #58a6ff 45%, #2a4a9c 100%);
-  border: 1px solid rgba(88, 166, 255, 0.6);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #bfe0ff 40%, #58a6ff 100%);
+  border: 1px solid rgba(191, 224, 255, 0.7);
   box-shadow:
-    0 0 10px 2px rgba(88, 166, 255, 0.55),
-    0 0 22px 8px rgba(88, 166, 255, 0.25);
+    0 0 6px 1px rgba(88, 166, 255, 0.7),
+    0 0 14px 4px rgba(88, 166, 255, 0.35);
   cursor: pointer;
   pointer-events: auto;
   transform: translateZ(0);
-  animation: nodePulse 3s ease-in-out infinite;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: transform 0.28s ease-in-out, box-shadow 0.28s ease-in-out;
+  animation: nodeBreath 3.2s ease-in-out infinite;
 }
 .map-node:hover {
-  transform: scale(1.25);
+  transform: scale(1.5);
   box-shadow:
-    0 0 16px 4px rgba(88, 166, 255, 0.8),
-    0 0 32px 14px rgba(88, 166, 255, 0.4);
+    0 0 10px 2px rgba(88, 166, 255, 0.95),
+    0 0 24px 8px rgba(88, 166, 255, 0.5),
+    0 0 48px 16px rgba(88, 166, 255, 0.22);
+  z-index: 3;
 }
-@keyframes nodePulse {
-  0%, 100% { box-shadow: 0 0 10px 2px rgba(88,166,255,0.55), 0 0 22px 8px rgba(88,166,255,0.25); }
-  50%      { box-shadow: 0 0 14px 3px rgba(88,166,255,0.7),  0 0 30px 12px rgba(88,166,255,0.35); }
+@keyframes nodeBreath {
+  0%, 100% {
+    box-shadow:
+      0 0 6px 1px rgba(88,166,255,0.7),
+      0 0 14px 4px rgba(88,166,255,0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 9px 2px rgba(88,166,255,0.85),
+      0 0 20px 6px rgba(88,166,255,0.45);
+  }
 }
 
-/* 当前场景：光晕更强 + 扩散波纹 */
+/* ============ 当前场景：中心锚点（十字准线 + 双层波纹） ============ */
 .map-node.current {
-  width: 34px;
-  height: 34px;
-  margin: -17px 0 0 -17px;
-  border-color: rgba(191, 224, 255, 0.95);
-  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #bfe0ff 40%, #58a6ff 100%);
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-color: rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #d8e6ff 35%, #58a6ff 100%);
   box-shadow:
-    0 0 18px 4px rgba(88, 166, 255, 0.9),
-    0 0 40px 16px rgba(88, 166, 255, 0.5);
-  animation: nodePulseCurrent 2.4s ease-in-out infinite, ripple 2.4s ease-out infinite;
+    0 0 14px 3px rgba(191, 224, 255, 0.95),
+    0 0 30px 10px rgba(88, 166, 255, 0.6),
+    0 0 60px 22px rgba(88, 166, 255, 0.3);
+  animation: currentBreath 2.4s ease-in-out infinite;
 }
-@keyframes nodePulseCurrent {
-  0%, 100% { box-shadow: 0 0 18px 4px rgba(88,166,255,0.9), 0 0 40px 16px rgba(88,166,255,0.5); }
-  50%      { box-shadow: 0 0 24px 6px rgba(88,166,255,1),   0 0 56px 22px rgba(88,166,255,0.65); }
+@keyframes currentBreath {
+  0%, 100% {
+    box-shadow:
+      0 0 14px 3px rgba(191,224,255,0.95),
+      0 0 30px 10px rgba(88,166,255,0.6),
+      0 0 60px 22px rgba(88,166,255,0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 18px 4px rgba(191,224,255,1),
+      0 0 40px 14px rgba(88,166,255,0.75),
+      0 0 72px 30px rgba(88,166,255,0.4);
+  }
 }
-/* 扩散波纹：用伪元素 */
+/* 双层扩散波纹 */
+.map-node.current::before,
 .map-node.current::after {
   content: "";
   position: absolute;
-  inset: -6px;
+  inset: -10px;
   border-radius: 50%;
-  border: 1px solid rgba(88, 166, 255, 0.6);
-  animation: ripple 2.4s ease-out infinite;
+  border: 1px solid rgba(88, 166, 255, 0.55);
+  pointer-events: none;
 }
-@keyframes ripple {
-  0%   { transform: scale(0.6); opacity: 0.9; }
-  100% { transform: scale(2.4); opacity: 0; }
+.map-node.current::before {
+  animation: rippleOut 2.8s ease-out infinite;
+}
+.map-node.current::after {
+  inset: -16px;
+  border-color: rgba(191, 224, 255, 0.3);
+  animation: rippleOut 2.8s ease-out infinite 1.4s;
+}
+@keyframes rippleOut {
+  0%   { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
-/* ============ 节点标签 ============ */
+/* ============ 节点标签（常显，hover 时增强） ============ */
 .map-label {
   position: absolute;
   transform: translate(-50%, 0);
-  margin-top: 16px;
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: #8fa0c0;
-  text-shadow: 0 0 6px rgba(88, 166, 255, 0.7), 0 0 12px rgba(88, 166, 255, 0.35);
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #7e95b8;
+  text-shadow: 0 0 6px rgba(88, 166, 255, 0.6);
   white-space: nowrap;
   pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+.map-node:hover ~ .map-label {
+  opacity: 1;
+  color: #d8e6ff;
 }
 .map-node.current + .map-label {
+  opacity: 1;
   color: #d8e6ff;
+  font-size: 12px;
+  letter-spacing: 2px;
   text-shadow: 0 0 8px rgba(88, 166, 255, 0.9), 0 0 16px rgba(88, 166, 255, 0.5);
 }
 
@@ -219,7 +283,7 @@
 }
 .map-traveler.flying { opacity: 1; }
 
-/* ============ 底部场景名称列表 ============ */
+/* ============ 底部图例 ============ */
 .wm-legend {
   position: relative;
   z-index: 10;
@@ -230,8 +294,8 @@
   padding: 12px 28px 18px;
   border-top: 1px solid rgba(88, 166, 255, 0.15);
   background: rgba(10, 12, 18, 0.55);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 .wm-legend-hint {
   font-size: 12px;
@@ -267,30 +331,40 @@
   box-shadow: 0 0 12px rgba(88, 166, 255, 0.55);
 }
 
-/* ============ 移动端适配：节点位置自动缩放 ============ */
+/* ============ 移动端 ============ */
 @media (max-width: 768px) {
-  /* 顶部导航紧凑 */
-  .wm-nav { padding: 12px 16px; }
-  .wm-title { font-size: 19px; letter-spacing: 4px; }
+  .wm-nav { padding: 10px 16px; }
+  .wm-title { font-size: 17px; letter-spacing: 4px; }
   .wm-back { padding: 5px 12px; font-size: 12px; }
   .wm-nav-spacer { width: 60px; }
 
-  /* 节点适度缩小 */
-  .map-node { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
-  .map-node.current { width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+  .map-node {
+    width: 12px; height: 12px;
+    margin: -6px 0 0 -6px;
+    box-shadow:
+      0 0 4px 1px rgba(88, 166, 255, 0.65),
+      0 0 10px 3px rgba(88, 166, 255, 0.3);
+  }
+  .map-node.current {
+    width: 16px; height: 16px;
+    margin: -8px 0 0 -8px;
+  }
+  .map-node.current::before { inset: -6px; }
+  .map-node.current::after  { inset: -10px; }
 
-  /* 底部图例紧凑 */
+  .map-label { font-size: 10px; margin-top: 9px; }
+
   .wm-legend { padding: 10px 16px 16px; }
   .wm-legend-hint { font-size: 11px; }
   .wm-chip { padding: 4px 12px; font-size: 11px; }
+
+  #wmSvg line.map-line { stroke-width: 1; stroke-dasharray: 3 5; }
 }
 
-/* 极窄屏额外收紧 */
-@media (max-width: 640px) {
-  .wm-title { font-size: 16px; letter-spacing: 3px; }
-  .wm-nav { padding: 8px 12px; }
-  .map-node { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
-  .map-node.current { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
-  .map-label { font-size: 10px; margin-top: 10px; }
-  .wm-legend { padding: 8px 10px 12px; }
+/* 减弱动效 */
+@media (prefers-reduced-motion: reduce) {
+  .map-node, .map-traveler, .wm-star,
+  .map-line, .wm-stars {
+    animation: none !important;
+  }
 }

@@ -135,27 +135,34 @@
     });
   }
 
-  // ---------- 全局粒子 ----------
+  // ---------- 全局背景粒子（底部向上漂浮，三档速度：慢 20s / 中 12s / 快 7s） ----------
   (function initGlobalParticles() {
     var container = document.getElementById("globalParticles");
     if (!container) return;
     var isMobile = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-    var count = isMobile ? 15 : 30;
+    var count = isMobile ? 20 : 45;
+    // 为每个粒子分配速度档位，保证三档都有覆盖
+    function randDuration() {
+      var r = Math.random();
+      if (r < 0.35) return 20 + Math.random() * 5;   // 慢：20-25s
+      if (r < 0.75) return 10 + Math.random() * 5;   // 中：10-15s
+      return 6 + Math.random() * 4;                  // 快：6-10s
+    }
     for (var i = 0; i < count; i++) {
       var p = document.createElement("div");
       p.className = "global-particle";
-      var size = 1 + Math.random() * 2;
-      var opacity = 0.2 + Math.random() * 0.3;
-      var duration = 8 + Math.random() * 7;
-      var delay = Math.random() * 5;
-      p.style.left = (Math.random() * 100) + "%";
-      p.style.top = (Math.random() * 100) + "%";
+      var size = 1 + Math.random() * 2;                              // 1-3px
+      var opacity = 0.3 + Math.random() * 0.4;                        // 0.3-0.7
+      var duration = randDuration();
+      var delay = Math.random() * duration;
+      p.style.left = (Math.random() * 100).toFixed(1) + "%";
+      p.style.top = (100 + Math.random() * 10).toFixed(1) + "%";      // 从屏幕底部外侧开始
       p.style.width = size + "px";
       p.style.height = size + "px";
       p.style.opacity = opacity;
       p.style.setProperty("--p-opacity", opacity.toFixed(2));
       p.style.animationDuration = duration.toFixed(1) + "s";
-      p.style.animationDelay = delay.toFixed(1) + "s";
+      p.style.animationDelay = "-" + delay.toFixed(1) + "s";           // 负延迟让粒子初始即散布
       container.appendChild(p);
     }
   })();

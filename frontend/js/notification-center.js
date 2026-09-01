@@ -1,91 +1,204 @@
-/* 通知中心：右上角触发按钮 + 右侧滑出抽屉（预设通知为占位，后续接入后端） */
+/* ============================================================
+   通知中心抽屉（右侧滑入 · 磨砂玻璃）
+   - 不接管 sidebarNotify / notifyClose 的 click 事件（已由 app.js 处理）
+   - 通过 MutationObserver 监听抽屉 .open class 变化，同步遮罩显隐
+   - 管理通知数据（未读 / 已读分组）、渲染列表、标记已读、触发按钮红点
+   - 支持：单条标记已读 / 全部标为已读 / 点击遮罩关闭 / ESC 关闭
+   ============================================================ */
 (function () {
   "use strict";
 
-  var trigger = null;
   var drawer = null;
+  var mask = null;
+  var sidebarNotify = null;
+  var markAllBtn = null;
 
-  // 预设通知（占位，后续接入后端）
-  var PRESETS = [
-    { sender: "冷旭帆", time: "刚刚", content: "今天训练到很晚，回来时宿舍已经熄灯了。" },
-    { sender: "系统", time: "00:05", content: "世界日第 1 天结束，状态已自动保存。" },
-    { sender: "黄景云", time: "昨天 23:30", content: "帮你带了宵夜，在桌上。" }
-  ];
+  /* ---------- 预设通知数据（占位，后续接入后端 API） ---------- */
+  var notifications = {
+    unread: [
+      { id: 1, sender: "冷旭帆",   time: "刚刚",      content: "今天训练到很晚，回来时宿舍已经熄灯了。",       avatar: "冷" },
+      { id: 2, sender: "黄景云",   time: "5 分钟前",  content: "帮你带了宵夜，在桌上。记得趁热吃。",           avatar: "黄" },
+      { id: 3, sender: "系统",     time: "12 分钟前", content: "世界日第 1 天结束，状态已自动保存。",          avatar: "系" },
+      { id: 4, sender: "叶清辞",   time: "半小时前",  content: "明天的观测时间调整到下午 3 点。",              avatar: "叶" }
+    ],
+    read: [
+      { id: 5, sender: "系统",     time: "昨天 23:30", content: "版本更新已完成，新增通知中心功能。",           avatar: "系" },
+      { id: 6, sender: "冷旭帆",   time: "昨天 18:02", content: "今天晚上有训练，可能晚回来。",                 avatar: "冷" }
+    ]
+  };
 
-  function ensureElements() {
-    trigger = document.getElementById("notificationTrigger");
-    drawer = document.getElementById("notificationDrawer");
-
-    if (!trigger) {
-      trigger = document.createElement("div");
-      trigger.id = "notificationTrigger";
-      document.body.appendChild(trigger);
-    }
-    if (!drawer) {
-      drawer = document.createElement("div");
-      drawer.id = "notificationDrawer";
-      document.body.appendChild(drawer);
-    }
-    if (!trigger.querySelector(".mail-icon")) {
-      var icon = document.createElement("span");
-      icon.className = "mail-icon";
-      icon.textContent = "✉";
-      trigger.appendChild(icon);
-    }
-  }
-
+  /* ---------- 初始化 ---------- */
   function init() {
-    ensureElements();
-    if (trigger._ncBound) return;
-    trigger._ncBound = true;
+    drawer = document.getElementById("notifyDrawer");
+    mask = document.getElementById("notifyMask");
+    sidebarNotify = document.getElementById("sidebarNotify");
+    markAllBtn = document.getElementById("notifyMarkAll");
+    if (!drawer) return;
 
-    // 点击触发按钮：toggle 抽屉开合
-    trigger.addEventListener("click", function (e) {
-      e.stopPropagation();
-      if (drawer.classList.contains("open")) {
-        close();
-      } else {
-        open();
+    // 遮罩点击 → 关闭抽屉
+    if (mask && !mask._ncBound) {
+      mask._ncBound = true;
+      mask.addEventListener("click", function () {
+        drawer.classList.remove("open");
+      });
+    }
+
+    // ESC 键 → 关闭抽屉
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && drawer.classList.contains("open")) {
+        drawer.classList.remove("open");
       }
     });
 
-    // 初始化时添加 3 条预设通知（倒序插入使 1 号位于顶部）
-    PRESETS.slice().reverse().forEach(function (n) {
-      addNotification(n.sender, n.time, n.content);
+    // 全部标为已读
+    if (markAllBtn && !markAllBtn._ncBound) {
+      markAllBtn._ncBound = true;
+      markAllBtn.addEventListener("click", markAllAsRead);
+    }
+
+    // MutationObserver：监听 .open class 变化 → 同步遮罩
+    var observer = new MutationObserver(syncMask);
+    observer.observe(drawer, { attributes: true, attributeFilter: ["class"] });
+
+    // 初始同步 + 渲染
+    syncMask();
+    render();
+    syncTriggerBadge();
+  }
+
+  /* ---------- 遮罩同步 ---------- */
+  function syncMask() {
+    if (!mask) return;
+    if (drawer.classList.contains("open")) {
+      mask.classList.add("show");
+    } else {
+      mask.classList.remove("show");
+    }
+  }
+
+  /* ---------- 触发按钮红点同步（sidebar.css 已有 .has-new → 显示 .notify-dot） ---------- */
+  function syncTriggerBadge() {
+    if (!sidebarNotify) return;
+    if (notifications.unread.length > 0) {
+      sidebarNotify.classList.add("has-new");
+    } else {
+      sidebarNotify.classList.remove("has-new");
+    }
+  }
+
+  /* ---------- "全部标为已读"按钮状态同步 ---------- */
+  function syncMarkAllBtn() {
+    if (!markAllBtn) return;
+    markAllBtn.disabled = notifications.unread.length === 0;
+  }
+
+  /* ---------- 渲染 ---------- */
+  function render() {
+    var unreadList = drawer.querySelector('[data-group="unread"]');
+    var readList   = drawer.querySelector('[data-group="read"]');
+    var unreadSection = document.getElementById("notifyUnread");
+    var readSection   = document.getElementById("notifyRead");
+    var emptyEl       = document.getElementById("notifyEmpty");
+    if (!unreadList || !readList) return;
+
+    unreadList.innerHTML = "";
+    readList.innerHTML   = "";
+
+    notifications.unread.forEach(function (n) {
+      unreadList.appendChild(createItem(n, "unread"));
     });
-  }
-
-  function open() {
-    drawer.classList.add("open");
-    trigger.classList.remove("unread"); // 已查看，清除未读状态
-  }
-
-  function close() {
-    drawer.classList.remove("open");
-  }
-
-  function addNotification(sender, time, content) {
-    var item = document.createElement("div");
-    item.className = "notification-item unread";
-    item.innerHTML =
-      '<div class="sender"></div>' +
-      '<div class="time"></div>' +
-      '<div class="preview"></div>';
-    item.querySelector(".sender").textContent = sender;
-    item.querySelector(".time").textContent = time;
-    item.querySelector(".preview").textContent = content;
-
-    // 点击通知项：展开/收起完整内容并标记已读
-    item.addEventListener("click", function () {
-      item.classList.toggle("expanded");
-      item.classList.remove("unread");
+    notifications.read.forEach(function (n) {
+      readList.appendChild(createItem(n, "read"));
     });
 
-    // 添加到抽屉顶部
-    drawer.insertBefore(item, drawer.firstChild);
-    // 触发按钮显示未读状态
-    trigger.classList.add("unread");
+    // 分组显隐：空则隐藏 section
+    unreadSection.classList.toggle("hidden", notifications.unread.length === 0);
+    readSection.classList.toggle("hidden",   notifications.read.length === 0);
+
+    // 全空兜底
+    var allEmpty = notifications.unread.length === 0 && notifications.read.length === 0;
+    emptyEl.style.display = allEmpty ? "block" : "none";
+
+    syncMarkAllBtn();
   }
 
-  window.NotificationCenter = { init: init, addNotification: addNotification, open: open, close: close };
+  /* ---------- 创建单条通知 DOM ---------- */
+  function createItem(n, group) {
+    var el = document.createElement("div");
+    el.className = "notify-item" + (group === "unread" ? " unread" : "");
+    el.dataset.id = n.id;
+
+    el.innerHTML =
+      '<div class="notify-avatar"></div>' +
+      '<div class="notify-content">' +
+        '<div class="notify-meta">' +
+          '<span class="notify-sender"></span>' +
+          '<span class="notify-time"></span>' +
+        '</div>' +
+        '<div class="notify-preview"></div>' +
+      '</div>';
+
+    el.querySelector(".notify-avatar").textContent = n.avatar || (n.sender && n.sender.charAt(0)) || "?";
+    el.querySelector(".notify-sender").textContent = n.sender || "未知";
+    el.querySelector(".notify-time").textContent   = n.time   || "";
+    el.querySelector(".notify-preview").textContent = n.content || "";
+
+    // 点击未读条目 → 标记已读
+    if (group === "unread") {
+      el.addEventListener("click", function () { markAsRead(n.id); });
+    }
+
+    return el;
+  }
+
+  /* ---------- 标记单条已读 ---------- */
+  function markAsRead(id) {
+    var idx = -1;
+    for (var i = 0; i < notifications.unread.length; i++) {
+      if (notifications.unread[i].id === id) { idx = i; break; }
+    }
+    if (idx === -1) return;
+    var item = notifications.unread.splice(idx, 1)[0];
+    notifications.read.unshift(item);
+    render();
+    syncTriggerBadge();
+  }
+
+  /* ---------- 全部标为已读 ---------- */
+  function markAllAsRead() {
+    if (notifications.unread.length === 0) return;
+    notifications.unread.forEach(function (n) {
+      notifications.read.unshift(n);
+    });
+    notifications.unread = [];
+    render();
+    syncTriggerBadge();
+  }
+
+  /* ---------- 对外 API ---------- */
+  window.NotificationCenter = {
+    init: init,
+    open: function ()  { if (drawer) drawer.classList.add("open"); },
+    close: function () { if (drawer) drawer.classList.remove("open"); },
+    /** 添加一条通知（默认未读） */
+    addNotification: function (sender, content, time, avatar) {
+      var id = Date.now();
+      notifications.unread.unshift({
+        id: id,
+        sender: sender || "未知",
+        content: content || "",
+        time: time || "刚刚",
+        avatar: avatar || (sender && sender.charAt(0)) || "?"
+      });
+      render();
+      syncTriggerBadge();
+    }
+  };
+
+  /* ---------- DOM 就绪后启动 ---------- */
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();

@@ -2,38 +2,55 @@
 /* 延续深色主题，--accent-color 由 settings.js 设置（默认冰蓝） */
 :root { --accent-color: #58a6ff; }
 
+/* 统一外壳：背景 + 容器 padding */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
+}
 .settings-app {
   min-height: 100vh;
   max-width: 720px;
   margin: 0 auto;
-  padding: 24px 20px 40px;
+  padding: 100px 20px 40px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+  box-sizing: border-box;
 }
 
-/* 顶部栏 */
+/* 顶部栏：返回按钮已 fixed，header 仅留标题居中 */
 .settings-header {
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
   padding-bottom: 14px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
+/* 统一返回按钮：固定左上角磨砂胶囊 */
 .back-btn {
-  padding: 7px 14px; border-radius: 12px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.15);
-  color: #8fa0c0; font-size: 14px; cursor: pointer;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 90;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
+  font-size: 12px;
+  cursor: pointer;
   transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
 .back-btn:hover {
-  background: linear-gradient(135deg, rgba(88,166,255,0.2), rgba(28,109,240,0.2));
-  border-color: var(--accent-color);
-  color: #fff;
-  box-shadow: 0 0 15px rgba(88,166,255,0.3);
+  color: #ffffff;
+  border-color: var(--accent-color, #58a6ff);
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
 .settings-title {
   font-family: 'Noto Serif SC', Georgia, serif;
-  font-size: 20px; font-weight: 200; color: #eaf0ff;
+  font-size: 24px; font-weight: 200; color: #eaf0ff;
   letter-spacing: 0.15em;
   text-shadow: 0 0 10px rgba(88,166,255,0.5);
 }
@@ -174,7 +191,9 @@ body[data-font-size="large"]  { font-size: 16px; }
 
 /* 移动端 */
 @media (max-width: 768px) {
-  .settings-app { padding: 16px 12px 28px; gap: 14px; }
-  .settings-title { font-size: 18px; }
+  .settings-app { padding: 80px 16px 32px; gap: 14px; }
+  /* 移动端返回按钮缩小 */
+  .back-btn { padding: 6px 12px; font-size: 11px; border-radius: 16px; }
+  .settings-title { font-size: 20px; }
   .swatch { width: 26px; height: 26px; }
 }

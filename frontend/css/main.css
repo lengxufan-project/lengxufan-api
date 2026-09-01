@@ -31,10 +31,12 @@ body {
 .global-particle {
   position: fixed;
   border-radius: 50%;
-  background: #58a6ff;
+  background: rgba(88, 166, 255, 0.85);
+  box-shadow: 0 0 6px rgba(88, 166, 255, 0.5);
   pointer-events: none;
   z-index: 0;
   animation: floatUp linear infinite;
+  will-change: transform, opacity;
 }
 
 /* 噪点纹理（胶片感），覆盖全页面，不响应鼠标 */
@@ -584,11 +586,39 @@ button:hover:not(:disabled),
    世界观察中心（index.html 重构）：全屏场景
    .app 为唯一定位容器（relative，随 body 居中限宽）；sidebar / scene / floatingBall 全部用 absolute 相对 #app 定位
    ============================================================ */
+/* ============ 星云光晕（叠加在场景全屏背景上，伪元素缓慢漂浮） ============ */
 .scene.fullscreen {
   position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0;
   width: auto; height: auto;   /* 由绝对定位四边撑开 */
   margin: 0; border: none; border-radius: 0;
   transition: left 0.3s ease-in-out;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(10, 14, 26, 0.6) 0%, rgba(5, 7, 13, 1) 80%),
+    linear-gradient(180deg, #0a0c15 0%, #06080f 100%);
+}
+/* 星云层 A：冰蓝光晕（主） */
+.scene.fullscreen::before {
+  content: "";
+  position: absolute; inset: -10%;
+  background:
+    radial-gradient(ellipse 60% 40% at 30% 35%, rgba(88,166,255,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 45% at 70% 65%, rgba(30,80,200,0.08) 0%, transparent 55%);
+  filter: blur(30px);
+  animation: nebulaA 26s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+/* 星云层 B：深蓝 + 极淡紫色光晕（副，反向漂浮） */
+.scene.fullscreen::after {
+  content: "";
+  position: absolute; inset: -8%;
+  background:
+    radial-gradient(ellipse 55% 50% at 65% 30%, rgba(40,60,160,0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 35% at 25% 70%, rgba(140,80,200,0.06) 0%, transparent 55%);
+  filter: blur(40px);
+  animation: nebulaB 30s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 桌面端（sidebar 常驻左侧）：scene 默认 left:220px，collapsed 时收窄到 50px */
@@ -652,4 +682,97 @@ body .relation-thermo {
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
   box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   场景区顶部磨砂信息条（产品级层级增强）
+   仅 index.html 使用，位于 .scene.fullscreen 内最顶部
+   ============================================================ */
+.scene.fullscreen .scene-topbar {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 9px 22px;
+  border-radius: 999px;
+  background: rgba(22, 26, 41, 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 0 15px rgba(255, 255, 255, 0.03),
+    0 0 20px rgba(0, 0, 0, 0.35);
+  max-width: calc(100% - 32px);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.scene.fullscreen .st-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 18px 2px 0;
+}
+.scene.fullscreen .st-item:first-child { padding-left: 0; }
+
+.scene.fullscreen .st-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #58a6ff;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+  flex-shrink: 0;
+  animation: indicatorBreath 2.5s ease-in-out infinite;
+}
+
+.scene.fullscreen .st-label {
+  font-size: 10px;
+  color: #5f6b80;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.scene.fullscreen .st-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #bfe0ff;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+.scene.fullscreen .st-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* 让 scene-meta 下移，避免与顶部信息条重叠 */
+.scene.fullscreen .scene-meta {
+  top: 56px;
+}
+
+/* ============================================================
+   移动端：顶部信息条调整
+   ============================================================ */
+@media (max-width: 768px) {
+  .scene.fullscreen .scene-topbar {
+    top: 6px;
+    padding: 7px 14px;
+    gap: 0;
+    max-width: calc(100% - 20px);
+  }
+  .scene.fullscreen .st-item {
+    padding-right: 10px;
+    gap: 3px;
+  }
+  .scene.fullscreen .st-label { font-size: 9px; }
+  .scene.fullscreen .st-value { font-size: 11px; }
+  .scene.fullscreen .st-divider { height: 12px; margin: 0 2px; }
+  .scene.fullscreen .st-indicator { display: none; }
+  .scene.fullscreen .scene-meta { top: 40px; right: 14px; }
 }

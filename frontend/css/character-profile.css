@@ -1,15 +1,13 @@
 /* 人物典籍页 —— 独立页面样式（深色 · 冰蓝） */
 
-/* 页面容器：最大宽度 900px，居中 */
+/* 统一外壳：背景 + 容器 padding */
 .profile-page {
   max-width: 900px;
   margin: 0 auto;
-  padding: 24px 20px 32px;
+  padding: 100px 20px 40px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 20% 0%, rgba(88, 166, 255, 0.07), transparent 45%),
-    radial-gradient(circle at 85% 100%, rgba(88, 166, 255, 0.05), transparent 40%),
-    linear-gradient(135deg, #0a0c12 0%, #10131d 50%, #0a0c12 100%);
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -21,34 +19,40 @@
   box-sizing: border-box;
 }
 
-/* ========== 顶部导航 ========== */
+/* ========== 顶部导航（返回按钮已 fixed） ========== */
 .profile-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
+  justify-content: center;
+  padding: 0 16px;
   margin-bottom: 24px;
-  border: 1px solid #1d2230;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #11141d 0%, #0d0f17 100%);
+  border: none;
+  border-radius: 0;
+  background: transparent;
 }
 
+/* 统一返回按钮：固定左上角磨砂胶囊 */
 .back-btn {
-  display: inline-block;
-  padding: 6px 14px;
-  border: 1px solid #2a3550;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #a8b8e0;
-  font-size: 13px;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 90;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
+  font-size: 12px;
   text-decoration: none;
   transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
-
 .back-btn:hover {
-  color: #d8e6ff;
-  border-color: #4a6fa5;
-  background: rgba(80, 140, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(88, 166, 255, 0.7);
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
 
 .nav-title {
@@ -288,51 +292,69 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ========== 底部翻页指示 ========== */
+/* ========== 底部翻页控制 ========== */
 .profile-pager {
   margin-top: 12px;
   padding-top: 18px;
   border-top: 1px solid #1d2230;
+  flex-shrink: 0;
+}
+
+.pager-controls {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 20px;
 }
 
-.pager-dots {
-  display: flex;
-  gap: 12px;
-}
-
-.pager-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: none;
-  padding: 0;
+.pager-btn {
+  padding: 8px 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(88, 166, 255, 0.08);
+  color: #bfe0ff;
+  font-size: 13px;
+  letter-spacing: 1px;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.15);
   transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.pager-dot:hover {
-  background: rgba(88, 166, 255, 0.45);
+.pager-btn:hover {
+  border-color: #58a6ff;
+  background: rgba(88, 166, 255, 0.18);
+  box-shadow: 0 0 18px rgba(88, 166, 255, 0.4);
+  color: #d8e6ff;
+  transform: translateY(-1px);
 }
 
-.pager-dot.active {
-  background: #58a6ff;
-  box-shadow: 0 0 8px rgba(88, 166, 255, 0.7);
+.pager-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
 }
 
 .pager-text {
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 2px;
-  color: #66799f;
+  color: #7f95c4;
   font-variant-numeric: tabular-nums;
+  min-width: 60px;
+  text-align: center;
 }
 
 /* ========== 移动端适配 ========== */
 @media (max-width: 640px) {
+  .profile-page {
+    padding: 80px 16px 32px;
+  }
+  /* 移动端返回按钮缩小 */
+  .back-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 16px;
+  }
   .profile-body {
     flex-direction: column;
     align-items: stretch;
@@ -348,5 +370,10 @@
 
   .info-grid {
     flex-direction: column;
+  }
+
+  .pager-btn {
+    padding: 6px 14px;
+    font-size: 12px;
   }
 }
