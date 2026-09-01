@@ -11,7 +11,7 @@
 
   <!-- 顶部区域 -->
   <header class="profile-header">
-    <a class="profile-back" href="index.html?skipIntro=1" title="返回世界入口">
+    <a class="profile-back" href="index.html?skipIntro=1" title="返回世界入口" onclick="event.preventDefault();goBack()">
       <span class="profile-back-arrow">‹</span>
       <span class="profile-back-text">返回</span>
     </a>
@@ -68,7 +68,7 @@
 
   <!-- 底部导航 -->
   <footer class="profile-footer">
-    <a class="profile-nav-item" href="index.html?skipIntro=1">
+    <a class="profile-nav-item" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()">
       <span class="profile-nav-icon">◐</span>
       <span class="profile-nav-label">世界</span>
     </a>

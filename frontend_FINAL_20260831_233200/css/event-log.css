@@ -1,0 +1,62 @@
+.event-log {
+  position: fixed;
+  left: 16px;
+  bottom: 80px;
+  z-index: 90;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.event-item {
+  padding: 8px 12px;
+  background: rgba(22, 26, 41, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  font-size: 11px;
+  color: #a8b4cc;
+  animation: eventIn 0.4s ease-out, eventOut 0.4s ease-in 3.5s forwards;
+}
+
+@keyframes eventIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes eventOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+.event-item .time {
+  color: #5f6b80;
+  font-family: monospace;
+  margin-right: 6px;
+}
+
+.event-item .highlight {
+  color: #58a6ff;
+}
+
+@media (max-width: 768px) {
+  .event-log {
+    bottom: 60px;
+    left: 8px;
+    max-width: 180px;
+  }
+}

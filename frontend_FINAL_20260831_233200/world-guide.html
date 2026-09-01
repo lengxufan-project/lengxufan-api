@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>世界导览</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/world-guide.css">
+</head>
+<body>
+<div class="wg-page">
+
+  <!-- 顶部：返回 + 标题 -->
+  <header class="wg-nav">
+    <button class="wg-back" type="button" onclick="location.href='index.html?skipIntro=1'">← 返回世界</button>
+    <h1 class="wg-title">世界导览</h1>
+    <span class="wg-nav-spacer"></span>
+  </header>
+
+  <!-- 全局背景：视差尘埃层（随滚动反向缓移，由 JS 驱动） -->
+  <div class="wg-backdrop" aria-hidden="true">
+    <div class="wg-dust wg-dust-far" data-speed="0.05"></div>
+    <div class="wg-dust wg-dust-near" data-speed="0.12"></div>
+  </div>
+
+  <!-- 全局粒子层：颜色与运动方向随当前场景变化（JS 驱动） -->
+  <div class="wg-particles" id="wgParticles" aria-hidden="true"></div>
+
+  <!-- 右侧垂直导航点（由 JS 注入并高亮当前场景） -->
+  <nav class="wg-dots" id="wgDots" aria-label="场景导航"></nav>
+
+  <!-- 场景滚动区：分屏长滚动 -->
+  <main class="wg-scroll" id="wgScroll">
+
+    <!-- 01 · 宿舍：暖光 -->
+    <section class="wg-scene wg-scene-dorm" data-scene="dorm" data-dir="rise">
+      <div class="wg-inner">
+        <div class="wg-text">
+          <span class="wg-index">01</span>
+          <h2 class="wg-name">宿舍</h2>
+          <p class="wg-sub">暖光 · 台灯 · 回来时亮着的房间</p>
+          <p class="wg-desc">晚自习回来，走廊尽头的门缝里漏出一线暖光。桌上的台灯亮着，椅背上搭着没叠的外套，空气里有洗过的布料和一点泡面的味道。不管在外面走了多远，推开这扇门，肩膀总会先松下来。</p>
+        </div>
+        <div class="wg-visual" aria-hidden="true">
+          <div class="wg-parallax" data-speed="0.16">
+            <div class="wg-visual-bg"></div>
+            <div class="wg-visual-glow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 · 天台：冰蓝月光 -->
+    <section class="wg-scene wg-scene-roof" data-scene="roof" data-dir="drift">
+      <div class="wg-inner">
+        <div class="wg-text">
+          <span class="wg-index">02</span>
+          <h2 class="wg-name">天台</h2>
+          <p class="wg-sub">冰蓝月光 · 风 · 没说完的话</p>
+          <p class="wg-desc">铁门推开，风先一步灌进袖口。水泥地上还留着白天的余温，栏杆外是整片沉下去的城市灯火。月亮悬得很高，光是冰蓝色的，把影子钉在地上。适合把没说出口的话，一句一句交给风。</p>
+        </div>
+        <div class="wg-visual" aria-hidden="true">
+          <div class="wg-parallax" data-speed="0.22">
+            <div class="wg-visual-bg"></div>
+            <div class="wg-visual-glow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 · 防空洞：深灰绿 -->
+    <section class="wg-scene wg-scene-shelter" data-scene="shelter" data-dir="sink">
+      <div class="wg-inner">
+        <div class="wg-text">
+          <span class="wg-index">03</span>
+          <h2 class="wg-name">防空洞</h2>
+          <p class="wg-sub">深灰绿 · 应急灯 · 很久以前的回声</p>
+          <p class="wg-desc">台阶向下，声音开始变得湿润。墙皮剥落，露出更深一层的灰，绿色的应急灯每隔几米亮一盏，照不亮整条通道，只照亮下一步。这里安静得能听见自己的呼吸，还有很久以前留下来的回声。</p>
+        </div>
+        <div class="wg-visual" aria-hidden="true">
+          <div class="wg-parallax" data-speed="0.1">
+            <div class="wg-visual-bg"></div>
+            <div class="wg-visual-glow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 尾部留白 -->
+    <footer class="wg-footer">
+      <span class="wg-footer-hint">— 已抵达世界尽头 —</span>
+    </footer>
+
+  </main>
+
+</div>
+<script src="js/world-guide.js"></script>
+</body>
+</html>

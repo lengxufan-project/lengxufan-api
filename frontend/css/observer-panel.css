@@ -313,3 +313,39 @@ body {
   color: #5f6b80;
   transition: color 0.3s ease-in-out;
 }
+
+/* ============ 移动端适配：768px 以下紧凑化 ============ */
+@media (max-width: 768px) {
+  body { max-width: 100%; padding: 0 14px; }
+  .observer-panel { padding: 0 8px 20px; }
+
+  /* 顶部紧凑化 */
+  .op-header { padding: 10px 2px 10px; }
+  .back-btn { padding: 5px 10px; font-size: 11px; }
+  .op-title { font-size: 14px; letter-spacing: 0.1em; }
+  .op-sub { font-size: 9px; letter-spacing: 0.25em; }
+
+  /* 圆环缩小 */
+  .ring-stage { padding: 24px 0 20px; }
+  .observer-ring { width: 170px; height: 170px; }
+  .observer-ring::before { -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px)); mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px)); }
+  .observer-ring .core { width: 78px; height: 78px; }
+  .observer-ring .value { font-size: 32px; }
+  .value-label { font-size: 10px; margin-top: 5px; letter-spacing: 0.25em; }
+
+  /* 压力条紧凑 */
+  .stress-block { padding: 12px 14px; margin-bottom: 10px; }
+  .stress-title { font-size: 12px; letter-spacing: 0.15em; }
+  .stress-head { margin-bottom: 6px; }
+  .stress-bar { height: 8px; }
+
+  /* 关系摘要紧凑 */
+  .relation-summary { padding: 12px 14px; }
+  .rel-row { gap: 8px; padding: 7px 0; }
+  .rel-name { width: 48px; font-size: 12px; }
+  .rel-val { width: 44px; font-size: 11px; }
+
+  /* 底部说明 */
+  .op-footer { padding-top: 14px; }
+  .breath-hint { font-size: 11px; line-height: 1.7; }
+}

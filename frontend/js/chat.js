@@ -177,10 +177,11 @@
 
   /* ---------- 抽屉 ---------- */
   function toggleDrawer(force) {
-    var drawer = $("statusDrawer"), btn = $("statusToggle");
+    var drawer = $("statusDrawer"), btn = $("statusToggle"), mask = $("drawerMask");
     if (!drawer) return;
     var open = typeof force === "boolean" ? force : !drawer.classList.contains("open");
     drawer.classList.toggle("open", open);
+    if (mask) mask.classList.toggle("show", open);
     drawer.setAttribute("aria-hidden", open ? "false" : "true");
     if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
   }
@@ -215,6 +216,8 @@
     if (toggle) toggle.addEventListener("click", function () { toggleDrawer(); });
     var close = $("statusClose");
     if (close) close.addEventListener("click", function () { toggleDrawer(false); });
+    var mask = $("drawerMask");
+    if (mask) mask.addEventListener("click", function () { toggleDrawer(false); });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") toggleDrawer(false);
     });
@@ -237,3 +240,12 @@
 
   window.ChatPage = { init: init };
 })();
+
+/* 统一返回逻辑：有同源来源页则回退，否则回主界面（导航闭环） */
+window.goBack = function () {
+  if (document.referrer && document.referrer.includes(window.location.host)) {
+    history.back();
+  } else {
+    window.location.href = "index.html?skipIntro=1";
+  }
+};

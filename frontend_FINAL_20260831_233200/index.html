@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冷旭帆 · 世界入口</title>
+<link rel="stylesheet" href="css/emotion-chart.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/sidebar.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/scene-transition.css">
+<link rel="stylesheet" href="css/character-display.css">
+<link rel="stylesheet" href="css/world-clock.css">
+<link rel="stylesheet" href="css/loading-bar.css">
+<link rel="stylesheet" href="css/relation-thermometer.css">
+<link rel="stylesheet" href="css/status-dashboard.css">
+<link rel="stylesheet" href="css/character-tooltip.css">
+<link rel="stylesheet" href="css/event-log.css">
+<link rel="stylesheet" href="css/scene-shortcut.css">
+<link rel="stylesheet" href="css/weather-effects.css">
+<link rel="stylesheet" href="css/time-lighting.css">
+<link rel="stylesheet" href="css/emotion-particles.css">
+<link rel="stylesheet" href="css/achievement-card.css">
+<link rel="stylesheet" href="css/notification-center.css">
+<link rel="stylesheet" href="css/choice-branch.css">
+<link rel="stylesheet" href="css/search-panel.css">
+<link rel="stylesheet" href="css/shortcuts-panel.css">
+<link rel="stylesheet" href="css/skeleton.css">
+</head>
+<body>
+<div id="loadingBar"></div>
+  <div id="globalParticles"></div>
+
+  <!-- 开场动画 -->
+  <div class="intro" id="intro">
+    <div class="intro-particles" id="introParticles"></div>
+    <div class="intro-glow" id="introGlow"></div>
+    <div class="intro-ball" id="introBall"></div>
+    <div class="intro-text" id="introText">世界入口</div>
+    <div class="intro-skip" id="introSkip">跳过</div>
+  </div>
+
+  <!-- 左侧可收起侧边栏 -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-toggle" id="sidebarToggle">☰</div>
+    <div class="sidebar-header">
+      <div class="sidebar-ball"></div>
+      <span class="sidebar-title">世界入口</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html?skipIntro=1" class="nav-link active">世界入口</a>
+      <a href="character-gallery.html" class="nav-link">角色画廊</a>
+      <a href="character-profile.html" class="nav-link">人物典籍</a>
+      <a href="relation-map.html" class="nav-link">关系图谱</a>
+      <a href="observer-panel.html" class="nav-link">观察者之窗</a>
+      <a href="exploration.html" class="nav-link">暗夜拾遗</a>
+      <a href="memory-gallery.html" class="nav-link">时光回廊</a>
+      <a href="world-map.html" class="nav-link">星图导航</a>
+      <a href="world-guide.html" class="nav-link">世界观</a>
+      <a href="journey.html" class="nav-link">旅程时间线</a>
+      <a href="export.html" class="nav-link">对话导出</a>
+      <a href="about.html" class="nav-link">关于</a>
+      <a href="help.html" class="nav-link">帮助</a>
+      <a href="settings.html" class="nav-link">设置</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span id="sidebarWeather">--</span>
+      <span id="sidebarTime">--</span>
+    </div>
+  </div>
+
+  <!-- 主界面 -->
+  <div class="app" id="app">
+    <div class="header">
+      <div class="title">冷旭帆 <span class="sep">·</span> 世界入口</div>
+      <div class="online"><span class="green-dot"></span>在线</div>
+      <button class="search-trigger" id="searchTrigger" type="button" title="搜索 (Ctrl+K)">🔍</button>
+    </div>
+
+    <div class="nav-menu" id="navMenu">
+      <a href="character-profile.html" class="nav-item">人物典籍</a>
+      <a href="relation-map.html" class="nav-item">关系图谱</a>
+      <a href="observer-panel.html" class="nav-item">观察者之窗</a>
+      <a href="exploration.html" class="nav-item">暗夜拾遗</a>
+      <a href="memory-gallery.html" class="nav-item">时光回廊</a>
+      <a href="world-map.html" class="nav-item">星图导航</a>
+      <a href="login.html" class="nav-item">登录</a>
+    </div>
+
+    <div class="charbar" id="charbar">
+      <button class="group-toggle" id="groupToggle">群聊模式：关</button>
+    </div>
+
+    <div class="scene" id="scene">
+      <div class="scene-label" id="sceneLabel">307室 · --</div>
+      <div class="scene-meta" id="sceneMeta">第--天 · --</div>
+      <div class="scene-acts" id="sceneActs"></div>
+    </div>
+
+    <div class="charinfo">
+      <div class="avatar" id="ciAvatar">冷</div>
+      <div class="cname" id="ciName">冷旭帆</div>
+      <div class="elabel" id="ciLabel">--</div>
+      <div class="ebar-wrap">
+        <div class="ebar"><div class="ebar-fill" id="ciFill" style="width:0%"></div></div>
+        <div class="eval" id="ciVal">0</div>
+      </div>
+    </div>
+
+    <div class="chat" id="chat"></div>
+
+    <div class="composer">
+      <textarea id="input" placeholder="输入消息，Enter 发送，Shift+Enter 换行" rows="1"></textarea>
+      <button id="send">发送</button>
+    </div>
+
+    <!-- 情绪曲线图容器（结构由 js/emotion-chart.js 动态生成） -->
+    <div class="emotion-chart" id="emotionChart"></div>
+
+    <div class="statusbar" id="statusbar">
+      <div class="st"><span class="lab">情绪</span><span class="v" id="s-emotion">--</span><div class="mini-bar"><div class="mini-bar-fill" id="s-emoBar" style="width:0%"></div></div></div>
+      <div class="st"><span class="lab">身体</span><span class="v" id="s-body">--</span></div>
+      <div class="st"><span class="lab">心理</span><span class="v" id="s-mind">--</span></div>
+      <div class="st"><span class="lab">关系</span><span class="v" id="s-rel">--</span><div class="mini-bar"><div class="mini-bar-fill" id="s-relBar" style="width:0%"></div></div></div>
+      <div class="st"><span class="lab">天气</span><span class="v" id="s-weather">--</span></div>
+      <div class="st"><span class="lab">时间</span><span class="v" id="s-time">--</span></div>
+    </div>
+  </div>
+
+  <!-- 悬浮球 -->
+  <div id="floatingBall" class="floating-ball"></div>
+
+  <script src="js/loading-bar.js"></script>
+  <script src="js/api.js"></script>
+<script src="js/skeleton.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/characters.js"></script>
+  <script src="js/scene-transition.js"></script>
+  <script src="js/character-display.js"></script>
+  <script src="js/emotion-chart.js"></script>
+  <script src="js/world-clock.js"></script>
+<script src="js/time-lighting.js"></script>
+<script src="js/emotion-particles.js"></script>
+  <script src="js/relation-thermometer.js"></script>
+<script src="js/status-dashboard.js"></script>
+<script src="js/character-tooltip.js"></script>
+<script src="js/event-log.js"></script>
+<script src="js/scene-shortcut.js"></script>
+<script src="js/weather-effects.js"></script>
+<script src="js/achievement-card.js"></script>
+<script src="js/notification-center.js"></script>
+<script src="js/choice-branch.js"></script>
+<script src="js/search-panel.js"></script>
+<script src="js/shortcuts-panel.js"></script>
+<script src="js/app.js"></script>
+<div id="notificationTrigger"></div>
+<div id="notificationDrawer"></div>
+</body>
+</html>

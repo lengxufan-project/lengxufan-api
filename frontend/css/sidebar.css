@@ -1,115 +1,379 @@
 /* ============================================================
    sidebar.css — 左侧可收起侧边栏（仅 index.html 加载）
-   依赖 index.html 中 #sidebar / #sidebarToggle 结构与
-   animations.css 中的 ballBreath 关键帧
+   微信/QQ 式交互 + 暗黑磨砂风格
+   结构依赖：index.html 中 #sidebar / #sidebarToggle / #sidebarNotify /
+   #notifyDrawer / #notifyClose / #sidebarMask / #searchTrigger
    ============================================================ */
 
 /* ============ 侧边栏容器 ============ */
+/* 绝对定位（相对 .app 容器），不再用视口 fixed；
+   这样浏览器 Ctrl+滚轮缩放时，sidebar 与 scene 保持相对位置，整体像一张固定 A4 纸 */
 .sidebar {
-  position: fixed;
-  left: 0; top: 0;
-  width: 220px; height: 100vh;
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 220px;
   background: rgba(10,12,18,0.85);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
   border-right: 1px solid rgba(88,166,255,0.15);
   z-index: 100;
-  transition: width 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* 收起态：仅保留开关与光球（导航列表整体隐藏，避免文字被裁切） */
+/* 收起态：仅保留开关（导航列表整体隐藏，避免文字被裁切） */
 .sidebar.collapsed { width: 50px; }
 .sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .sidebar-notify,
+.sidebar.collapsed .sidebar-search,
 .sidebar.collapsed .sidebar-nav,
-.sidebar.collapsed .sidebar-nav span,
+.sidebar.collapsed .sidebar-characters,
 .sidebar.collapsed .sidebar-footer { display: none; }
-.sidebar.collapsed .sidebar-header { padding: 10px 7px; justify-content: center; }
-.sidebar.collapsed .sidebar-ball { width: 30px; height: 30px; }
-.sidebar.collapsed .sidebar-toggle { padding: 10px 0; text-align: center; }
+.sidebar.collapsed .sidebar-topbar { padding: 10px 0; justify-content: center; }
 
-/* ============ 收起 / 展开开关 ============ */
-.sidebar-toggle {
-  cursor: pointer;
-  padding: 10px 16px;
-  font-size: 16px;
-  color: #8fa0c0;
-  transition: color 0.2s ease-in-out;
-  user-select: none;
-}
-.sidebar-toggle:hover { color: #fff; }
-
-/* ============ 头部：光球 + 标题 ============ */
-.sidebar-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 16px;
+/* ============ 顶部条：开关 / 标题 / 通知图标 ============ */
+.sidebar-topbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.sidebar-ball {
-  flex-shrink: 0;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #bfe0ff, #58a6ff 40%, #1a2a4a 80%);
-  box-shadow: 0 0 15px rgba(88,166,255,0.5), 0 0 40px rgba(88,166,255,0.25);
-  animation: ballBreath 3s ease-in-out infinite;
+.sidebar-toggle {
+  cursor: pointer;
+  font-size: 16px;
+  color: #8fa0c0;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+  padding: 4px 6px;
+  border-radius: 6px;
 }
+.sidebar-toggle:hover { color: #fff; background: rgba(88,166,255,0.08); }
 .sidebar-title {
+  flex: 1;
   font-family: 'Noto Serif SC', Georgia, serif;
   font-size: 14px; font-weight: 300;
   color: #eaf0ff; letter-spacing: 0.1em;
   white-space: nowrap;
 }
 
+/* ============ 通知图标（CSS 绘制小铃铛） ============ */
+.sidebar-notify {
+  position: relative;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
+}
+.sidebar-notify:hover {
+  background: rgba(88,166,255,0.08);
+  border-color: rgba(88,166,255,0.15);
+}
+.sidebar-notify:hover .notify-bell { border-color: #fff; }
+.sidebar-notify:hover .notify-bell::before,
+.sidebar-notify:hover .notify-bell::after { background: #fff; }
+
+/* 铃铛主体（CSS 绘制） */
+.notify-bell {
+  position: relative;
+  width: 12px; height: 12px;
+  border: 1.5px solid #8fa0c0;
+  border-radius: 12px 12px 4px 4px;
+  transition: border-color 0.2s ease-in-out;
+}
+/* 顶部把手 */
+.notify-bell::before {
+  content: '';
+  position: absolute;
+  top: -4px; left: 50%;
+  transform: translateX(-50%);
+  width: 6px; height: 2px;
+  background: #8fa0c0;
+  border-radius: 2px;
+  transition: background 0.2s ease-in-out;
+}
+/* 底部铃舌 */
+.notify-bell::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 50%;
+  transform: translateX(-50%);
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #8fa0c0;
+  transition: background 0.2s ease-in-out;
+}
+/* 通知红点 */
+.notify-dot {
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #ff5c5c;
+  box-shadow: 0 0 6px rgba(255,92,92,0.6);
+  display: none;
+}
+.sidebar-notify.has-new .notify-dot { display: block; }
+
+/* ============ 搜索框：胶囊形磨砂，聚焦冰蓝发光 ============ */
+.sidebar-search {
+  margin: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.sidebar-search:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(88,166,255,0.2);
+}
+.sidebar-search:focus-within {
+  border-color: rgba(88,166,255,0.5);
+  box-shadow: 0 0 12px rgba(88,166,255,0.25);
+}
+.search-icon { font-size: 13px; opacity: 0.6; flex-shrink: 0; }
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none; outline: none;
+  color: #eaf0ff;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  min-width: 0;
+}
+.search-input::placeholder { color: #5f6b80; }
+
 /* ============ 导航列表 ============ */
 .sidebar-nav {
-  padding: 12px 10px;
-  display: flex; flex-direction: column; gap: 2px;
+  padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 4px;
 }
 .nav-link {
-  padding: 9px 14px;
+  position: relative;
+  padding: 10px 14px;
   border-radius: 8px;
   color: #8fa0c0; text-decoration: none;
   font-size: 13px;
   transition: all 0.2s ease-in-out;
-  border: 1px solid transparent;
   white-space: nowrap;
+  background: transparent;
+}
+/* 左侧冰蓝指示条（悬停/激活时出现） */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 0;
+  background: #58a6ff;
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(88,166,255,0.6);
+  transition: height 0.2s ease-in-out;
 }
 .nav-link:hover {
   color: #fff;
-  background: rgba(88,166,255,0.06);
-  border-color: rgba(88,166,255,0.25);
+  background: rgba(88,166,255,0.1);
 }
+.nav-link:hover::before { height: 60%; }
 .nav-link.active {
-  color: #58a6ff;
+  color: #fff;
+  background: rgba(88,166,255,0.12);
+}
+.nav-link.active::before {
+  height: 80%;
+  box-shadow: 0 0 8px rgba(88,166,255,0.8);
+}
+
+/* 分组标题：字体缩小 10px / 颜色 #5f6b80 / 字间距 0.15em / 上下间距拉开 */
+.nav-group-title {
+  font-size: 10px;
+  color: #5f6b80;
+  letter-spacing: 0.15em;
+  padding: 14px 14px 6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.nav-group-title:first-child { padding-top: 4px; }
+
+/* ============ 角色快捷区：小卡片 + 28px 圆形头像 ============ */
+.sidebar-characters {
+  padding: 4px 10px 10px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.char-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  color: #8fa0c0; text-decoration: none;
+  font-size: 12px;
+  transition: all 0.2s ease-in-out;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  white-space: nowrap;
+}
+.char-link:hover {
+  background: rgba(88,166,255,0.08);
+  color: #fff;
+  border-color: rgba(88,166,255,0.15);
+}
+.char-avatar {
+  flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #bfe0ff, #58a6ff 40%, #1a2a4a 80%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff;
+  box-shadow: 0 0 8px rgba(88,166,255,0.35);
+  transition: all 0.2s ease-in-out;
+  border: 1.5px solid transparent;
+}
+.char-name { flex: 1; }
+/* 当前角色：冰蓝边框 + 发光 */
+.char-link.current {
   background: rgba(88,166,255,0.1);
   border-color: rgba(88,166,255,0.4);
   box-shadow: 0 0 12px rgba(88,166,255,0.15);
+  color: #fff;
 }
+.char-link.current .char-avatar {
+  border-color: #58a6ff;
+  box-shadow: 0 0 10px rgba(88,166,255,0.6);
+}
+/* "查看全部角色"弱化项 */
+.char-link.all {
+  color: #5f6b80;
+  font-size: 11px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-left: none; border-right: none; border-bottom: none;
+  padding-top: 8px;
+  border-radius: 0;
+  background: transparent;
+}
+.char-link.all:hover { color: #8fa0c0; background: transparent; border-color: rgba(255,255,255,0.05); }
 
-/* ============ 底部：时间 / 天气 ============ */
+/* ============ 底部：呼吸指示灯 + 时间 / 天气 ============ */
 .sidebar-footer {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-top: 1px solid rgba(255,255,255,0.06);
   font-size: 11px; color: #5f6b80;
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex; align-items: center; gap: 8px;
   white-space: nowrap;
   background: rgba(10,12,18,0.85);   /* 列表滚动时避免透出内容 */
 }
+.sidebar-footer-text {
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 0;
+}
+/* 极小呼吸指示灯（替代原悬浮球，置于侧边栏左下角） */
+.sidebar-indicator {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #58a6ff;
+  box-shadow: 0 0 8px rgba(88,166,255,0.6);
+  animation: indicatorBreath 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes indicatorBreath {
+  0%, 100% { opacity: 0.4; box-shadow: 0 0 4px rgba(88,166,255,0.3); }
+  50% { opacity: 1; box-shadow: 0 0 10px rgba(88,166,255,0.7); }
+}
+
+/* ============ 通知抽屉 ============ */
+/* 右侧滑入抽屉，点击侧边栏铃铛图标展开 */
+.notify-drawer {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 300px;
+  max-width: 80%;
+  background: rgba(10,12,18,0.95);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(88,166,255,0.15);
+  z-index: 110;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.4);
+}
+.notify-drawer.open { transform: translateX(0); }
+.notify-drawer-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.notify-drawer-title {
+  font-size: 14px; color: #eaf0ff; letter-spacing: 0.1em;
+}
+.notify-drawer-close {
+  background: transparent; border: none; cursor: pointer;
+  color: #8fa0c0; font-size: 22px; line-height: 1;
+  padding: 2px 8px; border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+.notify-drawer-close:hover { color: #fff; background: rgba(88,166,255,0.08); }
+.notify-drawer-body {
+  padding: 10px 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+.notify-empty {
+  color: #5f6b80; font-size: 12px;
+  text-align: center; padding: 40px 10px;
+}
+
+/* ============ 移动端遮罩 ============ */
+/* 侧边栏展开时半透明背景，点击关闭（仅移动端 .show 时显示） */
+.sidebar-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
+}
+.sidebar-mask.show { opacity: 1; visibility: visible; }
+
+/* ============ 悬浮球隐藏 ============ */
+/* 原右下角悬浮球改为侧边栏左下角呼吸指示灯，主界面不再出现突兀悬浮球 */
+/* #floatingBall 元素保留以维持开场动画逻辑（DOM id 不变），仅视觉隐藏 */
+#floatingBall { display: none; }
 
 /* ============ 主内容区偏移 ============ */
-.app {
-  width: auto;   /* 覆盖 main.css 的 width:100%，加边距后防止横向溢出 */
-  margin-left: 220px;
-  transition: margin-left 0.3s ease-in-out;
-}
-.sidebar.collapsed ~ .app { margin-left: 50px; }
+/* .app 已由 main.css 定义为 position:fixed 的视口级容器；
+   .scene.fullscreen { left: 220px } 由绝对定位四边撑开。
+   sidebar.collapsed → scene left:50px 的联动由 main.css 中
+   #app:has(.sidebar.collapsed) .scene.fullscreen 实现 */
 
-/* ============ 移动端：默认隐藏，.open 滑出 ============ */
+/* ============ 移动端：默认隐藏，汉堡按钮呼出，抽屉滑入占屏 80% ============ */
 @media (max-width: 768px) {
-  .sidebar { width: 0; overflow: hidden; }
-  .sidebar.open { width: 220px; }
+  .sidebar {
+    width: 0;
+    overflow: hidden;
+  }
+  .sidebar.open {
+    width: 80%;
+    max-width: 280px;
+  }
 
-  /* 开关固定于视口左上角，侧边栏收起时仍可点击展开 */
+  /* 覆盖 main.css 的 push 行为：sidebar 改为 overlay（不推挤 scene），
+     配合 .sidebar-mask 半透明遮罩实现微信式抽屉交互 */
+  #app:has(.sidebar.open) .scene.fullscreen { left: 0 !important; }
+
+  /* 开关固定于视口左上角（fixed 脱离 sidebar 溢出裁剪，收起时仍可点击） */
   .sidebar-toggle {
     position: fixed; top: 8px; left: 8px; z-index: 120;
     background: rgba(10,12,18,0.85);
@@ -117,16 +381,15 @@
     border-radius: 10px;
     padding: 6px 12px;
   }
-  /* 展开时头部下移，避免与固定开关重叠 */
-  .sidebar.open .sidebar-header { padding-top: 48px; }
+  /* 展开时顶部条下移，避免与固定开关重叠 */
+  .sidebar.open .sidebar-topbar { padding-top: 44px; }
 
-  /* 移动端主内容区不偏移（含收起态，选择器与桌面规则同级且靠后生效） */
-  .sidebar.collapsed ~ .app,
-  .app { margin-left: 0; }
+  /* 通知抽屉全宽 */
+  .notify-drawer { width: 100%; max-width: 100%; }
 }
 
 /* 减弱动效偏好 */
 @media (prefers-reduced-motion: reduce) {
-  .sidebar, .app, .nav-link, .sidebar-toggle { transition: none; }
-  .sidebar-ball { animation: none; }
+  .sidebar, .nav-link, .sidebar-toggle, .sidebar-search, .char-link, .notify-drawer, .sidebar-mask { transition: none; }
+  .sidebar-indicator { animation: none; }
 }

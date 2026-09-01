@@ -1,0 +1,278 @@
+/* ============================================================
+   world-map.css — 星图导航（独立页面样式）
+   仅服务于 world-map.html，类名前缀 wm- / map-
+   ============================================================ */
+
+/* ============ 页面骨架 ============ */
+.wm-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(40, 60, 120, 0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 75%, rgba(70, 40, 120, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, #0a0f1e 0%, #04060d 85%);
+}
+
+/* ============ 全屏星图背景：多层渐变 + 随机星点 ============ */
+.wm-stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(2px 2px at 12% 18%, #d8e6ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 28% 62%, #bfe0ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 47% 30%, #ffffff 50%, transparent 51%),
+    radial-gradient(2px 2px at 68% 12%, #8fa0c0 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 82% 48%, #d8e6ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 78%, #bfe0ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 8% 84%, #ffffff 50%, transparent 51%),
+    radial-gradient(1px 1px at 55% 88%, #8fa0c0 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 38% 8%, #d8e6ff 50%, transparent 51%);
+  animation: starTwinkle 6s ease-in-out infinite;
+}
+/* JS 注入的额外随机星点 */
+.wm-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #d8e6ff;
+  pointer-events: none;
+  animation: starBlink ease-in-out infinite;
+}
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+@keyframes starBlink {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 0.9; }
+}
+
+/* ============ 顶部导航 ============ */
+.wm-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  border-bottom: 1px solid rgba(88, 166, 255, 0.15);
+  background: rgba(10, 12, 18, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.wm-back {
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.06);
+  color: #bfe0ff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.wm-back:hover {
+  background: rgba(88, 166, 255, 0.18);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.4);
+}
+.wm-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  background: linear-gradient(90deg, #bfe0ff, #58a6ff, #bfe0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.wm-nav-spacer { width: 80px; }
+
+/* ============ 中央星图舞台 ============ */
+.wm-stage {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+#wmSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.wm-nodes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ============ 连线 ============ */
+.map-line {
+  fill: none;
+  stroke: #58a6ff;
+  stroke-width: 1.2;
+  stroke-opacity: 0.4;
+  stroke-dasharray: 6 8;
+  animation: lineFlow 4s linear infinite;
+}
+@keyframes lineFlow {
+  to { stroke-dashoffset: -56; }
+}
+.map-line.inner { stroke-opacity: 0.18; }
+
+/* ============ 场景节点：发光球体 ============ */
+.map-node {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;   /* 以坐标为中心 */
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e8f3ff 0%, #58a6ff 45%, #2a4a9c 100%);
+  border: 1px solid rgba(88, 166, 255, 0.6);
+  box-shadow:
+    0 0 10px 2px rgba(88, 166, 255, 0.55),
+    0 0 22px 8px rgba(88, 166, 255, 0.25);
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translateZ(0);
+  animation: nodePulse 3s ease-in-out infinite;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.map-node:hover {
+  transform: scale(1.25);
+  box-shadow:
+    0 0 16px 4px rgba(88, 166, 255, 0.8),
+    0 0 32px 14px rgba(88, 166, 255, 0.4);
+}
+@keyframes nodePulse {
+  0%, 100% { box-shadow: 0 0 10px 2px rgba(88,166,255,0.55), 0 0 22px 8px rgba(88,166,255,0.25); }
+  50%      { box-shadow: 0 0 14px 3px rgba(88,166,255,0.7),  0 0 30px 12px rgba(88,166,255,0.35); }
+}
+
+/* 当前场景：光晕更强 + 扩散波纹 */
+.map-node.current {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-color: rgba(191, 224, 255, 0.95);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #bfe0ff 40%, #58a6ff 100%);
+  box-shadow:
+    0 0 18px 4px rgba(88, 166, 255, 0.9),
+    0 0 40px 16px rgba(88, 166, 255, 0.5);
+  animation: nodePulseCurrent 2.4s ease-in-out infinite, ripple 2.4s ease-out infinite;
+}
+@keyframes nodePulseCurrent {
+  0%, 100% { box-shadow: 0 0 18px 4px rgba(88,166,255,0.9), 0 0 40px 16px rgba(88,166,255,0.5); }
+  50%      { box-shadow: 0 0 24px 6px rgba(88,166,255,1),   0 0 56px 22px rgba(88,166,255,0.65); }
+}
+/* 扩散波纹：用伪元素 */
+.map-node.current::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(88, 166, 255, 0.6);
+  animation: ripple 2.4s ease-out infinite;
+}
+@keyframes ripple {
+  0%   { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ============ 节点标签 ============ */
+.map-label {
+  position: absolute;
+  transform: translate(-50%, 0);
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #8fa0c0;
+  text-shadow: 0 0 6px rgba(88, 166, 255, 0.7), 0 0 12px rgba(88, 166, 255, 0.35);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.map-node.current + .map-label {
+  color: #d8e6ff;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.9), 0 0 16px rgba(88, 166, 255, 0.5);
+}
+
+/* ============ 光点滑行 ============ */
+.map-traveler {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #bfe0ff 50%, transparent 100%);
+  box-shadow: 0 0 12px 4px rgba(191, 224, 255, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  transition: left 0.6s ease-in-out, top 0.6s ease-in-out, opacity 0.2s ease-in-out;
+}
+.map-traveler.flying { opacity: 1; }
+
+/* ============ 底部场景名称列表 ============ */
+.wm-legend {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px 18px;
+  border-top: 1px solid rgba(88, 166, 255, 0.15);
+  background: rgba(10, 12, 18, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.wm-legend-hint {
+  font-size: 12px;
+  color: #7e95b8;
+  letter-spacing: 1px;
+}
+.wm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.wm-chip {
+  padding: 5px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  background: rgba(88, 166, 255, 0.05);
+  color: #8fa0c0;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.wm-chip:hover {
+  border-color: rgba(88, 166, 255, 0.6);
+  color: #bfe0ff;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.35);
+}
+.wm-chip.active {
+  border-color: rgba(191, 224, 255, 0.9);
+  background: rgba(88, 166, 255, 0.18);
+  color: #d8e6ff;
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.55);
+}
+
+/* ============ 移动端适配：节点位置自动缩放 ============ */
+@media (max-width: 640px) {
+  .wm-title { font-size: 18px; letter-spacing: 4px; }
+  .wm-nav { padding: 10px 14px; }
+  .map-node { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
+  .map-node.current { width: 28px; height: 28px; margin: -14px 0 0 -14px; }
+  .map-label { font-size: 10px; margin-top: 12px; }
+  .wm-legend { padding: 10px 12px 14px; }
+}

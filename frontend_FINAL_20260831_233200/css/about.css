@@ -1,0 +1,226 @@
+/* ============ 世界入口 · 关于（独立页面） ============ */
+
+/* 覆盖 main.css 全局设定：深蓝黑渐变，800px 居中 */
+body {
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(160deg, #050608 0%, #0a0c12 60%, #050608 100%);
+}
+
+.about-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0 24px 28px;
+}
+
+/* ---------- 顶部：返回 ---------- */
+.about-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 4px 14px;
+  position: relative;
+  flex-shrink: 0;
+}
+.about-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #58a6ff, transparent);
+}
+.back-btn {
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 1px solid #2a3550;
+  background: rgba(255, 255, 255, 0.04);
+  color: #8fa0c0;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+.back-btn:hover {
+  color: #d8e6ff;
+  border-color: #4a6fa5;
+  background: rgba(80, 140, 255, 0.12);
+}
+.about-sub {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: #3d4761;
+}
+
+/* ---------- 中央：巨大标题 + 发光球 ---------- */
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 0 40px;
+}
+.about-title {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 44px;
+  font-weight: 200;
+  letter-spacing: 0.28em;
+  margin: 0 0 34px;
+  background: linear-gradient(120deg, #a8d4ff 0%, #58a6ff 50%, #c9e6ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(88, 166, 255, 0.35));
+}
+.hero-motto {
+  margin: 30px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: #5b6a8a;
+}
+
+/* 发光球：径向渐变 + 双层阴影 + 呼吸动画 */
+.glow-orb {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  /* 呼吸缩放由 JS 通过 --breath 微调 */
+  transform: scale(var(--breath, 1));
+  transition: transform 0.4s ease-in-out;
+}
+.orb-core {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%,
+    #eaf5ff 0%,
+    #8ec8ff 28%,
+    #3d7dd8 62%,
+    #1a3a6e 100%);
+  box-shadow:
+    0 0 40px rgba(88, 166, 255, 0.45),
+    0 0 90px rgba(88, 166, 255, 0.18),
+    inset 0 0 24px rgba(255, 255, 255, 0.25);
+  animation: orbBreath 4.5s ease-in-out infinite;
+}
+.orb-halo {
+  position: absolute;
+  inset: -26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(88, 166, 255, 0.14) 0%, transparent 70%);
+  animation: haloBreath 4.5s ease-in-out infinite;
+}
+@keyframes orbBreath {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.18); }
+}
+@keyframes haloBreath {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.12); }
+}
+
+/* ---------- 正文：三张磨砂玻璃卡片 ---------- */
+.about-cards {
+  display: flex;
+  gap: 18px;
+  align-items: stretch;
+}
+.glass-card {
+  flex: 1;
+  padding: 22px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(88, 166, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out, border-color 0.4s ease-in-out;
+}
+.glass-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(88, 166, 255, 0.5);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.45),
+    0 0 22px rgba(88, 166, 255, 0.22);
+}
+.card-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: #a8d4ff;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.4);
+}
+.card-title::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  margin-top: 8px;
+  background: linear-gradient(90deg, #58a6ff, transparent);
+}
+.card-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.9;
+  color: #c9d1d9;
+}
+.tech-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 2.1;
+  color: #c9d1d9;
+}
+.tech-list li::before {
+  content: "·";
+  margin-right: 8px;
+  color: #58a6ff;
+}
+
+/* 卡片延迟上浮淡入（由 JS 添加 .revealed 触发） */
+.reveal-card {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out,
+              box-shadow 0.4s ease-in-out, border-color 0.4s ease-in-out;
+}
+.reveal-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-card.revealed:hover {
+  transform: translateY(-6px);
+}
+
+/* ---------- 底部 ---------- */
+.about-footer {
+  margin-top: auto;
+  padding-top: 40px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: #3d4761;
+}
+
+/* ---------- 移动端：宽度自适应，卡片单列 ---------- */
+@media (max-width: 640px) {
+  .about-page {
+    padding: 0 16px 24px;
+  }
+  .about-title {
+    font-size: 32px;
+    letter-spacing: 0.2em;
+  }
+  .glow-orb {
+    width: 104px;
+    height: 104px;
+  }
+  .about-cards {
+    flex-direction: column;
+    gap: 14px;
+  }
+}

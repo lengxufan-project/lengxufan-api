@@ -89,7 +89,7 @@
 
     els.page.classList.add('burst');
     setTimeout(function () {
-      location.href = 'index.html?skipIntro=1';
+      goBack();
     }, 900);
   }
 
@@ -113,3 +113,12 @@
 
   init();
 })();
+
+/* 统一返回逻辑：有同源来源页则回退，否则回主界面（导航闭环） */
+window.goBack = function () {
+  if (document.referrer && document.referrer.includes(window.location.host)) {
+    history.back();
+  } else {
+    window.location.href = "index.html?skipIntro=1";
+  }
+};

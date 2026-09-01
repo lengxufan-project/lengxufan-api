@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050608">
+    <title>演示模式 · 世界入口的预告片</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/demo-mode.css">
+</head>
+<body>
+    <div class="demo-container" id="demoContainer">
+
+        <!-- ============ 阶段 1 · 开场 ============ -->
+        <div class="demo-intro is-visible" id="demoIntro">
+            <div class="demo-particles" id="demoParticles"></div>
+            <div class="demo-intro-title" id="demoIntroTitle"></div>
+            <div class="demo-intro-sub" id="demoIntroSub">—— 这里有人陪你长大 ——</div>
+        </div>
+
+        <!-- 发光球（贯穿：开场中心 → 收束飞向右下角变悬浮球） -->
+        <div class="demo-orb-wrap is-visible is-hidden" id="demoOrbWrap">
+            <div class="demo-orb" id="demoOrb"></div>
+        </div>
+
+        <!-- ============ 阶段 2 · 场景引入 ============ -->
+        <div class="demo-panel demo-scene" id="demoScenePanel">
+            <div class="demo-scene-room" id="demoSceneRoom">307室 · 深夜</div>
+            <div class="demo-scene-meta" id="demoSceneMeta">第--天 · --</div>
+            <ul class="demo-acts" id="demoActs"></ul>
+        </div>
+
+        <!-- ============ 状态栏（阶段 2 起显示） ============ -->
+        <div class="demo-status" id="demoStatus">
+            <div class="demo-status-item">
+                <span class="demo-status-label">角色</span>
+                <span class="demo-status-value demo-status-name" id="statusCharacter">—</span>
+            </div>
+            <div class="demo-status-item">
+                <span class="demo-status-label">情绪</span>
+                <div class="demo-status-bar">
+                    <div class="demo-status-bar-fill emotion" id="statusEmotionBar" style="width:0%"></div>
+                </div>
+                <span class="demo-status-value" id="statusEmotion">0</span>
+            </div>
+            <div class="demo-status-item">
+                <span class="demo-status-label">身体</span>
+                <span class="demo-status-value demo-status-text" id="statusBody">—</span>
+            </div>
+            <div class="demo-status-item">
+                <span class="demo-status-label">关系</span>
+                <span class="demo-status-value demo-status-text" id="statusRelation">—</span>
+            </div>
+        </div>
+
+        <!-- ============ 阶段 3 · 对话展示 ============ -->
+        <div class="demo-chat" id="demoChat">
+            <div class="demo-chat-messages" id="demoChatMessages"></div>
+        </div>
+
+        <!-- ============ 阶段 4 · 角色档案 ============ -->
+        <div class="demo-panel demo-cards-panel" id="demoCardsPanel">
+            <div class="demo-panel-title">角色档案</div>
+            <div class="demo-cards" id="demoCards"></div>
+            <div class="demo-cards-hint">移入卡片，触碰他们的世界</div>
+        </div>
+
+        <!-- ============ 阶段 5 · 功能展示 ============ -->
+        <div class="demo-panel demo-features" id="demoFeaturesPanel">
+            <div class="demo-panel-title">世界的脉搏</div>
+            <div class="demo-feature-grid">
+                <div class="demo-feature demo-feature-chart">
+                    <div class="demo-feature-label">情绪曲线</div>
+                    <svg id="demoChart" viewBox="0 0 300 96" preserveAspectRatio="none">
+                        <polyline id="demoChartLine"
+                                  points="0,74 25,66 50,70 75,54 100,60 125,42 150,48 175,32 200,38 225,24 250,30 275,18 300,24"/>
+                    </svg>
+                </div>
+                <div class="demo-feature demo-feature-thermo">
+                    <div class="demo-feature-label">关系温度</div>
+                    <div class="demo-thermo">
+                        <div class="demo-thermo-tube">
+                            <div class="demo-thermo-fill" id="demoThermoFill"></div>
+                        </div>
+                        <div class="demo-thermo-val" id="demoThermoVal">0%</div>
+                    </div>
+                </div>
+                <div class="demo-feature demo-feature-gauge">
+                    <div class="demo-feature-label">状态仪表盘</div>
+                    <div class="demo-gauge">
+                        <svg viewBox="0 0 120 120">
+                            <circle class="demo-gauge-track" cx="60" cy="60" r="50"></circle>
+                            <circle class="demo-gauge-arc" id="demoGaugeArc" cx="60" cy="60" r="50"></circle>
+                        </svg>
+                        <div class="demo-gauge-center">
+                            <span id="demoGaugeVal">0</span>
+                            <small>情绪</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="demo-events" id="demoEvents"></div>
+        </div>
+
+        <!-- ============ 阶段 6 · 收束 ============ -->
+        <div class="demo-finale" id="demoFinale">
+            <button class="demo-enter" id="demoEnter">进 入 世 界</button>
+            <div class="demo-replay" id="demoReplay">演示将在 <b id="demoReplaySec">6</b> 秒后重播</div>
+        </div>
+
+        <!-- ============ 控制 ============ -->
+        <button class="demo-skip" id="demoSkip" title="跳到结尾 (Esc 退出)">跳过 ›</button>
+        <div class="demo-hint" id="demoHint">点击 / 空格：暂停 · 继续 ｜ Esc：退出 ｜ 移动端：双击退出</div>
+
+        <!-- ============ 底部进度条 ============ -->
+        <div class="demo-progress" id="demoProgress">
+            <div class="demo-progress-track">
+                <div class="demo-progress-fill" id="demoProgressFill"></div>
+                <div class="demo-progress-shine"></div>
+            </div>
+            <div class="demo-progress-text" id="demoProgressText">0%</div>
+        </div>
+    </div>
+
+    <script src="js/demo-mode.js"></script>
+</body>
+</html>

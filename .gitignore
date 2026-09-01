@@ -1,3 +1,16 @@
-﻿frontend_backup_*/
+﻿# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 备份
+frontend_backup_*/
 frontend_locked_*/
-frontend/index_working_backup.html
+index_working_backup.html
+
+# 运行时
+data/*.db
+data/*.json
+
+# 环境
+.env

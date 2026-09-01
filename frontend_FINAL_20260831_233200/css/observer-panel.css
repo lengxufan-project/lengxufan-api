@@ -1,0 +1,315 @@
+/* ============ 观察者之窗（独立页面） ============ */
+/* 覆盖 main.css 的全局 body 设定：深色背景，最大宽度 800px 居中 */
+body {
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, #0a0c12 0%, #10131d 50%, #0a0c12 100%);
+}
+
+.observer-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0 20px 24px;
+}
+
+/* ---------- 顶部：返回 + 标题 ---------- */
+.op-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 4px 14px;
+  position: relative;
+  flex-shrink: 0;
+}
+/* 标题下方渐变细线（与主界面 header 一致） */
+.op-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #58a6ff, transparent);
+}
+.back-btn {
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 1px solid #2a3550;
+  background: rgba(255, 255, 255, 0.04);
+  color: #8fa0c0;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+.back-btn:hover {
+  color: #d8e6ff;
+  border-color: #4a6fa5;
+  background: rgba(80, 140, 255, 0.12);
+}
+.op-title {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 17px;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  color: #eaf0ff;
+  text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+}
+.op-sub {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: #3d4761;
+}
+
+/* ---------- 中央：玻璃圆环仪表盘 ---------- */
+.ring-stage {
+  display: flex;
+  justify-content: center;
+  padding: 36px 0 30px;
+}
+.observer-ring {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  /* 玻璃质感底座 */
+  border: 1px solid rgba(88, 166, 255, 0.18);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow:
+    0 0 30px rgba(88, 166, 255, 0.12),
+    inset 0 0 24px rgba(88, 166, 255, 0.05);
+  transition: box-shadow 0.6s ease-in-out;
+}
+/* 环形仪表：conic-gradient 显示情绪值（--p: 0~100，由 JS 更新） */
+.observer-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from -90deg,
+    #58a6ff 0deg,
+    #9fd8ff calc(var(--p, 0) * 3.6deg),
+    rgba(88, 166, 255, 0.08) calc(var(--p, 0) * 3.6deg),
+    rgba(88, 166, 255, 0.08) 360deg
+  );
+  /* 挖空中心形成圆环 */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+}
+/* 弧线端点光斑 */
+.observer-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
+  opacity: calc(var(--p, 0) / 100);
+  transition: opacity 0.6s ease-in-out;
+}
+
+/* 环内光晕（深呼吸时扩散） */
+.observer-ring .halo {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(88, 166, 255, 0.28) 0%, rgba(88, 166, 255, 0.08) 45%, transparent 68%);
+  opacity: 0;
+  transform: scale(0.82);
+  pointer-events: none;
+  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+}
+.observer-ring.breathing .halo {
+  opacity: 1;
+  transform: scale(1.38);
+}
+.observer-ring.breathing {
+  box-shadow:
+    0 0 60px rgba(88, 166, 255, 0.35),
+    inset 0 0 40px rgba(88, 166, 255, 0.12);
+}
+
+/* 中央发光点（点击触发深呼吸重置） */
+.observer-ring .core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 104px;
+  height: 104px;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+  background: radial-gradient(circle at 42% 40%, rgba(191, 224, 255, 0.32) 0%, rgba(88, 166, 255, 0.12) 46%, transparent 72%);
+  box-shadow: 0 0 22px rgba(88, 166, 255, 0.35), 0 0 56px rgba(88, 166, 255, 0.14);
+  animation: corePulse 3.2s ease-in-out infinite;
+  transition: box-shadow 0.6s ease-in-out, transform 0.6s ease-in-out;
+}
+.observer-ring.breathing .core {
+  transform: translate(-50%, -50%) scale(1.5);
+  box-shadow: 0 0 60px rgba(88, 166, 255, 0.7), 0 0 120px rgba(88, 166, 255, 0.32);
+  animation-play-state: paused;
+}
+@keyframes corePulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.35); }
+}
+
+/* 中央大号字体：冰蓝发光 */
+.observer-ring .value-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+.observer-ring .value {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 44px;
+  font-weight: 200;
+  line-height: 1;
+  color: #bfe0ff;
+  text-shadow: 0 0 12px rgba(88, 166, 255, 0.8), 0 0 32px rgba(88, 166, 255, 0.4);
+}
+.value-label {
+  margin-top: 7px;
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em; /* 抵消末字符字距，保持视觉居中 */
+  color: #6f7d96;
+}
+
+/* ---------- 压力值进度条 ---------- */
+.stress-block {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(88, 166, 255, 0.12);
+  border-radius: 14px;
+  padding: 16px 18px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  margin-bottom: 14px;
+}
+.stress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.stress-title {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: #aeb9cf;
+}
+.stress-num {
+  font-size: 12px;
+  color: #6f7d96;
+  font-variant-numeric: tabular-nums;
+}
+.stress-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 6px;
+  background: rgba(88, 166, 255, 0.08);
+  border: 1px solid rgba(88, 166, 255, 0.15);
+  overflow: hidden;
+}
+.stress-fill {
+  position: relative;
+  height: 100%;
+  width: 0%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #2a6fd9 0%, #58a6ff 60%, #9fd8ff 100%);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.6);
+  overflow: hidden;
+  transition: width 0.6s ease-in-out;
+}
+/* 流动光效 */
+.stress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 56px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: flowLight 2.4s ease-in-out infinite;
+}
+@keyframes flowLight {
+  0% { left: -56px; }
+  100% { left: 100%; }
+}
+
+/* ---------- 亲密度摘要：三行 ---------- */
+.relation-summary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(88, 166, 255, 0.12);
+  border-radius: 14px;
+  padding: 14px 18px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.rel-title {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: #aeb9cf;
+  margin-bottom: 6px;
+}
+.rel-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+}
+.rel-name {
+  width: 60px;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #d8dde6;
+}
+.rel-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 4px;
+  background: rgba(88, 166, 255, 0.08);
+  overflow: hidden;
+}
+.rel-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #2a6fd9, #58a6ff);
+  box-shadow: 0 0 6px rgba(88, 166, 255, 0.4);
+  transition: width 0.6s ease-in-out;
+}
+.rel-val {
+  width: 56px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 12px;
+  color: #6f7d96;
+  font-variant-numeric: tabular-nums;
+}
+/* 未解锁角色的行做弱化处理 */
+.rel-row.locked .rel-name { color: #5f6b80; }
+.rel-row.locked .rel-fill {
+  background: rgba(95, 107, 128, 0.45);
+  box-shadow: none;
+}
+
+/* ---------- 底部说明文字 ---------- */
+.op-footer {
+  margin-top: auto;
+  padding-top: 22px;
+  text-align: center;
+}
+.breath-hint {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #5f6b80;
+  transition: color 0.3s ease-in-out;
+}

@@ -261,13 +261,34 @@ body {
 }
 
 /* ---------- 移动端适配 ---------- */
+@media (max-width: 768px) {
+  /* 顶部紧凑 */
+  .ex-header { padding: 10px 16px; }
+  .ex-title { font-size: 15px; letter-spacing: 0.1em; }
+  .ex-sub { font-size: 9px; letter-spacing: 0.3em; }
+  .back-btn { padding: 5px 12px; font-size: 11px; }
+
+  /* 月光光斑缩小，避免溢出 */
+  .moonlight { width: 300px; height: 440px; }
+
+  /* 收集栏紧凑 */
+  .collect-bar { bottom: 16px; padding: 8px 14px; gap: 8px; }
+  .slot { width: 36px; height: 36px; font-size: 14px; }
+
+  /* 提示框适度缩小 */
+  .item-tooltip { min-width: 110px; padding: 7px 10px; }
+  .item-tooltip .tip-name { font-size: 12px; }
+  .item-tooltip .tip-desc { font-size: 10px; }
+}
+
+/* 极窄屏额外收紧 */
 @media (max-width: 600px) {
-  .ex-header { padding: 12px 14px; }
-  .ex-title { font-size: 15px; }
-  .moonlight { width: 260px; height: 380px; }
-  .slot { width: 34px; height: 34px; font-size: 13px; }
-  .collect-bar { bottom: 14px; gap: 7px; padding: 8px 12px; }
-  .done-text { bottom: 74px; font-size: 13px; }
-  .item-tooltip { min-width: 104px; }
+  .ex-header { padding: 8px 12px; }
+  .ex-title { font-size: 13px; }
+  .moonlight { width: 240px; height: 340px; }
+  .slot { width: 32px; height: 32px; font-size: 12px; }
+  .collect-bar { bottom: 12px; gap: 6px; padding: 6px 10px; }
+  .done-text { bottom: 70px; font-size: 12px; letter-spacing: 0.3em; }
+  .item-tooltip { min-width: 100px; }
   .item-tooltip .tip-desc { display: none; }
 }

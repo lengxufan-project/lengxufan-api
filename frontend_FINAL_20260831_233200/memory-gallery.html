@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时光回廊</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/memory-gallery.css">
+</head>
+<body>
+<div class="mg-page">
+
+  <!-- 顶部：返回 + 标题 -->
+  <header class="mg-nav">
+    <button class="mg-back" type="button" onclick="location.href='index.html?skipIntro=1'">← 返回世界</button>
+    <h1 class="mg-title">时光回廊</h1>
+    <span class="mg-nav-spacer"></span>
+  </header>
+
+  <!-- 中央：3D 透视视口，两侧排列 6 张记忆卡片 -->
+  <div class="gallery-view" id="galleryView">
+    <div class="gallery-track" id="galleryTrack">
+      <!-- 记忆卡片由 js/memory-gallery.js 注入 -->
+    </div>
+    <div class="gallery-stars" id="galleryStars" aria-hidden="true"></div>
+  </div>
+
+  <!-- 底部：滚动指示 -->
+  <footer class="mg-legend">
+    <span class="mg-legend-hint">滚轮 / 拖动 切换记忆 · 点击卡片查看完整对话</span>
+    <div class="mg-indicator" id="mgIndicator" aria-hidden="true"></div>
+  </footer>
+
+</div>
+<script src="js/memory-gallery.js"></script>
+</body>
+</html>

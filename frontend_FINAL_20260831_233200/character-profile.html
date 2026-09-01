@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人物典籍</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/character-profile.css">
+</head>
+<body>
+  <div class="profile-page">
+
+    <!-- 顶部导航 -->
+    <header class="profile-nav">
+      <a class="back-btn" href="index.html?skipIntro=1">&larr; 返回世界</a>
+      <div class="nav-title">人物典籍</div>
+    </header>
+
+    <!-- 主体：左侧形象 + 右侧资料 -->
+    <main class="profile-body">
+
+      <!-- 左侧：角色形象 -->
+      <aside class="profile-side">
+        <div class="profile-figure" id="profileFigure"></div>
+        <div class="profile-name" id="profileName">--</div>
+        <div class="profile-emotion" id="profileEmotion">--</div>
+      </aside>
+
+      <!-- 右侧：资料主体 -->
+      <section class="profile-main">
+
+        <!-- 基本信息 -->
+        <div class="profile-section">
+          <h2 class="section-title">基本信息</h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">代号</span>
+              <span class="info-value" id="infoCodename">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">身份</span>
+              <span class="info-value" id="infoIdentity">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">标志物</span>
+              <span class="info-value" id="infoToken">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 内心独白碎片 -->
+        <div class="profile-section">
+          <h2 class="section-title">内心独白碎片</h2>
+          <div class="monologue-list" id="monologueList"></div>
+        </div>
+
+        <!-- 关系网络摘要 -->
+        <div class="profile-section">
+          <h2 class="section-title">关系网络</h2>
+          <div class="relation-list" id="relationList"></div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- 底部翻页指示 -->
+    <footer class="profile-pager">
+      <div class="pager-dots" id="pagerDots"></div>
+      <div class="pager-text" id="pagerText">1 / 3</div>
+    </footer>
+
+  </div>
+
+  <script src="js/character-profile.js"></script>
+</body>
+</html>

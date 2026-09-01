@@ -25,7 +25,7 @@
 <body>
   <div class="relations-page">
     <div class="page-header">
-      <a class="back-btn" href="index.html">&larr; 返回</a>
+      <a class="back-btn" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()">&larr; 返回</a>
       <h1 class="page-title">关系温度计</h1>
     </div>
     <div id="relationsContainer"></div>
@@ -50,6 +50,15 @@
 
       load();
     })();
+
+    /* 统一返回逻辑：有同源来源页则回退，否则回主界面（导航闭环） */
+    window.goBack = function () {
+      if (document.referrer && document.referrer.includes(window.location.host)) {
+        history.back();
+      } else {
+        window.location.href = "index.html?skipIntro=1";
+      }
+    };
   </script>
 </body>
 </html>

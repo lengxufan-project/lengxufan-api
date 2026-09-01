@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星图导航</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/world-map.css">
+</head>
+<body>
+<div class="wm-page">
+
+  <!-- 全屏星图背景 -->
+  <div class="wm-stars" id="wmStars" aria-hidden="true"></div>
+
+  <!-- 顶部：返回按钮 + 标题 -->
+  <header class="wm-nav">
+    <button class="wm-back" type="button" onclick="location.href='index.html?skipIntro=1'">← 返回世界</button>
+    <h1 class="wm-title">星图导航</h1>
+    <span class="wm-nav-spacer"></span>
+  </header>
+
+  <!-- 中央：SVG 星空，5 个场景节点 -->
+  <div class="wm-stage" id="wmStage">
+    <svg id="wmSvg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <!-- 连线由 js/world-map.js 注入 -->
+    </svg>
+    <div class="wm-nodes" id="wmNodes">
+      <!-- 节点由 js/world-map.js 注入 -->
+    </div>
+    <!-- 光点滑行轨迹 -->
+    <div class="map-traveler" id="mapTraveler" aria-hidden="true"></div>
+  </div>
+
+  <!-- 底部：场景名称列表 -->
+  <footer class="wm-legend">
+    <span class="wm-legend-hint">点击星点切换场景</span>
+    <div class="wm-chips" id="wmChips"></div>
+  </footer>
+
+</div>
+<script src="js/world-map.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+2026-08-30 18:21:42 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 18:48:42 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 18:50:00 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 18:54:34 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 18:56:19 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 18:56:28 | INFO    | logger          | 世界状态: 开学第1天。傍晚。风。风很大。窗帘被吹得鼓起来，又落下。
+2026-08-30 18:56:28 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 18:56:28 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 18:56:47 | INFO    | logger          | 世界状态: 开学第1天。傍晚。风。风很大。窗帘被吹得鼓起来，又落下。
+2026-08-30 18:56:47 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 18:56:47 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 18:56:47 | DEBUG   | logger          | [SceneEngine] 时间段=傍晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 18:56:47 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 18:56:48 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-08-30 19:10:33 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 19:10:39 | INFO    | logger          | 世界状态: 开学第1天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-08-30 19:10:39 | INFO    | logger          | 世界状态: 开学第1天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-08-30 19:10:39 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 19:10:39 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 19:10:40 | INFO    | logger          | 世界状态: 开学第1天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-08-30 19:10:40 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 19:10:40 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 19:21:35 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 19:29:08 | INFO    | logger          | 世界状态: 开学第1天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-08-30 19:29:08 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 19:29:08 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 19:29:08 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=小雨, 地点=307室, 人物=7人
+2026-08-30 19:29:08 | DEBUG   | logger          | [ContextAnalyzer] 意图=疑问, 追问=True, 情感=中性, 话题=一般对话
+2026-08-30 19:29:08 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-08-30 19:33:49 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 19:41:52 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 19:41:59 | INFO    | logger          | 世界状态: 开学第1天。夜晚。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-08-30 19:41:59 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 19:41:59 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 19:42:03 | INFO    | logger          | 世界状态: 开学第1天。夜晚。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-08-30 19:42:03 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 19:42:03 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 19:42:03 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 19:42:03 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 19:42:04 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-08-30 19:42:10 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 19:42:10 | DEBUG   | logger          | [ContextAnalyzer] 意图=疑问, 追问=False, 情感=中性, 话题=一般对话
+2026-08-30 20:17:48 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 20:52:58 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 20:53:04 | INFO    | logger          | 世界状态: 开学第1天。夜晚。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-08-30 20:53:04 | INFO    | logger          | 世界状态: 开学第1天。夜晚。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-08-30 20:53:04 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 20:53:04 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 20:53:06 | INFO    | logger          | 世界状态: 开学第1天。夜晚。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-08-30 20:53:06 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 20:53:06 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 21:15:20 | INFO    | logger          | 世界状态: 开学第1天。夜晚。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-08-30 21:15:20 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 21:15:20 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 21:15:20 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:15:20 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:15:20 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-08-30 21:15:34 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:15:34 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=陆华望
+2026-08-30 21:15:44 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:15:44 | DEBUG   | logger          | [ContextAnalyzer] 意图=疑问, 追问=True, 情感=正面, 话题=一般对话
+2026-08-30 21:15:57 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:15:57 | DEBUG   | logger          | [ContextAnalyzer] 意图=疑问, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:16:16 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:16:16 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:16:29 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=阴, 地点=307室, 人物=7人
+2026-08-30 21:16:29 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=中性, 话题=一般对话
+2026-08-30 21:16:49 | INFO    | logger          | 世界状态: 开学第1天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-08-30 21:16:49 | INFO    | logger          | 已加载角色: 黄景云
+2026-08-30 21:16:49 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-08-30 21:16:49 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=小雨, 地点=307室, 人物=7人
+2026-08-30 21:16:49 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:17:04 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:17:04 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-08-30 21:24:20 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=阴, 地点=307室, 人物=7人
+2026-08-30 21:24:20 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:24:30 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:24:30 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:24:42 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=阴, 地点=307室, 人物=7人
+2026-08-30 21:24:42 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=陆华望
+2026-08-30 21:37:28 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-08-30 21:37:45 | INFO    | logger          | 世界状态: 开学第1天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-08-30 21:37:45 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 21:37:46 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 21:40:38 | INFO    | logger          | 世界状态: 开学第1天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-08-30 21:40:38 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-08-30 21:40:38 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-08-30 21:40:38 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=小雨, 地点=307室, 人物=7人
+2026-08-30 21:40:38 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-08-30 21:40:39 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-08-30 21:54:41 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=阴, 地点=307室, 人物=7人
+2026-08-30 21:54:41 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:54:48 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=小雨, 地点=307室, 人物=7人
+2026-08-30 21:54:48 | DEBUG   | logger          | [ContextAnalyzer] 意图=疑问, 追问=False, 情感=中性, 话题=一般对话
+2026-08-30 21:55:05 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=小雨, 地点=307室, 人物=7人
+2026-08-30 21:55:05 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:55:12 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-08-30 21:55:12 | DEBUG   | logger          | [ContextAnalyzer] 意图=敷衍, 追问=False, 情感=正面, 话题=一般对话
+2026-08-30 21:55:25 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=小雨, 地点=307室, 人物=7人
+2026-08-30 21:55:25 | DEBUG   | logger          | [ContextAnalyzer] 意图=疑问, 追问=False, 情感=正面, 话题=一般对话

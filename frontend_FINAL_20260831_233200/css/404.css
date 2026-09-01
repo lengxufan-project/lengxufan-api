@@ -1,0 +1,232 @@
+/* ============================================================
+   404.css — 世界的缝隙（独立 404 页面样式）
+   仅服务于 404.html，类名前缀 nf-
+   ============================================================ */
+
+/* ============ 覆盖 main.css 的 body 限宽，恢复全屏 ============ */
+body {
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+  animation: none;
+  background: radial-gradient(ellipse at 40% 46%, #0b1526 0%, #060a14 55%, #03050a 100%);
+}
+
+/* ============ 页面骨架 ============ */
+.nf-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nf-stage {
+  display: flex;
+  align-items: center;
+  gap: 72px;
+  padding: 0 8vw;
+}
+
+/* ============ 发光球 + 环绕粒子 ============ */
+.nf-orb-wrap {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  flex-shrink: 0;
+  will-change: transform;
+}
+
+/* 粒子轨道：逆时针缓慢旋转 */
+.nf-orbit {
+  position: absolute;
+  inset: 0;
+  animation: nfOrbitSpin 24s linear infinite;
+}
+@keyframes nfOrbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* 粒子：淡冰蓝光点，位置 / 大小由 JS 注入 */
+.nf-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #cfe6ff;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 6px rgba(190, 224, 255, 0.9),
+    0 0 14px rgba(88, 166, 255, 0.5);
+  animation: nfTwinkle var(--tw-dur, 3s) ease-in-out var(--tw-delay, 0s) infinite alternate;
+}
+@keyframes nfTwinkle {
+  from { opacity: var(--p-op, 0.8); }
+  to   { opacity: 0.15; }
+}
+
+/* 中央光球：#58a6ff 光晕，持续脉动；入场时从黑暗中浮现 */
+.nf-ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  margin: -90px 0 0 -90px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #bfe0ff 0%, #58a6ff 38%, #1b4a8a 76%, #0a1a33 100%);
+  box-shadow:
+    0 0 40px rgba(88, 166, 255, 0.75),
+    0 0 90px rgba(88, 166, 255, 0.4),
+    0 0 160px rgba(88, 166, 255, 0.22),
+    0 0 30px rgba(191, 224, 255, 0.5) inset;
+  animation:
+    nfEmerge 0.9s ease-in-out 0.1s both,
+    nfPulse 3.2s ease-in-out 1s infinite;
+}
+@keyframes nfPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 40px rgba(88, 166, 255, 0.75),
+      0 0 90px rgba(88, 166, 255, 0.4),
+      0 0 160px rgba(88, 166, 255, 0.22),
+      0 0 30px rgba(191, 224, 255, 0.5) inset;
+  }
+  50% {
+    transform: scale(1.07);
+    box-shadow:
+      0 0 60px rgba(88, 166, 255, 0.95),
+      0 0 130px rgba(88, 166, 255, 0.55),
+      0 0 220px rgba(88, 166, 255, 0.3),
+      0 0 40px rgba(191, 224, 255, 0.65) inset;
+  }
+}
+
+/* ============ 文案 + 按钮：从黑暗中浮现 ============ */
+.nf-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: opacity 0.5s ease-in-out;
+  will-change: transform;
+}
+
+.nf-text {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 6px;
+  color: #d5e3f5;
+  text-shadow: 0 0 18px rgba(88, 166, 255, 0.35);
+  animation: nfEmerge 0.9s ease-in-out 0.3s both;
+}
+
+.nf-btn {
+  margin-top: 30px;
+  padding: 12px 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(88, 166, 255, 0.5);
+  background: rgba(88, 166, 255, 0.08);
+  color: #bfe0ff;
+  font-size: 14px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  animation: nfEmerge 0.9s ease-in-out 0.45s both;
+}
+.nf-btn:hover {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: rgba(88, 166, 255, 0.9);
+  box-shadow: 0 0 18px rgba(88, 166, 255, 0.45);
+}
+.nf-btn:active {
+  transform: scale(0.96);
+}
+
+@keyframes nfEmerge {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ 爆发状态（点击返回按钮后，由 JS 触发） ============ */
+.nf-page.burst .nf-ball {
+  animation: nfBallBurst 0.85s ease-in-out forwards;
+}
+@keyframes nfBallBurst {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow:
+      0 0 40px rgba(88, 166, 255, 0.75),
+      0 0 90px rgba(88, 166, 255, 0.4),
+      0 0 160px rgba(88, 166, 255, 0.22);
+  }
+  45% {
+    transform: scale(1.9);
+    opacity: 1;
+    box-shadow:
+      0 0 120px rgba(140, 200, 255, 1),
+      0 0 260px rgba(88, 166, 255, 0.8),
+      0 0 420px rgba(88, 166, 255, 0.5);
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+    box-shadow:
+      0 0 200px rgba(140, 200, 255, 0),
+      0 0 360px rgba(88, 166, 255, 0),
+      0 0 520px rgba(88, 166, 255, 0);
+  }
+}
+
+.nf-page.burst .nf-particle {
+  animation: nfParticleFly 0.85s ease-in-out forwards;
+}
+@keyframes nfParticleFly {
+  to {
+    transform: translate(calc(-50% + var(--fx, 0px)), calc(-50% + var(--fy, 0px))) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.nf-page.burst .nf-content {
+  opacity: 0;
+}
+
+/* ============ 移动端 ============ */
+@media (max-width: 640px) {
+  .nf-stage {
+    flex-direction: column;
+    gap: 44px;
+    text-align: center;
+    padding: 0 24px;
+  }
+  .nf-orb-wrap {
+    width: 220px;
+    height: 220px;
+  }
+  .nf-ball {
+    width: 120px;
+    height: 120px;
+    margin: -60px 0 0 -60px;
+  }
+  /* 粒子减半 */
+  .nf-particle:nth-child(n + 13) { display: none; }
+  .nf-content {
+    align-items: center;
+    width: 100%;
+  }
+  .nf-text {
+    font-size: 20px;
+    letter-spacing: 4px;
+  }
+  .nf-btn {
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+  }
+}

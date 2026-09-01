@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生命之阶</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/journey.css">
+</head>
+<body>
+<div class="jr-page">
+
+  <!-- 顶部：返回 + 标题 -->
+  <header class="jr-nav">
+    <button class="jr-back" type="button" onclick="location.href='index.html?skipIntro=1'">← 返回世界</button>
+    <h1 class="jr-title">生命之阶</h1>
+    <span class="jr-nav-spacer"></span>
+  </header>
+
+  <!-- 中心时间线 -->
+  <main class="jr-timeline" id="jrTimeline">
+    <!-- 发光竖线 -->
+    <div class="jr-line" id="jrLine" aria-hidden="true"></div>
+    <!-- 节点与卡片由 js/journey.js 注入 -->
+  </main>
+
+  <!-- 底部提示 -->
+  <footer class="jr-legend">
+    <span class="jr-legend-hint">向下滚动，点亮每一个共同的瞬间</span>
+  </footer>
+
+</div>
+<script src="js/journey.js"></script>
+</body>
+</html>

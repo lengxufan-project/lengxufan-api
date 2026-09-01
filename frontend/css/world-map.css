@@ -268,11 +268,29 @@
 }
 
 /* ============ 移动端适配：节点位置自动缩放 ============ */
+@media (max-width: 768px) {
+  /* 顶部导航紧凑 */
+  .wm-nav { padding: 12px 16px; }
+  .wm-title { font-size: 19px; letter-spacing: 4px; }
+  .wm-back { padding: 5px 12px; font-size: 12px; }
+  .wm-nav-spacer { width: 60px; }
+
+  /* 节点适度缩小 */
+  .map-node { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+  .map-node.current { width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+
+  /* 底部图例紧凑 */
+  .wm-legend { padding: 10px 16px 16px; }
+  .wm-legend-hint { font-size: 11px; }
+  .wm-chip { padding: 4px 12px; font-size: 11px; }
+}
+
+/* 极窄屏额外收紧 */
 @media (max-width: 640px) {
-  .wm-title { font-size: 18px; letter-spacing: 4px; }
-  .wm-nav { padding: 10px 14px; }
-  .map-node { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
-  .map-node.current { width: 28px; height: 28px; margin: -14px 0 0 -14px; }
-  .map-label { font-size: 10px; margin-top: 12px; }
-  .wm-legend { padding: 10px 12px 14px; }
+  .wm-title { font-size: 16px; letter-spacing: 3px; }
+  .wm-nav { padding: 8px 12px; }
+  .map-node { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
+  .map-node.current { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+  .map-label { font-size: 10px; margin-top: 10px; }
+  .wm-legend { padding: 8px 10px 12px; }
 }

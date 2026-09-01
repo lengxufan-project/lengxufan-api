@@ -1,0 +1,308 @@
+/* ============================================================
+   relation-map.css — 星光交织图谱（独立页面样式）
+   仅作用于本页 .rm-* / #rm* 元素，不影响主页面
+   ============================================================ */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #04060f;
+}
+
+/* ---------- 页面背景：深邃暗色渐变 ---------- */
+.rm-page {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(1100px 750px at 50% 32%, rgba(88, 166, 255, 0.10), transparent 62%),
+    radial-gradient(900px 600px at 82% 82%, rgba(88, 166, 255, 0.05), transparent 60%),
+    linear-gradient(180deg, #0a1024 0%, #060a1a 52%, #030510 100%);
+  color: #cfe0ff;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ---------- 星点纹理：1 个 2px 光点 + 50 个 box-shadow 随机星点 ---------- */
+.rm-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: none;
+  animation: rm-twinkle 6s ease-in-out infinite alternate;
+  box-shadow:
+    20px 30px #ffffff,
+    140px 90px rgba(158, 203, 255, 0.9),
+    260px 40px rgba(255, 255, 255, 0.7),
+    380px 150px #9ecbff,
+    520px 60px rgba(255, 255, 255, 0.8),
+    660px 120px rgba(88, 166, 255, 0.8),
+    800px 50px #ffffff,
+    940px 170px rgba(158, 203, 255, 0.7),
+    1080px 80px rgba(255, 255, 255, 0.6),
+    1220px 140px #9ecbff,
+    1350px 60px rgba(255, 255, 255, 0.8),
+    1480px 190px rgba(88, 166, 255, 0.7),
+    1560px 90px #ffffff,
+    90px 260px rgba(158, 203, 255, 0.8),
+    210px 340px rgba(255, 255, 255, 0.6),
+    330px 240px #ffffff,
+    460px 310px rgba(88, 166, 255, 0.8),
+    590px 250px rgba(255, 255, 255, 0.7),
+    720px 330px #9ecbff,
+    860px 270px rgba(255, 255, 255, 0.8),
+    1000px 350px rgba(158, 203, 255, 0.7),
+    1150px 290px #ffffff,
+    1280px 360px rgba(88, 166, 255, 0.8),
+    1420px 300px rgba(255, 255, 255, 0.6),
+    1540px 380px #9ecbff,
+    60px 480px rgba(255, 255, 255, 0.7),
+    180px 550px #ffffff,
+    300px 470px rgba(88, 166, 255, 0.8),
+    430px 540px rgba(158, 203, 255, 0.8),
+    560px 490px rgba(255, 255, 255, 0.6),
+    700px 560px #9ecbff,
+    830px 500px rgba(255, 255, 255, 0.8),
+    970px 460px rgba(88, 166, 255, 0.7),
+    1110px 530px #ffffff,
+    1250px 480px rgba(158, 203, 255, 0.8),
+    1390px 550px rgba(255, 255, 255, 0.6),
+    1500px 500px #9ecbff,
+    40px 680px rgba(88, 166, 255, 0.8),
+    170px 730px rgba(255, 255, 255, 0.7),
+    320px 660px #ffffff,
+    450px 720px rgba(158, 203, 255, 0.8),
+    610px 690px rgba(255, 255, 255, 0.6),
+    760px 740px #9ecbff,
+    900px 670px rgba(88, 166, 255, 0.8),
+    1040px 710px #ffffff,
+    1180px 660px rgba(255, 255, 255, 0.7),
+    1320px 730px rgba(158, 203, 255, 0.8),
+    1450px 680px rgba(88, 166, 255, 0.7),
+    1560px 740px #ffffff,
+    760px 840px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes rm-twinkle {
+  from { opacity: 0.55; }
+  to   { opacity: 1; }
+}
+
+/* ---------- 顶部导航 ---------- */
+.rm-nav {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 22px;
+}
+
+.rm-back {
+  appearance: none;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(88, 166, 255, 0.08);
+  color: #9cc4ff;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.rm-back:hover {
+  background: rgba(88, 166, 255, 0.18);
+  border-color: rgba(88, 166, 255, 0.7);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.35);
+}
+
+.rm-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  color: #dce9ff;
+  text-shadow: 0 0 12px rgba(88, 166, 255, 0.45);
+}
+
+.rm-nav-spacer { flex: 1; }
+
+/* ---------- 中央画布 ---------- */
+.rm-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 世界坐标系 1000x600，JS 按视口自动缩放（移动端适配） */
+.rm-world {
+  position: relative;
+  width: 1000px;
+  height: 600px;
+  flex: none;
+  transform-origin: center center;
+}
+
+#rmSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ---------- SVG 线条：虚线流动 ---------- */
+.rm-line {
+  stroke: #58a6ff;
+  stroke-width: 1.5;
+  opacity: 0.5;
+  fill: none;
+  stroke-dasharray: 6 6;
+  animation: rm-dash-flow 1.6s linear infinite;
+  transition: opacity 0.3s ease-in-out, stroke-width 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+@keyframes rm-dash-flow {
+  to { stroke-dashoffset: -12; }
+}
+
+/* 焦点态覆盖行内透明度/粗细 */
+.rm-line.is-dim {
+  opacity: 0.1 !important;
+  animation-play-state: paused;
+}
+
+.rm-line.is-active {
+  opacity: 0.95 !important;
+  stroke-width: 2.4px !important;
+  filter: drop-shadow(0 0 5px rgba(88, 166, 255, 0.9));
+}
+
+/* ---------- 流动光点 ---------- */
+.rm-spark {
+  fill: #cfe7ff;
+  filter: drop-shadow(0 0 3px rgba(88, 166, 255, 0.9));
+  transition: opacity 0.3s ease-in-out;
+}
+
+.rm-spark.is-dim    { opacity: 0.15; }
+.rm-spark.is-active { opacity: 1; filter: drop-shadow(0 0 6px rgba(88, 166, 255, 1)); }
+
+/* ---------- 节点：发光球体 ---------- */
+.rm-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  z-index: 2;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.rm-node.is-dim { opacity: 0.35; }
+
+.rm-node-core {
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #ffffff 0%, #e8f4ff 30%, #9cc8ff 58%, #58a6ff 82%, rgba(88, 166, 255, 0.25) 100%);
+  /* 双层 box-shadow 光晕 */
+  box-shadow:
+    0 0 10px rgba(143, 196, 255, 0.9),
+    0 0 28px rgba(88, 166, 255, 0.45);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* 悬停 / 焦点：放大 + 光晕增强 */
+.rm-node:hover .rm-node-core,
+.rm-node.is-focus .rm-node-core {
+  transform: scale(1.35);
+  box-shadow:
+    0 0 14px rgba(158, 203, 255, 1),
+    0 0 42px rgba(88, 166, 255, 0.75);
+}
+
+/* ---------- 节点 label ---------- */
+.rm-node-label {
+  font-size: 12px;
+  color: #8fa0c0;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  text-shadow: 0 0 6px rgba(88, 166, 255, 0.5);
+  transition: color 0.3s ease-in-out;
+}
+
+.rm-node:hover .rm-node-label,
+.rm-node.is-focus .rm-node-label { color: #cfe4ff; }
+
+/* ---------- 底部提示：角色名列表 ---------- */
+.rm-legend {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px 18px;
+}
+
+.rm-legend-hint {
+  font-size: 12px;
+  color: #6c7ea3;
+  letter-spacing: 1px;
+}
+
+.rm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rm-chip {
+  appearance: none;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  background: rgba(10, 18, 38, 0.6);
+  color: #8fa0c0;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.rm-chip:hover {
+  color: #d6e6ff;
+  border-color: rgba(88, 166, 255, 0.65);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+}
+
+.rm-chip.is-active {
+  color: #0a1024;
+  background: #9cc8ff;
+  border-color: #9cc8ff;
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.6);
+}
+
+/* ---------- 移动端适配 ---------- */
+@media (max-width: 640px) {
+  .rm-nav { padding: 12px 14px; gap: 10px; }
+  .rm-title { font-size: 15px; letter-spacing: 4px; }
+  .rm-back { font-size: 12px; padding: 6px 10px; }
+  .rm-legend { padding: 10px 12px 14px; }
+  .rm-legend-hint { width: 100%; text-align: center; }
+  .rm-chip { padding: 5px 12px; font-size: 11px; }
+}

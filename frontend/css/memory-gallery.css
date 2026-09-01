@@ -258,3 +258,34 @@
   background: rgba(88, 166, 255, 0.2);
   box-shadow: 0 0 12px rgba(88, 166, 255, 0.45);
 }
+
+/* ============ 移动端适配：768px 以下单列、卡片缩小 ============ */
+@media (max-width: 768px) {
+  /* 导航紧凑化 */
+  .mg-nav { padding: 10px 14px; gap: 10px; }
+  .mg-title { font-size: 16px; letter-spacing: 2px; }
+  .mg-nav-spacer { width: 56px; }
+  .mg-back { padding: 5px 10px; font-size: 12px; }
+
+  /* 记忆卡片缩小，轨道透视视口收缩 */
+  .gallery-view { perspective: 500px; perspective-origin: 50% 40%; }
+  .memory-card {
+    width: 190px; height: 130px;
+    margin: -65px 0 0 -95px;
+    padding: 14px 16px;
+  }
+  .memory-card.mc-left  { transform: rotateY(10deg); }
+  .memory-card.mc-right { transform: rotateY(-10deg); }
+  .mc-date { font-size: 10px; }
+  .mc-snippet { font-size: 12px; line-height: 1.5; }
+  .mc-name { font-size: 11px; }
+
+  /* 底部指示紧凑化 */
+  .mg-legend { padding: 10px 14px 14px; gap: 6px; }
+  .mg-legend-hint { font-size: 11px; }
+
+  /* 模态框缩小 */
+  .mg-modal { width: 92vw; padding: 20px 22px; }
+  .mg-modal-body { font-size: 14px; line-height: 1.7; }
+  .mg-modal-close { padding: 6px 18px; font-size: 12px; }
+}

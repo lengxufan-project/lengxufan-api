@@ -1,17 +1,20 @@
 /* ============ 基础重置 ============ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; }
-/* 两侧黑色呼吸空间：html 提供深底，body 居中限宽 */
+/* html / body 占满视口，禁止滚动，避免浏览器缩放时左右黑色边距导致布局错位 */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 html { background: #07080d; }
 body {
-  max-width: 1200px;
-  margin: 0 auto;
   background: linear-gradient(135deg, #0a0c12 0%, #161a29 50%, #0a0c12 100%);
   background-size: 400% 400%;
   animation: bgShift 15s ease-in-out infinite;
   color: #d8dde6;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  overflow: hidden;
 }
 
 /* ============ 全局粒子层 ============ */
@@ -61,23 +64,30 @@ body::after {
 .intro-skip:hover { color: #d8e6ff; border-color: #4a6fa5; background: rgba(80,140,255,0.12); }
 
 /* ============ 悬浮球 ============ */
+/* position:absolute（相对 #app 定位，而非视口 fixed），避免浏览器缩放时错位 */
 .floating-ball {
-  position: fixed; bottom: 24px; right: 24px;
+  position: absolute; bottom: 24px; right: 24px;
   width: 40px; height: 40px; border-radius: 50%;
   z-index: 900;
   opacity: 0; pointer-events: none;
   background: radial-gradient(circle at 35% 35%, #ffffff 0%, #bfe0ff 18%, #58a6ff 45%, #2a3a8c 80%, #0a0c12 100%);
   box-shadow: 0 0 10px rgba(88,166,255,0.6), 0 0 40px rgba(88,166,255,0.2);
 }
-/* 开场动画结束后（.intro.hide 出现）球体浮现并开始呼吸（动画见 animations.css） */
-.intro.hide ~ .floating-ball { opacity: 1; }
+/* 开场动画结束后（.intro.hide 出现）球体浮现并开始呼吸；
+   因 floatingBall 已移入 #app 容器，需改为后代选择器覆盖 animations.css 的旧 ~ 兄弟选择器 */
+.intro.hide ~ #app .floating-ball { opacity: 1; animation: ballBreath 3s ease-in-out infinite; }
 
 /* ============ 主界面 ============ */
+/* 主应用容器：固定占满视口，flex 纵向布局，避免缩放时拉伸/错位 */
 .app {
-  display: flex; flex-direction: column;
-  height: 100vh; width: 100%;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   opacity: 1; /* 默认可见，由 intro 覆盖后由 JS 隐藏 */
-  position: relative;
   z-index: 1;
 }
 
@@ -89,7 +99,7 @@ body::after {
   background: linear-gradient(180deg, #11141d 0%, #0d0f17 100%);
   border-bottom: 1px solid transparent; /* 渐变细线由 ::after 绘制 */
   flex-shrink: 0;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 /* 标题下方渐变线 */
 .header::after {
@@ -146,7 +156,7 @@ body::after {
   padding: 9px 22px; flex-wrap: wrap;
   background: #0d0f17; border-bottom: 1px solid #1d2230;
   flex-shrink: 0;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .char-btn {
   padding: 5px 14px; border-radius: 16px;
@@ -191,7 +201,7 @@ body::after {
     linear-gradient(180deg, #0f1220 0%, #0a0c15 100%);
   overflow: hidden;
   border-bottom: 1px solid #1d2230;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 /* 双层动态光晕（强度已减弱） */
 .scene::before {
@@ -259,7 +269,7 @@ body::after {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 22px; flex-shrink: 0;
   background: #0d0f17; border-bottom: 1px solid #1d2230;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .charinfo .avatar {
   width: 40px; height: 40px; border-radius: 50%;
@@ -309,7 +319,7 @@ body::after {
   flex: 1; overflow-y: auto;
   padding: 18px 22px;
   display: flex; flex-direction: column; gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .chat::-webkit-scrollbar { width: 6px; }
 .chat::-webkit-scrollbar-thumb { background: rgba(88,166,255,0.4); border-radius: 3px; }
@@ -328,31 +338,32 @@ body::after {
   color: transparent;
 }
 .bubble {
-  padding: 10px 14px; border-radius: 16px;
+  padding: 10px 14px; border-radius: 14px;
   font-size: 14px; line-height: 1.6;
   white-space: pre-wrap; word-wrap: break-word;
   animation: bubbleIn 0.3s ease-in-out;
 }
+/* 统一卡片质感：磨砂深底 + 白色微边 + 内外双阴影 */
 .bubble.ai {
-  background: rgba(22,26,41,0.6);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  border: 1px solid rgba(88,166,255,0.5);
-  box-shadow: inset 0 0 10px rgba(255,255,255,0.03);
+  background: rgba(22, 26, 41, 0.6);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
   color: #dde2ec;
   border-bottom-left-radius: 4px;
 }
 .bubble.user {
-  background: rgba(28,109,240,0.12);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-  border: 1px solid rgba(88,166,255,0.5);
-  box-shadow: 0 0 15px rgba(88,166,255,0.1);
+  background: rgba(22, 26, 41, 0.6);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
 /* 无 backdrop-filter 支持时加深背景（降级） */
 @supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
-  .bubble.ai { background: rgba(22,26,41,0.92); }
-  .bubble.user { background: rgba(28,109,240,0.35); }
+  .bubble.ai { background: rgba(22, 26, 41, 0.92); }
+  .bubble.user { background: rgba(22, 26, 41, 0.92); }
 }
 /* 独白 */
 .monologue {
@@ -384,7 +395,7 @@ body::after {
   padding: 12px 22px;
   background: linear-gradient(180deg, #0d0f17, #0a0c12);
   border-top: 1px solid #1d2230;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .composer textarea {
   flex: 1; resize: none; max-height: 120px; min-height: 42px;
@@ -393,7 +404,10 @@ body::after {
   color: #dde2ec; font-size: 14px; line-height: 1.5;
   font-family: inherit; outline: none;
 }
-.composer textarea:focus { border-color: #58a6ff; }
+.composer textarea:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.25), inset 0 0 10px rgba(88, 166, 255, 0.05);
+}
 /* 发送按钮：透明描边，hover 渐变发光 */
 .composer button {
   padding: 8px 20px; border-radius: 12px;
@@ -419,8 +433,9 @@ body::after {
   padding: 10px 18px;
   background: rgba(22,26,41,0.6);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
   font-size: 12px;
 }
 .st {
@@ -459,14 +474,16 @@ body::after {
 }
 
 /* ============ 情绪曲线图 ============ */
-/* 透明背景，移除大块底色与边框，仅保留呼吸间距 */
+/* 统一卡片质感：磨砂深底 + 白色微边 + 内外双阴影 */
 .emotion-chart {
   flex-shrink: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 8px 0;
-  margin: 0 22px 16px 22px;
+  background: rgba(22, 26, 41, 0.6);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
+  padding: 12px 16px;
+  margin: 0 20px 20px 20px;
 }
 .chart-header {
   display: flex; justify-content: space-between; align-items: baseline;
@@ -504,26 +521,28 @@ body::after {
 }
 ::-webkit-scrollbar-track { background: transparent; }
 
-/* ============ 微交互：所有可点击元素 hover 上移 ============ */
+/* ============ 微交互：所有可点击元素 hover 上移 + 光晕增强 ============ */
 button,
 .char-btn,
 .group-toggle,
 .intro-skip,
-.composer button {
+.composer button,
+.nav-item {
   transition: all 0.3s ease-in-out;
 }
-button:hover,
+button:hover:not(:disabled),
 .char-btn:hover,
 .group-toggle:hover,
 .intro-skip:hover,
-.composer button:hover {
+.nav-item:hover {
   transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.3);
 }
+.composer button:hover { transform: translateY(-1px); }   /* 发送键自带更强光晕，仅上移 */
+.char-btn.active:hover { box-shadow: inset 0 0 10px rgba(88, 166, 255, 0.3), 0 0 14px rgba(88, 166, 255, 0.35); }
 
 /* 移动端 */
 @media (max-width: 768px) {
-  /* 内容不限制最大宽度 */
-  body { max-width: none; }
   /* 区块间距收紧为 12px */
   .header, .charbar, .scene, .charinfo, .chat, .composer, .emotion-chart {
     margin-bottom: 12px;
@@ -549,8 +568,8 @@ button:hover,
   .typing { max-width: 85%; }
   /* 悬浮球缩小 */
   .floating-ball { width: 30px; height: 30px; bottom: 16px; right: 16px; }
-  /* 情绪曲线图：高度降为 60px */
-  .emotion-chart { margin: 0 12px 12px; padding: 8px 0; }
+  /* 情绪曲线图：卡片内边距适配小屏 */
+  .emotion-chart { margin: 0 12px 12px; padding: 10px 12px; }
   .chart-body { height: 60px; }
   .chart-title { font-size: 11px; }
   .chart-value { font-size: 13px; }
@@ -559,13 +578,25 @@ button:hover,
 
 /* ============================================================
    世界观察中心（index.html 重构）：全屏场景
-   .app 主容器已移除，场景升级为视口级背景层
+   .app 为唯一 fixed 容器；sidebar / scene / floatingBall 全部用 absolute 相对 #app 定位
    ============================================================ */
 .scene.fullscreen {
-  position: fixed; inset: 0; z-index: 0;
-  width: 100%; max-width: none;
-  height: 100vh; height: 100dvh;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0;
+  width: auto; height: auto;   /* 由绝对定位四边撑开 */
   margin: 0; border: none; border-radius: 0;
+  transition: left 0.3s ease-in-out;
+}
+
+/* 桌面端（sidebar 常驻左侧）：scene 默认 left:220px，collapsed 时收窄到 50px */
+@media (min-width: 769px) {
+  .scene.fullscreen { left: 220px; }
+  /* sidebar 收起态：场景左边界右移 50px（:has 联动，仅桌面生效避免移动端特异性冲突） */
+  #app:has(.sidebar.collapsed) .scene.fullscreen { left: 50px; }
+}
+/* 移动端：sidebar 从左滑入，场景默认全宽；展开时左移 220px */
+@media (max-width: 768px) {
+  .scene.fullscreen { left: 0; }
+  #app:has(.sidebar.open) .scene.fullscreen { left: 220px; }
 }
 
 /* 场景名：居中偏下，细字重大字距，冰蓝光晕 */
@@ -587,13 +618,16 @@ button:hover,
   text-shadow: 0 0 6px rgba(0,0,0,0.6), 0 0 8px rgba(88,166,255,0.35);
 }
 
-/* 室友活动：底部半透明遮罩，居中限宽 */
+/* 室友活动：底部磨砂卡片，居中限宽 */
 .scene.fullscreen .scene-acts {
   left: 50%; right: auto; transform: translateX(-50%);
   width: min(560px, calc(100% - 48px));
   padding: 14px 20px 18px;
-  background: linear-gradient(180deg, transparent, rgba(5,6,12,0.72));
-  border-radius: 14px 14px 0 0;
+  background: rgba(22, 26, 41, 0.6);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
   gap: 6px;
 }
 .scene.fullscreen .scene-act { font-size: 13px; line-height: 1.8; }
@@ -604,4 +638,14 @@ button:hover,
   .scene.fullscreen .scene-meta { top: 40px; right: 14px; font-size: 11px; }   /* 位于时钟胶囊下方 */
   .scene.fullscreen .scene-acts { width: calc(100% - 24px); padding: 10px 14px 14px; }
   .scene.fullscreen .scene-act { font-size: 11.5px; line-height: 1.7; }
+}
+
+/* ============ 统一卡片质感：关系温度计容器 ============ */
+/* relations.html 加载本文件；body 前缀提高优先级，确保覆盖 relation-thermometer.css */
+body .relation-thermo {
+  background: rgba(22, 26, 41, 0.6);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
 }

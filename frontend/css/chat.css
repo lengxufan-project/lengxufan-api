@@ -1,178 +1,341 @@
 /* ============================================================
    chat.css — 独立聊天页（chat.html 专用，前缀 cp- 避免冲突）
-   依赖 css/main.css 提供字体等基础，本文件覆盖 body 滚动行为
-   过渡统一 ease-in-out（0.3-0.6s）
+   微信单人对话框架 + 暗黑冰蓝磨砂风格
+   过渡统一 ease-in-out（0.2-0.3s）
    ============================================================ */
 
-/* main.css 的 body 限宽居中 + overflow hidden 不适用于本页，恢复文档流滚动 */
+/* main.css 的 body 已经 overflow:hidden；chat 页不需要额外覆盖，保持继承即可 */
 body {
-  max-width: none; margin: 0; overflow: auto;
   background: radial-gradient(ellipse at 50% -10%, #101a2e 0%, #07090f 55%, #050609 100%);
 }
 
-/* ============ 页面骨架：全屏，max-width 900px 居中 ============ */
+/* ============ 页面骨架：fixed 视口矩形，A4 纸式布局 ============ */
 .cp-page {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100vh; height: 100dvh;
+  overflow: hidden;
   display: flex; flex-direction: column;
-  height: 100vh; height: 100dvh;
-  max-width: 900px; margin: 0 auto;
   background: transparent;
 }
 
-/* ============ 顶栏：极简 ============ */
+/* ============ 状态抽屉遮罩（抽屉展开时半透明背景，点击关闭） ============ */
+.cp-drawer-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  z-index: 450;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
+}
+.cp-drawer-mask.show { opacity: 1; visibility: visible; }
+
+/* ============ 顶栏：深色磨砂 + 底部极细渐变线 ============ */
 .cp-topbar {
-  display: flex; align-items: center; gap: 14px;
+  position: relative;
+  display: flex; align-items: center; gap: 16px;
   padding: 14px 22px;
-  border-bottom: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, rgba(88,166,255,0.45) 50%, transparent) 1;
+  background: rgba(10,12,18,0.82);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  flex-shrink: 0;
 }
+/* 底部极细渐变线：从透明→冰蓝→透明 */
+.cp-topbar::after {
+  content: '';
+  position: absolute; bottom: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(88,166,255,0.35) 50%, transparent);
+}
+
+/* 返回按钮：极简 ← 圆形 */
 .cp-back {
-  color: #8fa0c0; text-decoration: none; font-size: 13px;
-  padding: 5px 12px; border-radius: 12px;
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  color: #8fa0c0;
+  text-decoration: none;
+  font-size: 18px;
+  border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.08);
-  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background 0.3s ease-in-out;
-  white-space: nowrap;
+  background: rgba(255,255,255,0.03);
+  transition: all 0.2s ease-in-out;
+  line-height: 1;
 }
-.cp-back:hover { color: #fff; border-color: rgba(88,166,255,0.4); background: rgba(88,166,255,0.06); }
-.cp-char-info { display: flex; align-items: baseline; gap: 10px; flex: 1; min-width: 0; }
+.cp-back:hover { color: #fff; background: rgba(88,166,255,0.08); border-color: rgba(88,166,255,0.35); box-shadow: 0 0 10px rgba(88,166,255,0.2); }
+
+/* 角色信息：居中偏左 */
+.cp-char-info {
+  display: flex; align-items: baseline; gap: 10px;
+  flex: 1; min-width: 0;
+  justify-content: center;
+}
 .cp-char-name {
   font-family: 'Noto Serif SC', Georgia, serif;
-  font-size: 17px; color: #eaf0ff; letter-spacing: 0.08em;
+  font-size: 16px; font-weight: 400;
+  color: #eaf0ff; letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 .cp-emotion-label {
-  font-size: 11px; color: #58a6ff;
+  font-size: 11px;
+  color: #58a6ff;
   padding: 2px 10px; border-radius: 10px;
-  border: 1px solid rgba(88,166,255,0.35);
+  border: 1px solid rgba(88,166,255,0.3);
   background: rgba(88,166,255,0.08);
   white-space: nowrap;
 }
+
+/* 状态抽屉按钮：极简图标 + 磨砂圆 */
 .cp-status-toggle {
-  cursor: pointer; font-size: 12px; color: #8fa0c0;
-  padding: 5px 14px; border-radius: 14px;
-  background: rgba(18,24,42,0.55);
-  border: 1px solid rgba(88,166,255,0.3);
-  transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out;
-  white-space: nowrap;
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease-in-out;
 }
-.cp-status-toggle:hover { color: #fff; border-color: rgba(88,166,255,0.55); box-shadow: 0 0 12px rgba(88,166,255,0.25); }
+.cp-status-toggle:hover {
+  background: rgba(88,166,255,0.08);
+  border-color: rgba(88,166,255,0.35);
+  box-shadow: 0 0 10px rgba(88,166,255,0.2);
+}
+/* 三条横线图标（CSS 绘制） */
+.status-icon {
+  position: relative;
+  width: 14px; height: 2px;
+  background: #8fa0c0;
+  border-radius: 2px;
+  transition: background 0.2s ease-in-out;
+}
+.status-icon::before,
+.status-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 14px; height: 2px;
+  background: #8fa0c0;
+  border-radius: 2px;
+  transition: background 0.2s ease-in-out;
+}
+.status-icon::before { top: -5px; }
+.status-icon::after { top: 5px; }
+.cp-status-toggle:hover .status-icon,
+.cp-status-toggle:hover .status-icon::before,
+.cp-status-toggle:hover .status-icon::after { background: #fff; }
 
 /* ============ 聊天区：flex 1，大面积留白 ============ */
 .cp-chat-area {
   flex: 1; overflow-y: auto;
-  padding: 40px 20px;
+  padding: 32px 28px;
   display: flex; flex-direction: column; gap: 16px;
-  scrollbar-width: thin; scrollbar-color: rgba(88,166,255,0.3) transparent;
+  scrollbar-width: thin; scrollbar-color: rgba(88,166,255,0.25) transparent;
 }
 .cp-chat-area::-webkit-scrollbar { width: 5px; }
-.cp-chat-area::-webkit-scrollbar-thumb { background: rgba(88,166,255,0.3); border-radius: 3px; }
+.cp-chat-area::-webkit-scrollbar-thumb { background: rgba(88,166,255,0.25); border-radius: 3px; }
+.cp-chat-area::-webkit-scrollbar-track { background: transparent; }
 
 /* 消息行与气泡 */
-.cp-msg { display: flex; max-width: 70%; }
+.cp-msg { display: flex; max-width: 65%; align-items: flex-end; gap: 8px; }
 .cp-msg.ai { align-self: flex-start; }
 .cp-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+/* 头像 */
 .cp-avatar {
-  flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
-  margin: 0 10px; align-self: flex-end;
+  flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #bfe0ff, #58a6ff 40%, #1a2a4a 80%);
   box-shadow: 0 0 10px rgba(88,166,255,0.4);
 }
-.cp-msg.user .cp-avatar { background: radial-gradient(circle at 35% 35%, #ffe3c2, #e8a25c 40%, #4a2f14 80%); box-shadow: 0 0 10px rgba(232,162,92,0.35); }
-.cp-bubble {
-  padding: 10px 14px; border-radius: 14px;
-  font-size: 14px; line-height: 1.7; color: #d6e2f5;
-  word-break: break-word; white-space: pre-wrap;
+.cp-msg.user .cp-avatar {
+  background: radial-gradient(circle at 35% 35%, #c2dfff, #7fb8ff 40%, #1a3a6a 80%);
+  box-shadow: 0 0 10px rgba(88,166,255,0.3);
 }
+
+/* 气泡基础 */
+.cp-bubble {
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+  white-space: pre-wrap;
+  position: relative;
+}
+
+/* AI 气泡：深灰磨砂 + 微内阴影 */
 .cp-msg.ai .cp-bubble {
-  background: rgba(18,26,46,0.72);
-  border: 1px solid rgba(88,166,255,0.5);       /* 与主页面 .bubble.ai 同边框色 */
+  color: #e6edf3;
+  background: rgba(22, 26, 41, 0.6);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 12px rgba(0, 0, 0, 0.25);
   border-bottom-left-radius: 4px;
 }
+
+/* 用户气泡：冰蓝渐变 + 白色文字 */
 .cp-msg.user .cp-bubble {
-  background: rgba(38,30,20,0.72);
-  border: 1px solid rgba(232,162,92,0.45);
+  color: #fff;
+  background: linear-gradient(135deg, rgba(88,166,255,0.9), rgba(40,110,200,0.9));
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid rgba(140,200,255,0.35);
+  box-shadow: 0 0 12px rgba(88,166,255,0.2), 0 2px 8px rgba(0,0,0,0.25);
   border-bottom-right-radius: 4px;
 }
+
+/* 无 backdrop-filter 支持时降级 */
+@supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+  .cp-msg.ai .cp-bubble { background: rgba(22, 26, 41, 0.92); }
+}
+
 /* 心理独白（💭） */
-.cp-inner { display: block; margin-top: 6px; font-style: italic; color: #9db4e0; opacity: 0.9; }
+.cp-inner {
+  display: block;
+  margin-top: 6px;
+  font-style: italic;
+  color: #9db4e0;
+  opacity: 0.9;
+}
+
 /* 打字中光标 */
-.cp-caret { display: inline-block; width: 1px; height: 1em; background: #58a6ff; vertical-align: -0.15em; animation: cpBlink 0.8s steps(1) infinite; }
+.cp-caret {
+  display: inline-block;
+  width: 1px; height: 1em;
+  background: #58a6ff;
+  vertical-align: -0.15em;
+  animation: cpBlink 0.8s steps(1) infinite;
+}
 @keyframes cpBlink { 50% { opacity: 0; } }
 
-/* ============ 输入区：磨砂玻璃 + 冰蓝光晕 ============ */
+/* ============ 输入区：极大圆角磨砂玻璃 + 冰蓝光晕 ============ */
 .cp-input-bar {
+  flex-shrink: 0;
   display: flex; align-items: flex-end; gap: 10px;
-  padding: 16px 20px 20px;
-  background: rgba(10,12,18,0.35);
+  padding: 14px 22px 18px;
+  background: rgba(10,12,18,0.3);
 }
-.cp-input {
-  flex: 1; resize: none;
-  max-height: 120px;
-  padding: 10px 14px;
-  font-size: 14px; line-height: 1.6; color: #eaf0ff;
-  font-family: inherit;
-  background: rgba(18,24,42,0.72);
+
+/* 输入框外包裹：实现 24px 大圆角 */
+.cp-input-wrap {
+  flex: 1;
+  background: rgba(22, 26, 41, 0.5);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  border: 1px solid rgba(88,166,255,0.3);
-  border-radius: 16px;
-  outline: none;
-  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border: 1px solid rgba(88,166,255,0.25);
+  border-radius: 24px;
+  padding: 4px 4px 4px 16px;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 0 10px rgba(88,166,255,0.08), inset 0 0 10px rgba(255,255,255,0.02);
+}
+.cp-input-wrap:focus-within {
+  border-color: rgba(140,200,255,0.65);
+  box-shadow: 0 0 18px rgba(88,166,255,0.3), 0 0 36px rgba(88,166,255,0.12), inset 0 0 12px rgba(88,166,255,0.06);
+}
+
+.cp-input {
+  width: 100%;
+  resize: none;
+  max-height: 120px;
+  padding: 10px 12px;
+  font-size: 14px; line-height: 1.6;
+  color: #eaf0ff;
+  font-family: inherit;
+  background: transparent;
+  border: none; outline: none;
+  border-radius: 20px;
+  box-shadow: none;
+  transition: none;
 }
 .cp-input::placeholder { color: #5f6b80; }
-.cp-input:focus {
-  border-color: rgba(88,166,255,0.6);
-  box-shadow: 0 0 16px rgba(88,166,255,0.25), inset 0 0 10px rgba(88,166,255,0.06);
-}
-.cp-send {
-  cursor: pointer; flex-shrink: 0;
-  padding: 10px 20px; border-radius: 16px;
-  font-size: 13px; color: #0a0f1e;
-  background: linear-gradient(135deg, #9fd0ff, #58a6ff);
-  border: 1px solid rgba(88,166,255,0.6);
-  transition: box-shadow 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-.cp-send:hover:not(:disabled) { box-shadow: 0 0 18px rgba(88,166,255,0.45); }
-.cp-send:active:not(:disabled) { transform: scale(0.96); }
-.cp-send:disabled { opacity: 0.45; cursor: default; }
 
-/* ============ 状态抽屉：固定右侧 300px，从右滑入 ============ */
+/* 发送按钮：磨砂底 + 冰蓝发光描边（不要生硬蓝色块） */
+.cp-send {
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 10px 22px;
+  border-radius: 18px;
+  font-size: 13px;
+  color: #cfe6ff;
+  background: rgba(88,166,255,0.06);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1px solid rgba(88,166,255,0.4);
+  box-shadow: 0 0 8px rgba(88,166,255,0.15);
+  transition: all 0.2s ease-in-out;
+  font-family: inherit;
+}
+.cp-send:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(88,166,255,0.12);
+  border-color: rgba(140,200,255,0.7);
+  box-shadow: 0 0 18px rgba(88,166,255,0.45), 0 0 32px rgba(88,166,255,0.15);
+  transform: translateY(-1px);
+}
+.cp-send:active:not(:disabled) { transform: translateY(0); }
+.cp-send:disabled {
+  opacity: 0.35;
+  cursor: default;
+  box-shadow: none;
+  border-color: rgba(255,255,255,0.08);
+  color: #5f6b80;
+}
+
+/* ============ 状态抽屉：absolute 相对 cp-page 定位，从右滑入 ============ */
 .cp-status-drawer {
-  position: fixed; top: 0; right: 0; bottom: 0;
-  width: 300px; z-index: 500;
-  background: rgba(12,16,28,0.82);
-  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-  border-left: 1px solid rgba(88,166,255,0.2);
-  box-shadow: -12px 0 40px rgba(0,0,0,0.45);
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 300px;
+  z-index: 500;
+  background: rgba(12,16,28,0.88);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(88,166,255,0.18);
+  box-shadow: -12px 0 40px rgba(0,0,0,0.5);
   transform: translateX(100%);
-  transition: transform 0.4s ease-in-out;
+  transition: transform 0.3s ease-in-out;
   display: flex; flex-direction: column;
 }
 .cp-status-drawer.open { transform: translateX(0); }
+
 .cp-drawer-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 18px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
 }
-.cp-drawer-title { font-size: 14px; color: #eaf0ff; letter-spacing: 0.1em; }
+.cp-drawer-title {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 14px; color: #eaf0ff; letter-spacing: 0.1em;
+}
 .cp-drawer-close {
-  cursor: pointer; width: 28px; height: 28px; border-radius: 50%;
-  background: transparent; border: 1px solid rgba(255,255,255,0.12);
-  color: #8fa0c0; font-size: 15px; line-height: 1;
-  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  cursor: pointer;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #8fa0c0;
+  font-size: 18px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease-in-out;
 }
-.cp-drawer-close:hover { color: #fff; border-color: rgba(88,166,255,0.5); }
-.cp-drawer-body { flex: 1; overflow-y: auto; padding: 14px 18px; }
+.cp-drawer-close:hover { color: #fff; border-color: rgba(88,166,255,0.4); background: rgba(88,166,255,0.08); }
+
+.cp-drawer-body {
+  flex: 1; overflow-y: auto;
+  padding: 14px 18px;
+}
 .cp-drawer-block {
-  padding: 12px 0;
+  padding: 14px 0;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .cp-drawer-block:last-child { border-bottom: none; }
 .cp-drawer-block h4 {
-  margin: 0 0 8px; font-size: 11px; font-weight: 400;
+  margin: 0 0 10px;
+  font-size: 10px; font-weight: 400;
   color: #5f6b80; letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 .cp-drawer-block p { margin: 0; font-size: 13px; line-height: 1.8; color: #c6d4ec; }
 .cp-drawer-env span { color: #8fb8e8; }
 
-/* 情绪曲线（复用 EmotionChart 时的兜底样式；emotion-chart.css 未加载） */
+/* 情绪曲线兜底样式 */
 .cp-chart-host .chart-header {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 6px; font-size: 11px; color: #8fa0c0;
@@ -183,16 +346,25 @@ body {
 
 /* ============ 移动端：单列，抽屉全屏，输入区固定底部 ============ */
 @media (max-width: 768px) {
-  .cp-page { max-width: 100%; }
-  .cp-topbar { padding: 10px 14px; position: sticky; top: 0; z-index: 10; background: rgba(7,9,15,0.85); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  .cp-topbar {
+    padding: 10px 14px;
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(7,9,15,0.9);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  }
   .cp-char-name { font-size: 15px; }
-  .cp-chat-area { padding: 24px 14px; }
-  .cp-msg { max-width: 84%; }
-  .cp-input-bar { position: sticky; bottom: 0; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: rgba(7,9,15,0.88); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  .cp-chat-area { padding: 20px 14px; gap: 14px; }
+  .cp-msg { max-width: 80%; }
+  .cp-input-bar {
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(7,9,15,0.85);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  /* 状态抽屉改为全屏覆盖 */
   .cp-status-drawer { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cp-status-drawer, .cp-back, .cp-status-toggle, .cp-send, .cp-input { transition: none; }
+  .cp-status-drawer, .cp-drawer-mask, .cp-back, .cp-status-toggle, .cp-send, .cp-input-wrap { transition: none; }
   .cp-caret { animation: none; }
 }
