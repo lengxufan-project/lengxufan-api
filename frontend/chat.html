@@ -22,10 +22,12 @@
     <!-- 顶栏：返回 ← + 角色名 + 情绪标签 + 状态抽屉按钮 -->
     <header class="cp-topbar">
       <a class="cp-back" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()" title="返回">&larr; 返回</a>
-      <div class="cp-char-info">
-        <span class="cp-char-name" id="chatCharName">冷旭帆</span>
-        <span class="cp-emotion-label" id="chatEmotionLabel">--</span>
-      </div>
+      <a class="cp-char-link" id="chatCharLink" href="character-profile.html?char=lengxufan">
+        <div class="cp-char-info">
+          <span class="cp-char-name" id="chatCharName">冷旭帆</span>
+          <span class="cp-emotion-label" id="chatEmotionLabel">--</span>
+        </div>
+      </a>
       <button class="cp-status-toggle" id="statusToggle" type="button" aria-controls="statusDrawer" aria-expanded="false" title="状态">
         <span class="status-icon"></span>
       </button>

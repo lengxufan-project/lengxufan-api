@@ -96,11 +96,19 @@
     setMode(mode === "login" ? "register" : "login");
   });
 
-  // 游客进入
+  // 游客进入（不携带表单凭证）
   guestBtn.addEventListener("click", function () {
     clearError();
     guestBtn.disabled = true;
-    post("/api/auth/guest").then(function (res) {
+    fetch("/api/auth/guest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (data) {
+        return { ok: r.ok, data: data };
+      });
+    }).then(function (res) {
       if (res.ok) {
         enterWorld();
       } else {

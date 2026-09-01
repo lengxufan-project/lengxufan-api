@@ -663,6 +663,14 @@
       }
       // 情绪粒子：依据情绪值调整颜色 / 速度 / 方向 / 密度
       if (window.EmotionParticles) window.EmotionParticles.update(s.emotion);
+      // 近况抽屉：从 dorm_activities / recent_events 刷新
+      if (window.NotificationCenter && window.NotificationCenter.refresh) {
+        window.NotificationCenter.refresh(s);
+      }
+      // 世界动态流：更新 dorm_activities
+      if (window.WorldActivities && window.WorldActivities.update) {
+        window.WorldActivities.update(s);
+      }
     }).catch(function () { /* 静默失败 */ });
   }
 
@@ -675,6 +683,7 @@
     if (window.TimeLighting) window.TimeLighting.init();
     if (window.WeatherEffects) window.WeatherEffects.init();
     if (window.SearchPanel) window.SearchPanel.init();   // 全局搜索面板（侧边栏入口 / Ctrl+K）
+    if (window.WorldActivities) window.WorldActivities.init();   // 世界动态流
 
     renderActiveCharacters();   // 活跃角色快捷区（动态加载，静态回退）
     refreshState();
@@ -693,13 +702,7 @@
     });
   }
 
-  // 搜索入口：唤起全局搜索面板（模块存在才绑定）
-  var searchTrigger = document.getElementById("searchTrigger");
-  if (searchTrigger) {
-    searchTrigger.addEventListener("click", function () {
-      if (window.SearchPanel && window.SearchPanel.open) window.SearchPanel.open();
-    });
-  }
+  // 搜索入口已移至 search-panel.js init() 中统一管理
 
   // ---------- 通知抽屉（侧边栏右上角铃铛图标） ----------
   var sidebarNotify = document.getElementById("sidebarNotify");
@@ -801,7 +804,8 @@
       return;
     }
     // 新版：动态加载角色列表
-    function loadCharacters(list) {
+    // stateMap: { charId: { emotionLabel, relationshipStage } }
+    function loadCharacters(list, stateMap) {
       if (!list || !list.length) return false;
       // 移除所有 .char-item（保留 .sb-entry-link 等非 char-item 元素）
       var oldItems = container.querySelectorAll(".char-item");
@@ -820,7 +824,17 @@
         nameSpan.textContent = name;
         var emotion = document.createElement("span");
         emotion.className = "char-emotion";
-        emotion.textContent = "--";
+        // 填充情绪与关系阶段（从 stateMap 获取）
+        var stateInfo = stateMap && stateMap[id];
+        if (stateInfo && stateInfo.emotionLabel) {
+          var text = stateInfo.emotionLabel;
+          if (stateInfo.relationshipStage) {
+            text += " · " + stateInfo.relationshipStage;
+          }
+          emotion.textContent = text;
+        } else {
+          emotion.textContent = "--";
+        }
         div.appendChild(dot);
         div.appendChild(nameSpan);
         div.appendChild(emotion);
@@ -842,13 +856,29 @@
     // 尝试 API 获取，兼容数组和 {value: [...]} 两种返回格式
     var api = window.API;
     if (api && typeof api.getCharacters === "function") {
-      api.getCharacters().then(function (res) {
+      // 并行获取角色列表和状态，为每个角色填充 emotion / relationship
+      Promise.all([
+        api.getCharacters(),
+        api.getState().catch(function () { return null; })
+      ]).then(function (results) {
+        var res = results[0];
+        var state = results[1];
         if (!res) { highlightCurrentChar(); bindCharItemClicks(); return; }
         var list = Array.isArray(res) ? res : (res.value || null);
-        if (!loadCharacters(list)) {
+
+        // 构建状态映射表 charId -> {emotionLabel, relationshipStage}
+        // 当前 /api/state 仅返回单个角色的状态，无法区分归属，
+        // 所以所有角色统一显示 "--" 占位，避免只给冷旭帆特殊处理。
+        // 未来后端支持 /api/state?char_id=xxx 后，可用 getCharacterStatus 扩展。
+        var stateMap = null;
+
+        if (!loadCharacters(list, stateMap)) {
           // API 返回空 → 保留静态兜底
           highlightCurrentChar();
           bindCharItemClicks();
+        } else {
+          // 动态加载成功，标记当前角色高亮（click 已在 loadCharacters 中绑定）
+          highlightCurrentChar();
         }
       }).catch(function () {
         // API 失败 → 保留静态兜底
@@ -916,4 +946,138 @@
     sidebar.classList.toggle('open', willOpen);
     if (mask) mask.classList.toggle('show', willOpen);
   });
+})();
+
+/* ============================================================
+   世界动态流：自动滚动室友活动列表
+   - 依赖 app.js 的 refreshState 每 2s 推送数据
+   - 垂直滚动，3-4 秒切换一条
+   - 淡入/淡出 + 平移动画
+   ============================================================ */
+(function () {
+  "use strict";
+
+  var actsEl = null;
+  var items = [];
+  var currentIndex = -1;
+  var timer = null;
+  var updateTimer = null;
+
+  function init() {
+    actsEl = document.getElementById("sceneActs");
+    if (!actsEl) return;
+    // 注入滚动容器
+    actsEl.innerHTML = '<div class="scene-act-wrap" id="sceneActWrap"></div>';
+  }
+
+  function update(s) {
+    if (!actsEl) init();
+    if (!actsEl) return;
+
+    var activities = [];
+    // 尝试多种数据格式
+    if (s.dorm_activities && Array.isArray(s.dorm_activities)) {
+      activities = s.dorm_activities;
+    } else if (s.recent_events && Array.isArray(s.recent_events)) {
+      activities = s.recent_events;
+    } else if (s.world && s.world.dorm_activities && Array.isArray(s.world.dorm_activities)) {
+      activities = s.world.dorm_activities;
+    } else if (s.dorm_activities && typeof s.dorm_activities === "object" && !Array.isArray(s.dorm_activities)) {
+      // 对象格式 { name: action } → 转换为数组
+      var keys = Object.keys(s.dorm_activities);
+      activities = keys.map(function (k) {
+        return { name: k, action: s.dorm_activities[k] };
+      });
+    }
+
+    // 如果没数据，显示占位
+    if (activities.length === 0) {
+      actsEl.innerHTML = '<div class="scene-act"><span class="who">——</span>室内一片安静</div>';
+      stopTimer();
+      items = [];
+      currentIndex = -1;
+      return;
+    }
+
+    // 生成展示文本
+    var newItems = activities.map(function (act) {
+      if (act.name && act.action) {
+        return '<span class="who">' + (act.name) + '</span>：' + (act.action);
+      }
+      if (act.sender && act.content) {
+        return '<span class="who">' + (act.sender) + '</span>：' + (act.content);
+      }
+      if (act.character && act.description) {
+        return '<span class="who">' + (act.character) + '</span>：' + (act.description);
+      }
+      if (typeof act === "string") return act;
+      return '——室内一片安静';
+    });
+
+    // 内容没变则跳过重新渲染
+    if (JSON.stringify(newItems) === JSON.stringify(items)) return;
+
+    items = newItems;
+    currentIndex = -1;
+    stopTimer();
+
+    // 重建容器
+    var wrap = document.createElement("div");
+    wrap.className = "scene-act-wrap";
+    wrap.id = "sceneActWrap";
+    actsEl.innerHTML = "";
+    actsEl.appendChild(wrap);
+
+    // 添加所有条目（隐藏状态）
+    items.forEach(function (html) {
+      var div = document.createElement("div");
+      div.className = "scene-act-item";
+      div.innerHTML = html;
+      wrap.appendChild(div);
+    });
+
+    // 启动滚动
+    showNext();
+    startTimer();
+  }
+
+  function showNext() {
+    var wrap = document.getElementById("sceneActWrap");
+    if (!wrap) return;
+    var allItems = wrap.querySelectorAll(".scene-act-item");
+    if (allItems.length === 0) return;
+
+    // 当前条目退出
+    if (currentIndex >= 0 && allItems[currentIndex]) {
+      allItems[currentIndex].classList.remove("active");
+      allItems[currentIndex].classList.add("exit");
+    }
+
+    // 下一条目进入
+    currentIndex = (currentIndex + 1) % allItems.length;
+    var next = allItems[currentIndex];
+
+    // 开始进入前先重置位置
+    next.classList.remove("exit");
+    next.classList.remove("active");
+    // 强制回流后添加 active
+    void next.offsetWidth;
+    next.classList.add("active");
+  }
+
+  function startTimer() {
+    stopTimer();
+    if (items.length < 2) return;
+    timer = setInterval(showNext, 3800);
+  }
+
+  function stopTimer() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  // 暴露全局 API
+  window.WorldActivities = {
+    init: init,
+    update: update
+  };
 })();

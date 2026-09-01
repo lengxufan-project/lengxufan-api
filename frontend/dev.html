@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>开发者数据统计面板</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dev.css">
+</head>
+<body>
+  <div class="dev-page">
+
+    <!-- 顶部：返回 -->
+    <header class="dev-header">
+      <a class="back-btn page-back-btn" id="backBtn" href="index.html?skipIntro=1">← 返回</a>
+      <span class="dev-sub">DEV STATS</span>
+    </header>
+
+    <!-- 标题 -->
+    <section class="dev-hero">
+      <h1 class="dev-title page-title">数据统计面板</h1>
+      <p class="dev-motto">· 开发者视角 ·</p>
+    </section>
+
+    <!-- 统计卡片网格 -->
+    <main class="dev-grid">
+
+      <!-- 卡片 1：总对话轮数 -->
+      <div class="dev-card">
+        <div class="dev-card-icon">💬</div>
+        <div class="dev-card-body">
+          <span class="dev-card-label">总对话轮数</span>
+          <span class="dev-card-value" id="totalChatRounds">--</span>
+        </div>
+      </div>
+
+      <!-- 卡片 2：角色交互次数 -->
+      <div class="dev-card">
+        <div class="dev-card-icon">👥</div>
+        <div class="dev-card-body">
+          <span class="dev-card-label">角色交互次数</span>
+          <span class="dev-card-value" id="totalCharInteractions">--</span>
+        </div>
+      </div>
+
+      <!-- 卡片 3：触发事件数 -->
+      <div class="dev-card">
+        <div class="dev-card-icon">📌</div>
+        <div class="dev-card-body">
+          <span class="dev-card-label">触发事件数</span>
+          <span class="dev-card-value" id="totalEvents">--</span>
+        </div>
+      </div>
+
+      <!-- 卡片 4：世界天数 -->
+      <div class="dev-card">
+        <div class="dev-card-icon">📅</div>
+        <div class="dev-card-body">
+          <span class="dev-card-label">世界天数</span>
+          <span class="dev-card-value" id="totalDays">--</span>
+        </div>
+      </div>
+
+      <!-- 各角色交互次数明细 -->
+      <div class="dev-section dev-section-full">
+        <div class="dev-section-title">各角色交互次数</div>
+        <div class="char-stats" id="charStats">
+          <!-- JS 动态渲染 -->
+        </div>
+      </div>
+
+      <!-- 情绪值历史曲线 -->
+      <div class="dev-section dev-section-full">
+        <div class="dev-section-title">情绪值历史曲线</div>
+        <div class="emotion-curve-wrap">
+          <svg class="emotion-svg" id="emotionSvg" viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet">
+            <!-- 网格线 -->
+            <line x1="0" y1="20" x2="600" y2="20" class="grid-line" />
+            <line x1="0" y1="60" x2="600" y2="60" class="grid-line" />
+            <line x1="0" y1="100" x2="600" y2="100" class="grid-line" />
+            <line x1="0" y1="140" x2="600" y2="140" class="grid-line" />
+            <line x1="0" y1="180" x2="600" y2="180" class="grid-line" />
+            <!-- 折线区域 -->
+            <path class="emotion-line" id="emotionLine" d="" />
+            <!-- 填充区域 -->
+            <path class="emotion-fill" id="emotionFill" d="" />
+            <!-- 数据点 -->
+            <g id="emotionDots"></g>
+          </svg>
+          <div class="curve-labels">
+            <span>100</span>
+            <span>50</span>
+            <span>0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 最近事件 -->
+      <div class="dev-section dev-section-full">
+        <div class="dev-section-title">最近事件</div>
+        <div class="event-list" id="eventList">
+          <!-- JS 动态渲染 -->
+        </div>
+      </div>
+
+      <!-- 数据提示 -->
+      <div class="dev-section dev-section-full">
+        <div class="dev-data-note">
+          ⚡ 当前数据为占位示例，接入后端后将自动更新。
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="js/dev.js"></script>
+</body>
+</html>

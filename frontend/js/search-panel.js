@@ -156,14 +156,21 @@
   }
 
   /* ============ 打开 / 关闭 ============ */
-  function open() {
+  function open(initialQuery) {
     if (!els.mask) return;
     isOpen = true;
     els.mask.classList.add("show");
-    els.input.value = "";
+    var q = (initialQuery != null ? String(initialQuery) : "");
+    els.input.value = q;
     renderTabs();
-    render("");
-    els.input.focus();
+    render(q);
+    // 如果有初始查询，聚焦时选中全部文本方便继续输入
+    if (q) {
+      els.input.focus();
+      els.input.select();
+    } else {
+      els.input.focus();
+    }
   }
 
   function close() {
@@ -171,6 +178,11 @@
     isOpen = false;
     els.mask.classList.remove("show");
     els.input.blur();
+    // 同步清理侧边栏输入（如果面板输入为空）
+    var sidebarInput = document.getElementById("sidebarSearchInput");
+    if (sidebarInput && !els.input.value.trim() && sidebarInput.value) {
+      sidebarInput.value = "";
+    }
   }
 
   /* ============ 构建模态框 ============ */
@@ -234,6 +246,33 @@
     }
   }
 
+  /* ============ 侧边栏搜索输入同步 ============ */
+  function syncSidebarInput() {
+    var sidebarInput = document.getElementById("sidebarSearchInput");
+    if (!sidebarInput) return;
+
+    // 输入时实时同步到面板
+    sidebarInput.addEventListener("input", function () {
+      var val = sidebarInput.value;
+      if (isOpen) {
+        // 面板已打开 → 更新面板输入并重新过滤
+        els.input.value = val;
+        render(val);
+      } else if (val.trim()) {
+        // 面板未打开但有输入 → 打开面板并带入查询
+        open(val);
+      }
+    });
+
+    // 聚焦时打开面板（如果尚未打开）
+    sidebarInput.addEventListener("focus", function () {
+      if (!isOpen) {
+        var val = sidebarInput.value;
+        open(val || "");
+      }
+    });
+  }
+
   /* ============ 初始化 ============ */
   function init() {
     if (els.mask) return;
@@ -241,7 +280,18 @@
     document.addEventListener("keydown", onDocumentKeydown);
 
     var trigger = document.getElementById("searchTrigger");
-    if (trigger) trigger.addEventListener("click", open);
+    if (trigger) {
+      trigger.addEventListener("click", function (e) {
+        // 如果点击的是输入框本身，不重复触发（focus 事件已处理）
+        if (e.target && e.target.tagName === "INPUT") return;
+        var sidebarInput = document.getElementById("sidebarSearchInput");
+        var val = sidebarInput ? sidebarInput.value : "";
+        open(val || "");
+      });
+    }
+
+    // 绑定侧边栏输入同步
+    syncSidebarInput();
   }
 
   window.SearchPanel = { init: init, open: open, close: close };

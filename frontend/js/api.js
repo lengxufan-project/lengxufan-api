@@ -50,6 +50,13 @@
         .then(function (r) { return r.json(); })
         .catch(function () { showChatError(); return null; })
         .finally(function () { window.LoadingBar.finish(); });
+    },
+
+    // 【预留】获取指定角色的状态详情
+    // 当前后端尚未支持 /api/state?char_id=xxx，返回 null 占位
+    getCharacterStatus: function (charId) {
+      // 未来实现：fetch("/api/state?char_id=" + encodeURIComponent(charId))
+      return Promise.resolve(null);
     }
   };
 })();

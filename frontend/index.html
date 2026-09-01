@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -55,12 +55,13 @@
           <span class="notify-bell"></span>
           
         </button>
+        <a class="sb-user-entry" href="login.html" title="登录">登录</a>
       </div>
 
       <!-- 搜索框：胶囊形磨砂，聚焦冰蓝发光，点击唤起全局搜索面板 -->
       <div class="sidebar-search" id="searchTrigger">
         <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" placeholder="搜索角色 / 场景 / 档案" readonly autocomplete="off" />
+        <input type="text" class="search-input" id="sidebarSearchInput" placeholder="搜索角色 / 场景 / 档案" autocomplete="off" />
       </div>
 
       <!-- 第二栏多面板：随第一栏 rail 切换显示（对话 / 当前角色 / 回忆 / 设置） -->
@@ -72,6 +73,11 @@
             <div class="sb-world-item">时段：夜晚</div>
             <div class="sb-world-item">天气：晴</div>
             <div class="sb-world-item">室友：3 人在活动</div>
+          </div>
+          <div class="sb-list" style="margin-top:12px">
+            <a class="sb-entry-link" href="world-guide.html">世界指南</a>
+            <a class="sb-entry-link" href="world-map.html">世界地图</a>
+            <a class="sb-entry-link" href="exploration.html">探索</a>
           </div>
         </div>
         <div class="sb-panel sb-panel-chat" data-panel="chat">
@@ -109,6 +115,8 @@
             <a class="sb-entry-link" href="relation-map.html">关系图谱</a>
             <a class="sb-entry-link" href="observer-panel.html">观察者之窗</a>
             <a class="sb-entry-link" href="journey.html">旅程时间线</a>
+            <a class="sb-entry-link" href="achievements.html">成就博物馆</a>
+            <a class="sb-entry-link" href="relations.html">关系总览</a>
           </div>
         </div>
         <div class="sb-panel sb-panel-settings" data-panel="settings">
@@ -119,6 +127,8 @@
             <a class="sb-entry-link" href="export.html">导出对话</a>
             <a class="sb-entry-link" href="about.html">关于</a>
             <a class="sb-entry-link" href="help.html">帮助</a>
+            <a class="sb-entry-link" href="dev.html">开发者面板</a>
+            <a class="sb-entry-link" href="demo-mode.html">演示模式</a>
           </div>
         </div>
       </div>
@@ -131,23 +141,23 @@
     <!-- 通知抽屉（点击通知图标展开，右侧滑入，磨砂玻璃） -->
     <div class="notify-drawer" id="notifyDrawer">
       <div class="notify-drawer-head">
-        <span class="notify-drawer-title">通知</span>
+        <span class="notify-drawer-title">通知中心</span>
         <button class="notify-drawer-markall" id="notifyMarkAll" type="button">全部标为已读</button>
         <button class="notify-drawer-close" id="notifyClose" type="button" aria-label="关闭">×</button>
       </div>
       <div class="notify-drawer-body" id="notifyList">
-        <!-- 未读分组 -->
-        <div class="notify-section notify-unread" id="notifyUnread">
-          <div class="notify-section-title">未读</div>
-          <div class="notify-section-list" data-group="unread"></div>
+        <!-- 近况分组 -->
+        <div class="notify-section" id="notifyRecent">
+          <div class="notify-section-title">近况</div>
+          <div class="notify-section-list" data-group="recent"></div>
+          <div class="notify-section-empty" id="notifyRecentEmpty">暂无近况</div>
         </div>
-        <!-- 已读分组 -->
-        <div class="notify-section notify-read" id="notifyRead">
-          <div class="notify-section-title">已读</div>
-          <div class="notify-section-list" data-group="read"></div>
+        <!-- 系统分组 -->
+        <div class="notify-section" id="notifySystem">
+          <div class="notify-section-title">系统</div>
+          <div class="notify-section-list" data-group="system"></div>
+          <div class="notify-section-empty" id="notifySystemEmpty">暂无系统通知</div>
         </div>
-        <!-- 空状态兜底 -->
-        <div class="notify-empty" id="notifyEmpty" style="display:none">暂无通知</div>
       </div>
     </div>
 

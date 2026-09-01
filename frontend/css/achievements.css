@@ -1,0 +1,249 @@
+/* ============ 成就博物馆（独立页面） ============ */
+
+/* 统一外壳：全局背景 + 全屏容器 */
+body {
+  max-width: none;
+  margin: 0;
+  min-height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
+}
+
+.achievements-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 100px 20px 40px;
+  box-sizing: border-box;
+}
+
+/* ---------- 顶部 header ---------- */
+.achievements-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px 14px;
+  position: relative;
+  flex-shrink: 0;
+}
+.achievements-header::after {
+  content: "";
+  position: absolute;
+  left: 10%; right: 10%; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #58a6ff, transparent);
+}
+.achievements-sub {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: #3d4761;
+}
+
+/* ---------- 中央：标题 + 统计 ---------- */
+.achievements-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0 30px;
+}
+.achievements-title {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 36px;
+  font-weight: 200;
+  letter-spacing: 0.28em;
+  margin: 0 0 18px;
+  background: linear-gradient(120deg, #a8d4ff 0%, #58a6ff 50%, #c9e6ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(88, 166, 255, 0.35));
+}
+.achievements-count {
+  font-size: 13px;
+  color: #8fa0c0;
+  letter-spacing: 0.1em;
+  margin: 0 0 14px;
+}
+.achievements-count span {
+  color: #58a6ff;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.5);
+}
+
+/* 进度条 */
+.progress-bar-wrap {
+  width: 300px;
+  max-width: 80%;
+  margin: 0 auto;
+}
+.progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #58a6ff, #8ec8ff);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.5);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- 成就网格 ---------- */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
+  padding: 10px 0 30px;
+}
+
+/* 单个成就卡片 */
+.achievement-card {
+  position: relative;
+  padding: 24px 16px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(22, 26, 41, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  transition: all 0.4s ease-in-out;
+  overflow: hidden;
+}
+.achievement-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(88, 166, 255, 0.3);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 22px rgba(88, 166, 255, 0.15);
+}
+
+/* 成就徽章图标 */
+.achievement-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+  transition: all 0.4s ease-in-out;
+}
+
+/* 已解锁 */
+.achievement-card.unlocked {
+  border-color: rgba(88, 166, 255, 0.35);
+}
+.achievement-card.unlocked .achievement-badge {
+  background: radial-gradient(circle at 35% 30%, rgba(88, 166, 255, 0.25), rgba(30, 60, 140, 0.3));
+  box-shadow: 0 0 18px rgba(88, 166, 255, 0.4), inset 0 0 12px rgba(88, 166, 255, 0.2);
+  border: 1px solid rgba(88, 166, 255, 0.4);
+  color: #bfe0ff;
+  text-shadow: 0 0 12px rgba(88, 166, 255, 0.6);
+}
+.achievement-card.unlocked .achievement-name {
+  color: #eaf0ff;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+}
+.achievement-card.unlocked .achievement-desc {
+  color: #8fa0c0;
+}
+.achievement-card.unlocked .achievement-time {
+  color: rgba(88, 166, 255, 0.6);
+}
+
+/* 未解锁（暗灰剪影） */
+.achievement-card.locked {
+  border-color: rgba(255, 255, 255, 0.04);
+  background: rgba(14, 16, 28, 0.5);
+}
+.achievement-card.locked .achievement-badge {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.12);
+  filter: grayscale(1) brightness(0.35);
+}
+.achievement-card.locked .achievement-name {
+  color: rgba(255, 255, 255, 0.18);
+}
+.achievement-card.locked .achievement-desc {
+  color: rgba(255, 255, 255, 0.1);
+}
+.achievement-card.locked .achievement-time {
+  display: none;
+}
+
+/* 锁图标覆盖 */
+.achievement-card.locked .achievement-badge::after {
+  content: "🔒";
+  position: absolute;
+  font-size: 14px;
+  opacity: 0.3;
+}
+.achievement-badge {
+  position: relative;
+}
+
+.achievement-name {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  transition: color 0.3s ease-in-out;
+}
+.achievement-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  transition: color 0.3s ease-in-out;
+}
+.achievement-time {
+  font-size: 10px;
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- 底部 ---------- */
+.achievements-footer {
+  margin-top: auto;
+  padding-top: 30px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: #3d4761;
+}
+
+/* ---------- 移动端 ---------- */
+@media (max-width: 640px) {
+  .achievements-page {
+    padding: 80px 16px 32px;
+  }
+  .achievements-title {
+    font-size: 26px;
+    letter-spacing: 0.2em;
+  }
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .achievement-card {
+    padding: 18px 12px 16px;
+  }
+  .achievement-badge {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+  }
+  .achievement-name {
+    font-size: 13px;
+  }
+  .progress-bar-wrap {
+    width: 200px;
+  }
+}

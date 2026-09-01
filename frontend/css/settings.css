@@ -189,6 +189,30 @@ body[data-font-size="small"]  { font-size: 13px; }
 body[data-font-size="medium"] { font-size: 14px; }
 body[data-font-size="large"]  { font-size: 16px; }
 
+/* 开发者入口 */
+.dev-entry {
+  margin-top: 12px;
+  text-align: center;
+}
+.dev-entry-link {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #3d4761;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.3s ease-in-out;
+  letter-spacing: 0.05em;
+}
+.dev-entry-link:hover {
+  color: #8fa0c0;
+  border-color: rgba(88, 166, 255, 0.25);
+  background: rgba(88, 166, 255, 0.04);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.1);
+}
+
 /* 移动端 */
 @media (max-width: 768px) {
   .settings-app { padding: 80px 16px 32px; gap: 14px; }

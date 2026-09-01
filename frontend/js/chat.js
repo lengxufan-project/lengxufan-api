@@ -313,6 +313,12 @@
     // 应用角色光晕颜色
     applyCharGlow(runtime.isGroup ? null : runtime.charId);
 
+    // 角色详情页链接
+    var charLink = $("chatCharLink");
+    if (charLink) {
+      charLink.href = "character-profile.html?char=" + encodeURIComponent(runtime.charId);
+    }
+
     if (runtime.isGroup) {
       // 群聊模式：标题显示"307室多人对话"，不发初始问候
       var nameEl = $("chatCharName");

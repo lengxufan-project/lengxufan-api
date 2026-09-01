@@ -80,6 +80,23 @@ body {
   color: #eaf0ff; letter-spacing: 0.08em;
   white-space: nowrap;
 }
+/* 角色名链接：指向角色详情页 */
+.cp-char-link {
+  text-decoration: none;
+  display: flex; align-items: center;
+  flex: 1; min-width: 0;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 10px;
+  transition: all 0.25s ease-in-out;
+  cursor: pointer;
+}
+.cp-char-link:hover {
+  background: rgba(88, 166, 255, 0.06);
+}
+.cp-char-link:hover .cp-char-name {
+  color: #58a6ff;
+}
 .cp-emotion-label {
   font-size: 11px;
   color: #58a6ff;

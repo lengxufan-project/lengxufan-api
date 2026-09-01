@@ -5,7 +5,7 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 100px 20px 40px;
-  min-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
   background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
   display: flex;
@@ -63,9 +63,26 @@
   text-shadow: 0 0 12px rgba(88, 166, 255, 0.35);
 }
 
+/* ========== 数据状态提示 ========== */
+.profile-notice {
+  width: 100%;
+  flex: 0 0 100%;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  border-radius: 8px;
+  background: rgba(88, 166, 255, 0.06);
+  color: #8fa0c0;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  flex-shrink: 0;
+}
+
 /* ========== 主体布局 ========== */
 .profile-body {
   display: flex;
+  flex-wrap: wrap;
   gap: 28px;
   align-items: flex-start;
   flex: 1;

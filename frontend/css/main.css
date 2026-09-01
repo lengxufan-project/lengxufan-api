@@ -668,6 +668,29 @@ body .world-clock {
 }
 .scene.fullscreen .scene-act { font-size: 13px; line-height: 1.8; }
 
+/* 世界动态流：滚动条目动画 */
+.scene-act-wrap {
+  position: relative;
+  min-height: 3.4em;
+  overflow: hidden;
+}
+.scene-act-item {
+  position: absolute;
+  left: 0; right: 0;
+  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+.scene-act-item.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+.scene-act-item.exit {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
 /* 移动端：场景全屏，文字缩小，无重叠 */
 @media (max-width: 768px) {
   .scene.fullscreen .scene-label { font-size: 16px; letter-spacing: 0.18em; bottom: 32vh; }
@@ -997,7 +1020,7 @@ body .notify-mask    { z-index: 119; }
 body .notify-drawer  { z-index: 120; }
 body .sp-mask        { z-index: 120; }
 body .scp-mask       { z-index: 120; }
-body .mobile-menu-btn { z-index: 130; }
+body .mobile-menu-btn { z-index: 300; }
 /* 入场动画（遮罩全页面） */
 body .intro          { z-index: 1000; }
 /* 顶层 */
@@ -1019,7 +1042,7 @@ body #loadingBar     { z-index: 9999; }
     position: fixed;
     top: 10px;
     left: 10px;
-    z-index: 200;
+    z-index: 300;
     width: 44px;
     height: 44px;
     border-radius: 12px;
@@ -1030,6 +1053,14 @@ body #loadingBar     { z-index: 9999; }
     cursor: pointer;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  }
+  /* 侧边栏打开时汉堡按钮调整为更明显样式 */
+  body .sidebar.open + .mobile-menu-btn,
+  body .sidebar.open ~ .mobile-menu-btn {
+    border-color: rgba(88, 166, 255, 0.6);
+    background: rgba(10, 12, 18, 0.95);
+    box-shadow: 0 0 16px rgba(88, 166, 255, 0.2);
   }
 }
 

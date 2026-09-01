@@ -1,0 +1,325 @@
+/* ============ 开发者数据统计面板（独立页面） ============ */
+
+/* 统一外壳 */
+body {
+  max-width: none;
+  margin: 0;
+  min-height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
+}
+
+.dev-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 100px 20px 40px;
+  box-sizing: border-box;
+}
+
+/* ---------- 顶部 header ---------- */
+.dev-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px 14px;
+  position: relative;
+  flex-shrink: 0;
+}
+.dev-header::after {
+  content: "";
+  position: absolute;
+  left: 10%; right: 10%; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #58a6ff, transparent);
+}
+.dev-sub {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: #3d4761;
+}
+
+/* ---------- 标题 ---------- */
+.dev-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0 30px;
+  text-align: center;
+}
+.dev-title {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 32px;
+  font-weight: 200;
+  letter-spacing: 0.28em;
+  margin: 0;
+  background: linear-gradient(120deg, #a8d4ff 0%, #58a6ff 50%, #c9e6ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(88, 166, 255, 0.35));
+}
+.dev-motto {
+  margin: 10px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: #3d4761;
+}
+
+/* ---------- 统计卡片网格 ---------- */
+.dev-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 0 20px;
+}
+
+/* 小卡片 */
+.dev-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(22, 26, 41, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+.dev-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(88, 166, 255, 0.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(88, 166, 255, 0.1);
+}
+.dev-card-icon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(88, 166, 255, 0.08);
+  border: 1px solid rgba(88, 166, 255, 0.15);
+}
+.dev-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.dev-card-label {
+  font-size: 11px;
+  color: #5f6b80;
+  letter-spacing: 0.08em;
+}
+.dev-card-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: #bfe0ff;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 全宽区块 ---------- */
+.dev-section {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(22, 26, 41, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
+  padding: 18px 20px;
+}
+.dev-section-full {
+  grid-column: 1 / -1;
+}
+.dev-section-title {
+  font-size: 12px;
+  color: #8fa0c0;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ---------- 各角色交互次数 ---------- */
+.char-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.char-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.char-stat-name {
+  width: 60px;
+  font-size: 13px;
+  color: #c9d6f0;
+  flex-shrink: 0;
+}
+.char-stat-bar-wrap {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.char-stat-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #58a6ff, #8ec8ff);
+  box-shadow: 0 0 6px rgba(88, 166, 255, 0.4);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+.char-stat-count {
+  width: 36px;
+  text-align: right;
+  font-size: 13px;
+  color: #58a6ff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 情绪曲线 ---------- */
+.emotion-curve-wrap {
+  position: relative;
+  display: flex;
+  gap: 6px;
+}
+.emotion-svg {
+  width: 100%;
+  height: 200px;
+  display: block;
+}
+.grid-line {
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 1;
+}
+.emotion-line {
+  fill: none;
+  stroke: #58a6ff;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(88, 166, 255, 0.4));
+}
+.emotion-fill {
+  fill: url(#emotionGradient);
+  opacity: 0.25;
+}
+.emotion-dot {
+  fill: #8ec8ff;
+  stroke: #58a6ff;
+  stroke-width: 1.5;
+  transition: r 0.2s ease-in-out;
+}
+.emotion-dot:hover {
+  r: 5;
+  filter: drop-shadow(0 0 6px rgba(88, 166, 255, 0.6));
+}
+.curve-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #3d4761;
+  padding: 2px 0;
+  flex-shrink: 0;
+}
+
+/* ---------- 最近事件列表 ---------- */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.2s ease-in-out;
+}
+.event-item:hover {
+  background: rgba(88, 166, 255, 0.04);
+  border-color: rgba(88, 166, 255, 0.15);
+}
+.event-day {
+  font-size: 10px;
+  color: #5f6b80;
+  flex-shrink: 0;
+  width: 44px;
+  letter-spacing: 0.05em;
+}
+.event-desc {
+  flex: 1;
+  font-size: 13px;
+  color: #c9d6f0;
+  line-height: 1.4;
+}
+.event-type {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(88, 166, 255, 0.1);
+  color: rgba(88, 166, 255, 0.7);
+  flex-shrink: 0;
+}
+
+/* 数据提示 */
+.dev-data-note {
+  font-size: 11px;
+  color: #3d4761;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- SVG 渐变定义 ---------- */
+/* 通过 JS 注入到 SVG 中 */
+
+/* ---------- 移动端 ---------- */
+@media (max-width: 640px) {
+  .dev-page {
+    padding: 80px 16px 32px;
+  }
+  .dev-title {
+    font-size: 24px;
+  }
+  .dev-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .dev-card {
+    padding: 14px 14px;
+  }
+  .dev-card-value {
+    font-size: 18px;
+  }
+  .dev-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+  .dev-section {
+    padding: 14px 14px;
+  }
+  .emotion-svg {
+    height: 150px;
+  }
+  .char-stat-name {
+    width: 48px;
+    font-size: 12px;
+  }
+}

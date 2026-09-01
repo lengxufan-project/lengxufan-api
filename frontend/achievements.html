@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成就博物馆</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/achievements.css">
+</head>
+<body>
+  <div class="achievements-page">
+
+    <!-- 顶部：返回 -->
+    <header class="achievements-header">
+      <a class="back-btn page-back-btn" id="backBtn" href="index.html?skipIntro=1">← 返回</a>
+      <span class="achievements-sub">ACHIEVEMENTS</span>
+    </header>
+
+    <!-- 中央：标题 + 统计 -->
+    <section class="achievements-hero">
+      <h1 class="achievements-title page-title">成就博物馆</h1>
+      <p class="achievements-count">
+        已解锁 <span id="unlockCount">0</span> / <span id="totalCount">0</span>
+      </p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 成就网格 -->
+    <main class="achievements-grid" id="achievementsGrid">
+      <!-- JS 动态渲染 -->
+    </main>
+
+    <footer class="achievements-footer">
+      <p>每一次对话，都是独一无二的印记</p>
+    </footer>
+
+  </div>
+
+  <script src="js/achievements.js"></script>
+</body>
+</html>
