@@ -36,4 +36,10 @@ def create_app():
     def dev():
         return send_from_directory('frontend', 'dev.html')
 
+    # 角色数据文件路由：提供 characters/<id>/data/character.json 的访问
+    @app.route('/characters/<path:subpath>')
+    def serve_character_data(subpath):
+        characters_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'characters')
+        return send_from_directory(characters_dir, subpath)
+
     return app

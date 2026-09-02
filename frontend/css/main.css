@@ -860,6 +860,11 @@ body .relation-thermo {
   .scene.fullscreen .st-divider { height: 12px; margin: 0 2px; }
   .scene.fullscreen .st-indicator { display: none; }
   .scene.fullscreen .scene-meta { top: 40px; right: 14px; display: none; }
+  /* 顶部信息条：左间距避开汉堡按钮（44px rail） */
+  .scene.fullscreen .scene-topbar {
+    padding-left: calc(14px + 22px);
+    max-width: calc(100% - 16px);
+  }
 }
 
 
@@ -881,6 +886,14 @@ body .relation-thermo {
   backdrop-filter: blur(12px);
   border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
+/* 移动端：第一栏容纳汉堡按钮，宽度调整为 44px */
+@media (max-width: 768px) {
+  .rail {
+    width: 44px;
+    padding-top: 8px;
+    gap: 8px;
+  }
+}
 .rail-item {
   width: 40px;
   height: 40px;
@@ -893,6 +906,13 @@ body .relation-thermo {
   cursor: pointer;
   transition: all 0.25s ease;
   border: 1px solid transparent;
+}
+@media (max-width: 768px) {
+  .rail-item {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
 }
 .rail-item:hover {
   color: #d8e6ff;
@@ -1020,7 +1040,7 @@ body .notify-mask    { z-index: 119; }
 body .notify-drawer  { z-index: 120; }
 body .sp-mask        { z-index: 120; }
 body .scp-mask       { z-index: 120; }
-body .mobile-menu-btn { z-index: 300; }
+body .mobile-menu-btn { z-index: 105; }
 /* 入场动画（遮罩全页面） */
 body .intro          { z-index: 1000; }
 /* 顶层 */
@@ -1030,7 +1050,7 @@ body #loadingBar     { z-index: 9999; }
 .scene.fullscreen .scene-meta {
   display: none !important;
 }
-/* ============ 移动端独立汉堡按钮 ============ */
+/* ============ 移动端汉堡按钮（移入第一栏 rail，不遮挡内容） ============ */
 .mobile-menu-btn {
   display: none;
 }
@@ -1040,27 +1060,21 @@ body #loadingBar     { z-index: 9999; }
     align-items: center;
     justify-content: center;
     position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 300;
+    top: 0;
+    left: 0;
+    z-index: 105;
     width: 44px;
     height: 44px;
-    border-radius: 12px;
-    background: rgba(10, 12, 18, 0.85);
-    border: 1px solid rgba(88, 166, 255, 0.3);
+    border-radius: 0;
+    background: transparent;
+    border: none;
     color: #bfe0ff;
     font-size: 20px;
     cursor: pointer;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    box-shadow: none;
   }
-  /* 侧边栏打开时汉堡按钮调整为更明显样式 */
-  body .sidebar.open + .mobile-menu-btn,
-  body .sidebar.open ~ .mobile-menu-btn {
-    border-color: rgba(88, 166, 255, 0.6);
-    background: rgba(10, 12, 18, 0.95);
-    box-shadow: 0 0 16px rgba(88, 166, 255, 0.2);
+  body .mobile-menu-btn:hover {
+    background: rgba(88, 166, 255, 0.08);
   }
 }
 
@@ -1112,9 +1126,20 @@ body .page-bg {
   min-height: 100vh;
 }
 
-/* 移动端：统一返回按钮缩小、标题字号 18px */
+/* 移动端：独立页面确保可滚动 */
 @media (max-width: 768px) {
+  .page {
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  body .page-bg {
+    min-height: 100vh;
+    overflow-y: auto;
+  }
   body .page-back-btn {
+    top: 12px;
+    left: 12px;
     padding: 6px 12px;
     font-size: 11px;
     border-radius: 16px;

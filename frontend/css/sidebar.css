@@ -317,4 +317,8 @@
     width: 100% !important;
     max-width: 100% !important;
   }
+  /* 桌面 sidebar 起始在 rail 右侧，移动端起始在屏幕最左侧 */
+  .sidebar {
+    left: -280px !important;
+  }
 }

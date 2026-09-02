@@ -22,3 +22,27 @@
 2026-09-01 12:03:18 | INFO    | logger          | 世界状态: 开学第5天。中午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
 2026-09-01 12:03:18 | INFO    | logger          | 已加载角色: 冷旭帆
 2026-09-01 12:03:18 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-01 20:05:22 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 20:05:39 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-01 21:48:03 | INFO    | logger          | 世界状态: 开学第14天。夜晚。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-01 21:48:03 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-01 21:48:03 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-01 21:48:03 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-09-01 21:48:03 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-01 21:48:05 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-01 21:48:09 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=晴, 地点=307室, 人物=7人
+2026-09-01 21:48:09 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-01 21:48:12 | INFO    | logger          | 世界状态: 开学第14天。夜晚。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-09-01 21:48:12 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-01 21:48:12 | DEBUG   | logger          | [SceneEngine] 时间段=夜晚, 天气=小雨, 地点=307室, 人物=7人
+2026-09-01 21:48:12 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-01 23:22:07 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 00:37:18 | DEBUG   | logger          | [SceneEngine] 时间段=深夜, 天气=风, 地点=307室, 人物=7人
+2026-09-02 00:37:18 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 00:37:22 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=3.84s
+2026-09-02 00:37:31 | DEBUG   | logger          | [SceneEngine] 时间段=深夜, 天气=风, 地点=307室, 人物=7人
+2026-09-02 00:37:31 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 00:37:35 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=3.47s
+2026-09-02 00:37:43 | DEBUG   | logger          | [SceneEngine] 时间段=深夜, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 00:37:43 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 00:37:46 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=3.16s

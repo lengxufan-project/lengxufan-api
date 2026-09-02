@@ -153,6 +153,94 @@ class EngineService:
             _engine_cache[char_id] = cls(char_id=char_id)
         return _engine_cache[char_id]
 
+def get_cached_engine(char_id):
+    """获取已缓存的引擎实例，不存在则返回 None（不会创建新实例）"""
+    return _engine_cache.get(char_id)
+
+
+def get_engine_status(char_id):
+    """获取角色状态摘要，优先从缓存引擎读取，其次从 save 文件读取，都不存在则返回 None"""
+    engine = _engine_cache.get(char_id)
+    if engine:
+        emo = engine.perception.emotion
+        if emo < 30:
+            el = "低落"
+        elif emo < 50:
+            el = "平静"
+        elif emo < 70:
+            el = "稍好"
+        else:
+            el = "高涨"
+        rel_stage = engine.relationship_dynamics.current_stage if engine.relationship_dynamics else "陌生人"
+        return {"emotion": emo, "emotion_label": el, "relationship_stage": rel_stage}
+
+    # 从 save 文件读取
+    from infra.persistence import load_full_state
+    saved = load_full_state(char_id)
+    if saved:
+        emo = saved.get("emotion", 50)
+        if emo < 30:
+            el = "低落"
+        elif emo < 50:
+            el = "平静"
+        elif emo < 70:
+            el = "稍好"
+        else:
+            el = "高涨"
+        return {"emotion": emo, "emotion_label": el, "relationship_stage": "--"}
+
+    return None
+
+
+def get_engine_full_state(char_id):
+    """获取角色完整当前状态，优先从引擎，其次从 save 文件"""
+    engine = _engine_cache.get(char_id)
+    if engine:
+        emo = engine.perception.emotion
+        if emo < 30:
+            el = "低落"
+        elif emo < 50:
+            el = "平静"
+        elif emo < 70:
+            el = "稍好"
+        else:
+            el = "高涨"
+        rel_stage = engine.relationship_dynamics.current_stage if engine.relationship_dynamics else "陌生人"
+        return {"emotion": emo, "emotion_label": el, "relationship_stage": rel_stage}
+
+    from infra.persistence import load_full_state
+    saved = load_full_state(char_id)
+    if saved:
+        emo = saved.get("emotion", 50)
+        if emo < 30:
+            el = "低落"
+        elif emo < 50:
+            el = "平静"
+        elif emo < 70:
+            el = "稍好"
+        else:
+            el = "高涨"
+        return {"emotion": emo, "emotion_label": el, "relationship_stage": "--"}
+
+    return {}
+
+
+def get_engine_memories(char_id):
+    """获取角色记忆碎片列表，优先从引擎，其次返回空数组"""
+    engine = _engine_cache.get(char_id)
+    if engine and engine.memory:
+        memories = []
+        for ep in engine.memory.episodic:
+            memories.append({
+                "id": f"ep_{int(ep.get('timestamp', 0) * 1000)}" if ep.get("timestamp") else f"ep_{len(memories)}",
+                "type": "episodic",
+                "summary": ep.get("summary", ""),
+                "created_at": ep.get("timestamp", 0)
+            })
+        return memories
+    return []
+
+
 # 全局群聊管理器
 from lengxufan_core.group_chat import GroupChatManager
 group_chat_manager = GroupChatManager()

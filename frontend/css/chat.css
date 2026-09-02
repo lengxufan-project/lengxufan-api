@@ -417,14 +417,23 @@ body {
   }
   .cp-char-name { font-size: 15px; }
   .cp-chat-area { padding: 20px 14px; gap: 14px; }
-  .cp-msg { max-width: 80%; }
+  .cp-msg { max-width: 85%; }
   .cp-input-bar {
-    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    position: sticky;
+    bottom: 0;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 10px));
     background: rgba(7,9,15,0.85);
     -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    z-index: 10;
   }
   /* 状态抽屉改为全屏覆盖 */
-  .cp-status-drawer { width: 100%; }
+  .cp-status-drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+  .cp-msg { max-width: 85%; }
+  .cp-back { padding: 5px 10px 5px 8px; font-size: 12px; }
+  .cp-status-toggle { width: 32px; height: 32px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

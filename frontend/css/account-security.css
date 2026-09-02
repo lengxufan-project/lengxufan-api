@@ -139,3 +139,31 @@
 [data-status="plan"].setting-item-danger .setting-label {
   color: #662233;
 }
+
+/* ============ 移动端适配 ============ */
+@media (max-width: 768px) {
+  .page {
+    padding: 80px 12px 24px;
+    height: 100vh;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .back-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+  .page-title {
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+  .topbar-spacer {
+    width: 40px;
+  }
+  .setting-item {
+    padding: 12px 14px;
+  }
+  .setting-label {
+    font-size: 13px;
+  }
+}
