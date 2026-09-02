@@ -388,3 +388,22 @@ window.goBack = function () {
     window.location.href = "index.html?skipIntro=1";
   }
 };
+
+function loadHistory() {
+    fetch('/api/conversations')
+        .then(function(res) {
+            if (!res.ok) return [];
+            return res.json();
+        })
+        .then(function(data) {
+            if (!data || data.length === 0) return;
+            var area = document.getElementById('chatArea');
+            if (!area) return;
+            area.innerHTML = '';
+            data.forEach(function(item) {
+                var role = item.role === 'user' ? 'user' : 'ai';
+                addBubble(role, item.content);
+            });
+        })
+        .catch(function() {});
+}

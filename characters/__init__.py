@@ -40,7 +40,7 @@ class CharacterConfig:
         json_path = os.path.join(self.data_dir, 'character.json')
         if not os.path.exists(json_path):
             return False
-        with open(json_path, 'r', encoding='utf-8') as f:
+        with open(json_path, 'r', encoding='utf-8-sig') as f:
             data = json.load(f)
 
         self.persona = data.get('persona', {})

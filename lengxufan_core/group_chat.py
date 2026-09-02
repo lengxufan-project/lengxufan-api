@@ -1,5 +1,5 @@
-"""群聊管理器 - 管理多角色会话、上下文传递、参与者上限、分组与主动插话占位"""
-import time
+"""群聊管理器 - 管理多角色会话、上下文传递、参与者上限、分组、主动插话与状态互感知"""
+import random, time
 from infra.logger import info
 
 
@@ -11,6 +11,8 @@ class GroupChatManager:
         self.current_context = []       # 本轮群聊上下文
         self.groups = {}                # 分组：{组名: [char_id, ...]}
         self.interrupt_queue = []       # 主动插话队列（占位）
+        self.member_states = {}         # 成员状态摘要 {char_id: {emotion, label, relation}}
+        self.interrupt_probability = {} # 每个角色的插话概率
 
     def set_members(self, members):
         """设置群聊参与者，自动截断到上限"""
@@ -30,6 +32,25 @@ class GroupChatManager:
         """将角色添加到分组（会覆盖同名分组）"""
         self.groups[group_name] = char_ids
 
+    def set_member_state(self, char_id, state_summary):
+        """设置某个成员的当前状态摘要（情绪/关系等）"""
+        self.member_states[char_id] = state_summary
+
+    def set_interrupt_probability(self, char_id, probability):
+        """设置某角色的插话概率（0-1）"""
+        self.interrupt_probability[char_id] = max(0.0, min(1.0, probability))
+
+    def get_status_context(self):
+        """生成所有成员状态摘要，供角色感知"""
+        lines = []
+        for cid in self.members:
+            state = self.member_states.get(cid, {})
+            label = state.get("emotion_label", "平静")
+            relation = state.get("relationship", "陌生人")
+            name = state.get("name", cid)
+            lines.append(f"{name}：情绪{label}，关系{relation}")
+        return "\n".join(lines)
+
     def request_interrupt(self, char_id, message):
         """角色主动插话请求（当前仅存储，不自动触发）"""
         self.interrupt_queue.append({"char_id": char_id, "message": message, "time": time.time()})
@@ -39,6 +60,25 @@ class GroupChatManager:
         pending = self.interrupt_queue[:]
         self.interrupt_queue = []
         return pending
+
+    def select_interrupt_candidate(self):
+        """根据概率随机选择一个插话角色，返回 char_id 或 None"""
+        if not self.members:
+            return None
+        weighted = []
+        for cid in self.members:
+            prob = self.interrupt_probability.get(cid, 0.2)
+            weighted.append((cid, prob))
+        total = sum(w for _, w in weighted)
+        if total <= 0:
+            return None
+        r = random.uniform(0, total)
+        cum = 0
+        for cid, w in weighted:
+            cum += w
+            if r <= cum:
+                return cid
+        return None
 
     def get_context(self):
         """获取当前上下文文本"""

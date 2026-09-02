@@ -29,3 +29,525 @@
 2026-09-02 12:03:05 | INFO    | logger          | 世界状态: 开学第29天。中午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
 2026-09-02 12:03:05 | INFO    | logger          | 已加载角色: 冷旭帆
 2026-09-02 12:03:06 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 13:30:28 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 13:33:46 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 13:33:46 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 13:33:47 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 13:33:49 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=3.65s
+2026-09-02 13:33:49 | INFO    | logger          | 世界状态: 开学第30天。中午。风。风很大。窗帘被吹得鼓起来，又落下。
+2026-09-02 13:33:49 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-02 13:33:49 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 13:33:49 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 13:33:49 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 13:33:53 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 13:33:53 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 13:33:56 | INFO    | logger          | 世界状态: 开学第30天。中午。风。风很大。窗帘被吹得鼓起来，又落下。
+2026-09-02 13:33:56 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-02 13:33:56 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 13:33:56 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 13:38:45 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 13:41:40 | INFO    | logger          | 世界状态: 开学第30天。中午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 13:41:40 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-02 13:41:40 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 13:41:40 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 13:41:40 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 13:41:41 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 13:41:43 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=2.72s
+2026-09-02 13:41:43 | INFO    | logger          | 世界状态: 开学第30天。中午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 13:41:43 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-02 13:41:43 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 13:41:43 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 13:41:43 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 13:41:47 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 13:41:47 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 13:41:49 | INFO    | logger          | 世界状态: 开学第30天。中午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 13:41:49 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-02 13:41:49 | DEBUG   | logger          | [SceneEngine] 时间段=中午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 13:41:49 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:27:02 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 14:27:15 | INFO    | logger          | 世界状态: 开学第31天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 14:27:15 | INFO    | logger          | 已加载角色: huangjingyun
+2026-09-02 14:27:15 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 14:27:15 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:27:15 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:27:16 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 14:27:19 | INFO    | logger          | 世界状态: 开学第31天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 14:27:19 | INFO    | logger          | 已加载角色: lengxufan
+2026-09-02 14:27:19 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 14:27:19 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:27:19 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:27:23 | INFO    | logger          | 世界状态: 开学第31天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 14:27:23 | INFO    | logger          | 已加载角色: yeqingci
+2026-09-02 14:27:23 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:27:23 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:28:58 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:28:58 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:29:02 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=4.12s
+2026-09-02 14:29:02 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:29:02 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:29:06 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:29:06 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:29:10 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:29:10 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:30:54 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:30:54 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:30:57 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:30:57 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:31:00 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 14:31:00 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:38:30 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 14:39:23 | INFO    | logger          | 世界状态: 开学第31天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 14:39:23 | INFO    | logger          | 已加载角色: huangjingyun
+2026-09-02 14:39:23 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 14:39:23 | INFO    | logger          | 世界状态: 开学第31天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 14:39:23 | INFO    | logger          | 已加载角色: lengxufan
+2026-09-02 14:39:23 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 14:39:23 | INFO    | logger          | 世界状态: 开学第31天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 14:39:23 | INFO    | logger          | 已加载角色: yeqingci
+2026-09-02 14:39:23 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 14:39:23 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:39:24 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 14:39:27 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:39:27 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:39:31 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:39:31 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:39:35 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:39:35 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:40:48 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:40:48 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:40:51 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=3.28s
+2026-09-02 14:40:51 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:40:51 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:40:55 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:40:55 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:40:59 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 14:40:59 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:41:03 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 14:41:03 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:45:42 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 14:46:01 | INFO    | logger          | 世界状态: 开学第31天。下午。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-09-02 14:46:01 | INFO    | logger          | 已加载角色: huangjingyun
+2026-09-02 14:46:01 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 14:46:01 | INFO    | logger          | 世界状态: 开学第31天。下午。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-09-02 14:46:01 | INFO    | logger          | 已加载角色: lengxufan
+2026-09-02 14:46:01 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 14:46:01 | INFO    | logger          | 世界状态: 开学第31天。下午。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-09-02 14:46:01 | INFO    | logger          | 已加载角色: yeqingci
+2026-09-02 14:46:01 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:46:01 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:46:02 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 14:46:05 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 14:46:05 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:46:09 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 14:46:09 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:46:13 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 14:46:13 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:48:22 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 14:48:38 | INFO    | logger          | 世界状态: 开学第31天。下午。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-09-02 14:48:38 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-02 14:48:38 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 14:48:38 | INFO    | logger          | 世界状态: 开学第31天。下午。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-09-02 14:48:38 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-02 14:48:38 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 14:48:38 | INFO    | logger          | 世界状态: 开学第31天。下午。小雨。窗外下着小雨。雨滴打在阳台栏杆上，声音很轻。
+2026-09-02 14:48:38 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-02 14:48:38 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:48:38 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:48:38 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 14:48:42 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 14:48:42 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:48:44 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 14:48:44 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 14:48:48 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 14:48:48 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 14:58:50 | INFO    | logger          | 世界状态: 开学第31天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 14:58:50 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-02 14:58:50 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 14:58:50 | INFO    | logger          | [离线] 冷旭帆: （手指在护腕上蹭了一下。）
+2026-09-02 14:58:50 | INFO    | logger          | 世界状态: 开学第31天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 14:58:50 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-02 14:58:50 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 14:58:50 | INFO    | logger          | [离线] 黄景云: （闭上眼睛。审讯训练的后遗症——耳朵里还有次声波的余震。）
+2026-09-02 14:58:50 | INFO    | logger          | 世界状态: 开学第31天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 14:58:50 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-02 14:58:50 | INFO    | logger          | [离线] 叶清辞: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 14:59:50 | INFO    | logger          | [离线] 冷旭帆: 安静地待着
+2026-09-02 14:59:50 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 14:59:50 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:00:50 | INFO    | logger          | [离线] 冷旭帆: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:00:50 | INFO    | logger          | [离线] 黄景云: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:00:50 | INFO    | logger          | [离线] 叶清辞: （重新打开数据面板，逐行核对。）
+2026-09-02 15:01:50 | INFO    | logger          | [离线] 冷旭帆: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:01:50 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 15:01:50 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:01:52 | INFO    | logger          | [GroupChat] 参与者超过上限，截断至 8 人
+2026-09-02 15:01:52 | INFO    | logger          | [GroupChat] 参与者超过上限，截断至 8 人
+2026-09-02 15:01:52 | INFO    | logger          | 世界状态: 开学第32天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 15:01:52 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-02 15:01:53 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 15:01:53 | INFO    | logger          | 世界状态: 开学第32天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 15:01:53 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-02 15:01:53 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 15:01:53 | INFO    | logger          | 世界状态: 开学第32天。下午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
+2026-09-02 15:01:53 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-02 15:01:53 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:01:53 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:01:53 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 15:01:55 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:01:55 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:01:58 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:01:58 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:02 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:02 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:05 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:05 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:09 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:09 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:12 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:12 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:14 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:14 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:17 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:17 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:20 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:20 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:23 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:23 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:26 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:26 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:28 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:28 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:31 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:31 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:33 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:33 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:37 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:37 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:40 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:40 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:42 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:42 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:45 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:45 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:47 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:47 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:50 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:50 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:50 | INFO    | logger          | [离线] 冷旭帆: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:02:50 | INFO    | logger          | [离线] 黄景云: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:02:50 | INFO    | logger          | [离线] 叶清辞: （手表停了。他盯着表盘看了很久。）
+2026-09-02 15:02:54 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:54 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:02:57 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:02:57 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:00 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:03:00 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:02 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:03:02 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:04 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:03:04 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:07 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:03:07 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:10 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:03:10 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:13 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:03:13 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:15 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:03:15 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:18 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:03:18 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:20 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:03:20 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:23 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:03:23 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:26 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:03:26 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:29 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:03:29 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:32 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:03:32 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:35 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:35 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:38 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:38 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:41 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:41 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:44 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:44 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:47 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:47 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:50 | INFO    | logger          | [离线] 冷旭帆: （重新打开数据面板，逐行核对。）
+2026-09-02 15:03:50 | INFO    | logger          | [离线] 黄景云: （重新打开数据面板，逐行核对。）
+2026-09-02 15:03:50 | INFO    | logger          | [离线] 叶清辞: （又看了一眼手表。误差0.3秒。）
+2026-09-02 15:03:51 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:51 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:55 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:55 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:03:58 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:03:58 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:01 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:01 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:05 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:05 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:09 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:09 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:13 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:13 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:16 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:16 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:20 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:20 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:23 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:23 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:23 | DEBUG   | logger          | [RelationshipDynamics] 关系升级: 陌生人 → 熟人
+2026-09-02 15:04:27 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:27 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:29 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:29 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:33 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:04:33 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:36 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:36 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:38 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:38 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:40 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:40 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:43 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:43 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:47 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:47 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:50 | INFO    | logger          | [离线] 冷旭帆: （重新打开数据面板，逐行核对。）
+2026-09-02 15:04:50 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 15:04:50 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:04:52 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:52 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:52 | DEBUG   | logger          | [RelationshipDynamics] 关系升级: 陌生人 → 熟人
+2026-09-02 15:04:54 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:54 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:56 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:56 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:04:59 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:04:59 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:01 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:01 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:05 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:05 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:09 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:09 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:13 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:13 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:16 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:16 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:19 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:19 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:23 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:23 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:25 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:25 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:29 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:05:29 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:32 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:32 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:35 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:35 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:35 | DEBUG   | logger          | [RelationshipDynamics] 关系升级: 陌生人 → 熟人
+2026-09-02 15:05:38 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:38 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:41 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:41 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:45 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:45 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:49 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:49 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:50 | INFO    | logger          | [离线] 冷旭帆: 安静地待着
+2026-09-02 15:05:50 | INFO    | logger          | [离线] 黄景云: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:05:50 | INFO    | logger          | [离线] 叶清辞: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:05:53 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:53 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:57 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:57 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:05:59 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:05:59 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:01 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:06:01 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:04 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:06:04 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:07 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:06:07 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:10 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:06:10 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:12 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:06:12 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:14 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:06:14 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:17 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:17 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:20 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:20 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:23 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:23 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:26 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:26 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:30 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:30 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:33 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:33 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:37 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:37 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:40 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:40 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:44 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:44 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:46 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:46 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:49 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:49 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:50 | INFO    | logger          | [离线] 冷旭帆: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:06:50 | INFO    | logger          | [离线] 黄景云: （手表停了。他盯着表盘看了很久。）
+2026-09-02 15:06:50 | INFO    | logger          | [离线] 叶清辞: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:06:52 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:06:52 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:54 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:06:54 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:06:57 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:06:57 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:07:00 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:07:00 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:07:04 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:07:04 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:07:50 | INFO    | logger          | [离线] 冷旭帆: （重新打开数据面板，逐行核对。）
+2026-09-02 15:07:50 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 15:07:50 | INFO    | logger          | [离线] 叶清辞: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:08:50 | INFO    | logger          | [离线] 冷旭帆: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:08:50 | INFO    | logger          | [离线] 黄景云: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:08:50 | INFO    | logger          | [离线] 叶清辞: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:09:49 | INFO    | logger          | 世界状态: 开学第32天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 15:09:49 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-02 15:09:49 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 15:09:49 | INFO    | logger          | [离线] 冷旭帆: （擦了很久的塑料刀。）
+2026-09-02 15:09:49 | INFO    | logger          | 世界状态: 开学第32天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 15:09:49 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-02 15:09:50 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 15:09:50 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 15:09:50 | INFO    | logger          | 世界状态: 开学第32天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 15:09:50 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-02 15:09:50 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:10:50 | INFO    | logger          | [离线] 冷旭帆: （擦了很久的塑料刀。）
+2026-09-02 15:10:50 | INFO    | logger          | [离线] 黄景云: （低头看糖纸上的字。那是陆华望写的。他不认识那种语言，但他知道意思。）
+2026-09-02 15:10:50 | INFO    | logger          | [离线] 叶清辞: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:11:50 | INFO    | logger          | [离线] 冷旭帆: 安静地待着
+2026-09-02 15:11:50 | INFO    | logger          | [离线] 黄景云: （手指停了半秒。然后继续敲桌面，但节奏变了。）
+2026-09-02 15:11:50 | INFO    | logger          | [离线] 叶清辞: （又看了一眼手表。误差0.3秒。）
+2026-09-02 15:12:50 | INFO    | logger          | [离线] 冷旭帆: （独自站在阳台上。）
+2026-09-02 15:12:50 | INFO    | logger          | [离线] 黄景云: （手指停了半秒。然后继续敲桌面，但节奏变了。）
+2026-09-02 15:12:50 | INFO    | logger          | [离线] 叶清辞: （重新打开数据面板，逐行核对。）
+2026-09-02 15:13:50 | INFO    | logger          | [离线] 冷旭帆: （左肩疼了一整夜。）
+2026-09-02 15:13:50 | INFO    | logger          | [离线] 黄景云: （剥了一颗糖放进嘴里，糖纸在指尖转了一圈。）
+2026-09-02 15:13:50 | INFO    | logger          | [离线] 叶清辞: （手表停了。他盯着表盘看了很久。）
+2026-09-02 15:14:50 | INFO    | logger          | [离线] 冷旭帆: （连续梦到妈妈，握着塑料刀很久没动。）
+2026-09-02 15:14:50 | INFO    | logger          | [离线] 黄景云: （盯着窗外。用客家话自言自语了一句。那是奶奶教的句子——'天黑了，该回家了。'但他现在没有家。）
+2026-09-02 15:14:50 | INFO    | logger          | [离线] 叶清辞: （又看了一眼手表。误差0.3秒。）
+2026-09-02 15:15:50 | INFO    | logger          | [离线] 冷旭帆: （凌晨听到脚步声，不是他。）
+2026-09-02 15:15:50 | INFO    | logger          | [离线] 黄景云: （剥了一颗糖放进嘴里，糖纸在指尖转了一圈。）
+2026-09-02 15:15:50 | INFO    | logger          | [离线] 叶清辞: （又看了一眼手表。误差0.3秒。）
+2026-09-02 15:16:50 | INFO    | logger          | [离线] 冷旭帆: （左肩疼了一整夜。）
+2026-09-02 15:16:50 | INFO    | logger          | [离线] 黄景云: （手指停了半秒。然后继续敲桌面，但节奏变了。）
+2026-09-02 15:16:50 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:17:50 | INFO    | logger          | [离线] 冷旭帆: （独自站在阳台上。）
+2026-09-02 15:17:50 | INFO    | logger          | [离线] 黄景云: （用粤语哼了一首歌。歌是奶奶教的。歌词忘了，但旋律还记得。）
+2026-09-02 15:17:50 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:18:50 | INFO    | logger          | [离线] 冷旭帆: （手指在护腕上蹭了一下。）
+2026-09-02 15:18:50 | INFO    | logger          | [离线] 黄景云: （用粤语哼了一首歌。歌是奶奶教的。歌词忘了，但旋律还记得。）
+2026-09-02 15:18:50 | INFO    | logger          | [离线] 叶清辞: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:19:50 | INFO    | logger          | [离线] 冷旭帆: （凌晨听到脚步声，不是他。）
+2026-09-02 15:19:50 | INFO    | logger          | [离线] 黄景云: （低头看糖纸上的字。那是陆华望写的。他不认识那种语言，但他知道意思。）
+2026-09-02 15:19:50 | INFO    | logger          | [离线] 叶清辞: （手表停了。他盯着表盘看了很久。）
+2026-09-02 15:20:50 | INFO    | logger          | [离线] 冷旭帆: （凌晨听到脚步声，不是他。）
+2026-09-02 15:20:50 | INFO    | logger          | [离线] 黄景云: （用斯瓦希里语低声说了一个词，然后自己笑了。）
+2026-09-02 15:20:50 | INFO    | logger          | [离线] 叶清辞: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:21:50 | INFO    | logger          | [离线] 冷旭帆: （连续梦到妈妈，握着塑料刀很久没动。）
+2026-09-02 15:21:50 | INFO    | logger          | [离线] 黄景云: （手指停了半秒。然后继续敲桌面，但节奏变了。）
+2026-09-02 15:21:50 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:22:50 | INFO    | logger          | [离线] 冷旭帆: （独自站在阳台上。）
+2026-09-02 15:22:50 | INFO    | logger          | [离线] 黄景云: （低头看糖纸上的字。那是陆华望写的。他不认识那种语言，但他知道意思。）
+2026-09-02 15:22:50 | INFO    | logger          | [离线] 叶清辞: （又看了一眼手表。误差0.3秒。）
+2026-09-02 15:23:50 | INFO    | logger          | [离线] 冷旭帆: 安静地待着
+2026-09-02 15:23:50 | INFO    | logger          | [离线] 黄景云: （低头看糖纸上的字。那是陆华望写的。他不认识那种语言，但他知道意思。）
+2026-09-02 15:23:50 | INFO    | logger          | [离线] 叶清辞: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:24:01 | INFO    | logger          | 世界状态: 开学第32天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 15:24:01 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-02 15:24:01 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 15:24:01 | INFO    | logger          | [离线] 冷旭帆: （手指在护腕上蹭了一下。）
+2026-09-02 15:24:01 | INFO    | logger          | 世界状态: 开学第32天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 15:24:01 | INFO    | logger          | 已加载角色: 黄景云
+2026-09-02 15:24:01 | DEBUG   | logger          | [EventBus] 订阅: lengxufan.action
+2026-09-02 15:24:01 | INFO    | logger          | [离线] 黄景云: （用斯瓦希里语低声说了一个词，然后自己笑了。）
+2026-09-02 15:24:01 | INFO    | logger          | 世界状态: 开学第32天。下午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 15:24:01 | INFO    | logger          | 已加载角色: 叶清辞
+2026-09-02 15:24:01 | INFO    | logger          | [离线] 叶清辞: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:25:01 | INFO    | logger          | [离线] 冷旭帆: （左肩疼了一整夜。）
+2026-09-02 15:25:01 | INFO    | logger          | [离线] 黄景云: （用斯瓦希里语低声说了一个词，然后自己笑了。）
+2026-09-02 15:25:01 | INFO    | logger          | [离线] 叶清辞: （手表停了。他盯着表盘看了很久。）
+2026-09-02 15:25:38 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:25:38 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:25:38 | INFO    | logger          | [API] 使用 qwen-plus | Key: sk-ws-H....
+2026-09-02 15:25:43 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:25:43 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:25:45 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=风, 地点=307室, 人物=7人
+2026-09-02 15:25:45 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:25:49 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:25:49 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:26:01 | INFO    | logger          | [离线] 冷旭帆: （擦了很久的塑料刀。）
+2026-09-02 15:26:01 | INFO    | logger          | [离线] 黄景云: （手指停了半秒。然后继续敲桌面，但节奏变了。）
+2026-09-02 15:26:01 | INFO    | logger          | [离线] 叶清辞: （把笔记本按颜色重新排列了一遍。）
+2026-09-02 15:26:58 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:26:58 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:27:00 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=2.38s
+2026-09-02 15:27:00 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:27:00 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:27:01 | INFO    | logger          | [离线] 冷旭帆: 安静地待着
+2026-09-02 15:27:01 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 15:27:01 | INFO    | logger          | [离线] 叶清辞: （手表停了。他盯着表盘看了很久。）
+2026-09-02 15:27:03 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=小雨, 地点=307室, 人物=7人
+2026-09-02 15:27:03 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:27:05 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:27:05 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:27:09 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:27:09 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:28:01 | INFO    | logger          | [离线] 冷旭帆: （凌晨听到脚步声，不是他。）
+2026-09-02 15:28:01 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 15:28:01 | INFO    | logger          | [离线] 叶清辞: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:29:01 | INFO    | logger          | [离线] 冷旭帆: （独自站在阳台上。）
+2026-09-02 15:29:01 | INFO    | logger          | [离线] 黄景云: （闭上眼睛。审讯训练的后遗症——耳朵里还有次声波的余震。）
+2026-09-02 15:29:01 | INFO    | logger          | [离线] 叶清辞: （手表停了。他盯着表盘看了很久。）
+2026-09-02 15:30:01 | INFO    | logger          | [离线] 冷旭帆: （一个人坐了很长时间。）
+2026-09-02 15:30:01 | INFO    | logger          | [离线] 黄景云: （盯着窗外。用客家话自言自语了一句。那是奶奶教的句子——'天黑了，该回家了。'但他现在没有家。）
+2026-09-02 15:30:01 | INFO    | logger          | [离线] 叶清辞: 安静地待着
+2026-09-02 15:31:01 | INFO    | logger          | [离线] 冷旭帆: （凌晨听到脚步声，不是他。）
+2026-09-02 15:31:01 | INFO    | logger          | [离线] 黄景云: （低头看糖纸上的字。那是陆华望写的。他不认识那种语言，但他知道意思。）
+2026-09-02 15:31:02 | INFO    | logger          | [离线] 叶清辞: （目光扫向黄景云的座位。他还没回来。）
+2026-09-02 15:31:27 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:31:27 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:31:30 | INFO    | logger          | [Chat] char=lengxufan model=qwen-plus elapsed=2.67s
+2026-09-02 15:31:30 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:31:30 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:31:33 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:31:33 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:31:35 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:31:35 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:31:38 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:31:38 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:31:41 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:31:41 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:31:45 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=阴, 地点=307室, 人物=7人
+2026-09-02 15:31:45 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:31:47 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:31:47 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=True, 情感=中性, 话题=一般对话
+2026-09-02 15:31:52 | DEBUG   | logger          | [SceneEngine] 时间段=下午, 天气=晴, 地点=307室, 人物=7人
+2026-09-02 15:31:52 | DEBUG   | logger          | [ContextAnalyzer] 意图=陈述, 追问=False, 情感=中性, 话题=一般对话
+2026-09-02 15:32:02 | INFO    | logger          | [离线] 冷旭帆: （左肩疼了一整夜。）
+2026-09-02 15:32:02 | INFO    | logger          | [离线] 黄景云: 安静地待着
+2026-09-02 15:32:02 | INFO    | logger          | [离线] 叶清辞: （重新打开数据面板，逐行核对。）
+2026-09-02 15:33:02 | INFO    | logger          | [离线] 冷旭帆: （盯着陆华望的空床位。）
+2026-09-02 15:33:02 | INFO    | logger          | [离线] 黄景云: （剥了一颗糖放进嘴里，糖纸在指尖转了一圈。）
+2026-09-02 15:33:02 | INFO    | logger          | [离线] 叶清辞: 安静地待着

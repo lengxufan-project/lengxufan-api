@@ -1,6 +1,7 @@
 import os, sys, argparse
 from app import create_app
 from infra.logger import info
+from services.background_service import start_background_life
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -17,6 +18,7 @@ if __name__ == '__main__':
         print(f"初始情绪: {engine.perception.emotion:.1f}")
         print("输入 /state /mem /scene /relation /exit")
         print("=" * 40)
+        start_background_life(interval_seconds=60)
         while True:
             try: user_input = input("\n你: ")
             except: break
@@ -34,6 +36,7 @@ if __name__ == '__main__':
             print(f"冷旭帆: {engine.get_reply(user_input)}")
     else:
         app = create_app()
+        start_background_life(interval_seconds=60)
         port = int(os.environ.get('PORT', 5000))
         info(f"启动 Web 服务，端口 {port}")
         app.run(host='0.0.0.0', port=port, debug=False)
