@@ -8,19 +8,16 @@ body {
   margin: 0 auto;
   background: #0a0c12;
 }
-
 .export-page {
   min-height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
   padding: 100px 20px 40px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  position: relative;
-  overflow-x: hidden;
 }
 
 .export-page::before {

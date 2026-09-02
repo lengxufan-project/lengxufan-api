@@ -120,10 +120,18 @@
         var stateInfo = stateMap && stateMap[id];
         if (stateInfo && stateInfo.emotionLabel) {
           var text = stateInfo.emotionLabel;
+          var stage = null;
           if (stateInfo.relationshipStage) {
-            text += " · " + stateInfo.relationshipStage;
+            stage = stateInfo.relationshipStage;
+          } else if (stateInfo.relationship) {
+            var m = stateInfo.relationship.match(/关系[:：]\s*([^\s（(]+)/);
+            if (m) stage = m[1];
+          }
+          if (stage) {
+            text += " · " + stage;
           }
           emotion.textContent = text;
+          emotion.setAttribute('data-emotion', stateInfo.emotionLabel);
         } else {
           emotion.textContent = "--";
         }

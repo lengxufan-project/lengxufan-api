@@ -1,7 +1,7 @@
 /* ============ 个人中心 · 深色主题 ============ */
 
 /* 页面基底：覆盖 main.css 的 overflow:hidden，本页可滚动 */
-html, body { height: auto; min-height: 100%; overflow: auto; }
+html, body { height: auto; min-height: 100%; overflow: auto; overflow-x: hidden; }
 body {
   max-width: 1200px;
   margin: 0 auto;

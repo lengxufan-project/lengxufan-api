@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    sidebar.css — 左侧可收起侧边栏（仅 index.html 加载）
    微信/QQ 式交互 + 暗黑磨砂风格
    结构依赖：index.html 中 #sidebar / #sidebarToggle / #sidebarNotify /
@@ -15,7 +15,8 @@
   width: 220px;
   background: rgba(10,12,18,0.85);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-  border-right: 1px solid rgba(88,166,255,0.15);
+  border-right: 1px solid rgba(88,166,255,0.12);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.35);
   z-index: 110;
   transition: left 0.3s ease-in-out;
   overflow-y: auto;
@@ -25,8 +26,10 @@
 /* 收起态（桌面端保留，但 sidebar 始终 220px 不折叠） */
 .sidebar.collapsed .sidebar-title,
 .sidebar.collapsed .sidebar-notify,
+.sidebar.collapsed .sidebar-avatar,
 .sidebar.collapsed .sidebar-search,
-.sidebar.collapsed .sidebar-nav { display: none; }
+.sidebar.collapsed .sidebar-nav,
+.sidebar.collapsed .sidebar-footer { display: none; }
 .sidebar.collapsed .sidebar-topbar { padding: 10px 0; justify-content: center; }
 
 /* ============ 顶部条：开关 / 标题 / 通知图标 ============ */
@@ -116,6 +119,36 @@
 }
 .sidebar-notify.has-new .notify-dot { display: block; }
 
+/* ============ 圆形头像按钮（登录入口，位于顶部条右侧） ============ */
+.sidebar-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease-in-out;
+  padding: 0;
+  position: relative;
+}
+/* 未登录状态：简化用户图标 */
+.sidebar-avatar::before {
+  content: '';
+  width: 12px; height: 12px;
+  border: 1.5px solid #5f6b80;
+  border-radius: 50%;
+  position: relative;
+}
+.sidebar-avatar:hover {
+  border-color: rgba(88,166,255,0.6);
+  background: rgba(88,166,255,0.1);
+  box-shadow: 0 0 10px rgba(88,166,255,0.3);
+}
+.sidebar-avatar:hover::before {
+  border-color: #58a6ff;
+}
+
 /* ============ 搜索框：胶囊形磨砂，聚焦冰蓝发光 ============ */
 .sidebar-search {
   margin: 10px 12px;
@@ -168,7 +201,7 @@
 .nav-link::before {
   content: '';
   position: absolute;
-  left: 56px; top: 50%;
+  left: 0; top: 50%;
   transform: translateY(-50%);
   width: 2px; height: 0;
   background: #58a6ff;
@@ -200,6 +233,78 @@
   white-space: nowrap;
 }
 .nav-group-title:first-child { padding-top: 4px; }
+
+/* ============ 设置面板分组抽屉（可折叠二级抽屉） ============ */
+.sb-settings-groups {
+  padding: 0;
+}
+.sb-group {
+  margin-bottom: 2px;
+}
+.sb-group-title {
+  font-size: 11px;
+  color: #6f7d96;
+  letter-spacing: 0.1em;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.sb-group-title:hover {
+  color: #c9d6f0;
+  background: rgba(88, 166, 255, 0.06);
+}
+.sb-group-title.expanded {
+  color: #bfe0ff;
+}
+/* ▸ 箭头图标 */
+.sg-arrow {
+  display: inline-block;
+  font-size: 10px;
+  color: #5f6b80;
+  transition: transform 0.2s ease-in-out;
+  line-height: 1;
+}
+.sb-group-title.expanded .sg-arrow {
+  transform: rotate(90deg);
+  color: #58a6ff;
+}
+/* 二级抽屉内容：默认收起，展开时显示 */
+.sb-group-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in-out;
+}
+.sb-group-body.open {
+  max-height: 200px;
+}
+.sb-group-body .sb-list {
+  padding: 2px 0 4px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sb-group-body .sb-entry-link {
+  padding: 7px 14px;
+  font-size: 12px;
+  border-radius: 8px;
+  color: #8fa0c0;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.sb-group-body .sb-entry-link:hover {
+  background: rgba(88, 166, 255, 0.08);
+  border-color: rgba(88, 166, 255, 0.25);
+  color: #fff;
+}
 
 
 /* ============ 通知抽屉 ============ */
@@ -245,6 +350,28 @@
 .notify-empty {
   color: #5f6b80; font-size: 12px;
   text-align: center; padding: 40px 10px;
+}
+
+/* ============ 侧边栏底部：登录入口 ============ */
+.sidebar-footer {
+  flex-shrink: 0;
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+.sidebar-login {
+  display: inline-block;
+  color: #5f6b80;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+.sidebar-login:hover {
+  color: #bfe0ff;
+  background: rgba(88, 166, 255, 0.08);
 }
 
 /* ============ 移动端遮罩 ============ */

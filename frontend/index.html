@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -55,7 +55,7 @@
           <span class="notify-bell"></span>
           
         </button>
-        <a class="sb-user-entry" href="login.html" title="登录">登录</a>
+        <button class="sidebar-avatar" id="sidebarAvatar" type="button" title="登录" onclick="handleAvatarClick()"></button>
       </div>
 
       <!-- 搜索框：胶囊形磨砂，聚焦冰蓝发光，点击唤起全局搜索面板 -->
@@ -84,7 +84,7 @@
         <div class="sb-panel sb-panel-chat" data-panel="chat">
           <div class="sb-panel-title">对话</div>
           <div class="sb-list">
-            <a class="sb-entry-link" href="chat.html?group=1">进入群聊</a>
+            <a class="sb-group-chat-btn" href="chat.html?group=1">进入群聊</a>
           </div>
           <div style="margin-top:16px;padding:0 14px">
             <div class="nav-group-title" style="padding:14px 0 6px">最近对话</div>
@@ -97,17 +97,17 @@
             <div class="char-item" data-char="lengxufan">
               <span class="char-dot"></span>
               <span class="char-name">冷旭帆</span>
-              <span class="char-emotion">稍好</span>
+              <span class="char-emotion" data-emotion="稍好">稍好</span>
             </div>
             <div class="char-item" data-char="huangjingyun">
               <span class="char-dot"></span>
               <span class="char-name">黄景云</span>
-              <span class="char-emotion">平静</span>
+              <span class="char-emotion" data-emotion="平静">平静</span>
             </div>
             <div class="char-item" data-char="yeqingci">
               <span class="char-dot"></span>
               <span class="char-name">叶清辞</span>
-              <span class="char-emotion">低落</span>
+              <span class="char-emotion" data-emotion="低落">低落</span>
             </div>
             <a class="sb-entry-link" href="character-gallery.html">查看全部角色 →</a>
           </div>
@@ -126,24 +126,69 @@
         </div>
         <div class="sb-panel sb-panel-settings" data-panel="settings">
           <div class="sb-panel-title">设置</div>
-          <div class="sb-list">
-            <a class="sb-entry-link" href="account-security.html">账号与安全</a>
-            <a class="sb-entry-link" href="profile-edit.html">编辑资料</a>
-            <a class="sb-entry-link" href="chat-settings.html">聊天设置</a>
-            <a class="sb-entry-link" href="status-records.html">状态记录</a>
-            <a class="sb-entry-link" href="world-feed.html">世界动态</a>
-            <a class="sb-entry-link" href="settings.html">设置页面</a>
-            <a class="sb-entry-link" href="profile.html">个人中心</a>
-            <a class="sb-entry-link" href="export.html">导出对话</a>
-            <a class="sb-entry-link" href="about.html">关于</a>
-            <a class="sb-entry-link" href="help.html">帮助</a>
-            <a class="sb-entry-link" href="dev.html">开发者面板</a>
-            <a class="sb-entry-link" href="demo-mode.html">演示模式</a>
+          <div class="sb-settings-groups">
+            <div class="sb-group">
+              <div class="sb-group-title" data-group="account">
+                <span class="sg-arrow">▸</span> 账号
+              </div>
+              <div class="sb-group-body" data-group="account">
+                <div class="sb-list">
+                  <a class="sb-entry-link" href="profile.html">个人中心</a>
+                  <a class="sb-entry-link" href="profile-edit.html">编辑资料</a>
+                  <a class="sb-entry-link" href="account-security.html">账号与安全</a>
+                </div>
+              </div>
+            </div>
+            <div class="sb-group">
+              <div class="sb-group-title" data-group="chat">
+                <span class="sg-arrow">▸</span> 聊天
+              </div>
+              <div class="sb-group-body" data-group="chat">
+                <div class="sb-list">
+                  <a class="sb-entry-link" href="chat-settings.html">聊天设置</a>
+                  <a class="sb-entry-link" href="export.html">导出对话</a>
+                </div>
+              </div>
+            </div>
+            <div class="sb-group">
+              <div class="sb-group-title" data-group="privacy">
+                <span class="sg-arrow">▸</span> 系统与隐私
+              </div>
+              <div class="sb-group-body" data-group="privacy">
+                <div class="sb-list">
+                  <a class="sb-entry-link" href="settings.html">设置页面</a>
+                  <a class="sb-entry-link" href="world-feed.html">世界动态</a>
+                  <a class="sb-entry-link" href="status-records.html">状态记录</a>
+                </div>
+              </div>
+            </div>
+            <div class="sb-group">
+              <div class="sb-group-title" data-group="about">
+                <span class="sg-arrow">▸</span> 关于
+              </div>
+              <div class="sb-group-body" data-group="about">
+                <div class="sb-list">
+                  <a class="sb-entry-link" href="about.html">关于</a>
+                  <a class="sb-entry-link" href="help.html">帮助</a>
+                </div>
+              </div>
+            </div>
+            <div class="sb-group">
+              <div class="sb-group-title" data-group="advanced">
+                <span class="sg-arrow">▸</span> 高级
+              </div>
+              <div class="sb-group-body" data-group="advanced">
+                <div class="sb-list">
+                  <a class="sb-entry-link" href="dev.html">开发者面板</a>
+                  <a class="sb-entry-link" href="demo-mode.html">演示模式</a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-    </div>
+      </div>
 
     <!-- 通知抽屉遮罩（抽屉打开时显示，点击关闭） -->
     <div class="notify-mask" id="notifyMask"></div>

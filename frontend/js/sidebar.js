@@ -18,6 +18,9 @@
 
     // 移动端独立汉堡按钮
     bindMobileMenuBtn();
+
+    // 设置面板分组抽屉
+    bindSettingsGroups();
   }
 
   function highlightSidebar() {
@@ -53,5 +56,26 @@
     });
   }
 
+  /* 设置面板分组抽屉：点击标题展开/收起 */
+  function bindSettingsGroups() {
+    var titles = document.querySelectorAll('.sb-group-title');
+    Array.prototype.forEach.call(titles, function (title) {
+      title.addEventListener('click', function () {
+        var group = title.getAttribute('data-group');
+        if (!group) return;
+        var body = document.querySelector('.sb-group-body[data-group="' + group + '"]');
+        if (!body) return;
+        var isOpen = body.classList.contains('open');
+        body.classList.toggle('open', !isOpen);
+        title.classList.toggle('expanded', !isOpen);
+      });
+    });
+  }
+
   window.Sidebar = { init: init };
 })();
+
+/* 全局函数：头像点击跳转登录页 */
+function handleAvatarClick() {
+  window.location.href = 'login.html';
+}

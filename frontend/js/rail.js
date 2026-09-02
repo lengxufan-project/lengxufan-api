@@ -5,12 +5,12 @@
   function init() {
     var railItems = document.querySelectorAll('.rail-item');
     var panelMap = {
-      world: '[data-panel="world"]',
-      roster: '[data-panel="characters"]',
-      chat: '[data-panel="chat"]',
-      memory: '[data-panel="memory"]',
-      settings: '[data-panel="settings"]'
-    };
+  world: '[data-panel="world"]',
+  roster: '[data-panel="characters"]',
+  chat: '[data-panel="chat"]',
+  memory: '[data-panel="memory"]',
+  settings: '[data-panel="settings"]'
+};
     function switchPanel(view) {
       var selector = panelMap[view];
       if (!selector) return;
@@ -31,8 +31,8 @@
       });
     });
     window.switchPanel = switchPanel;
-    var savedView = localStorage.getItem('lxf_active_view');
-    switchPanel(savedView && panelMap[savedView] ? savedView : 'world');
+    // Always default to 'world' panel on page load, never remember last user selection
+    switchPanel('world');
   }
 
   window.Rail = { init: init };

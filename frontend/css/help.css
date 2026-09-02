@@ -5,6 +5,7 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
 }
 

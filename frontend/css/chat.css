@@ -181,8 +181,8 @@ body {
 .cp-chat-area::-webkit-scrollbar-thumb { background: rgba(88,166,255,0.25); border-radius: 3px; }
 .cp-chat-area::-webkit-scrollbar-track { background: transparent; }
 
-/* 消息行与气泡 */
-.cp-msg { display: flex; max-width: 65%; align-items: flex-end; gap: 12px; position: relative; }
+/* 消息行与气泡 — max-width 70% */
+.cp-msg { display: flex; max-width: 70%; align-items: flex-end; gap: 12px; position: relative; }
 .cp-msg.ai { align-self: flex-start; }
 .cp-msg.user { align-self: flex-end; flex-direction: row-reverse; }
 
@@ -229,19 +229,23 @@ body {
   border-bottom-right-radius: 4px;
 }
 
-/* 群聊消息气泡包裹：角色名标签 + 气泡 */
+/* 群聊消息气泡包裹：角色名标签独占一行 + 气泡 + 动作描写 */
 .cp-bubble-wrap {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   max-width: 100%;
 }
+/* 群聊角色名：加粗 + 角色颜色 + 独立一行 */
 .cp-msg-name {
-  font-size: 11px;
-  color: #58a6ff;
-  padding: 0 4px;
-  opacity: 0.85;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0 2px;
   white-space: nowrap;
+  line-height: 1.4;
+  text-shadow: 0 0 10px currentColor;
+  opacity: 0.95;
 }
 
 /* 无 backdrop-filter 支持时降级 */
@@ -249,13 +253,35 @@ body {
   .cp-msg.ai .cp-bubble { background: rgba(22, 26, 41, 0.92); }
 }
 
-/* 心理独白（💭） */
+/* 内心独白（💭/💡 开头）：淡蓝色 + 带引号 + 独立样式 */
 .cp-inner {
   display: block;
   margin-top: 6px;
+  padding: 4px 0;
+  color: #7db8ff;
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  background: linear-gradient(90deg, rgba(88,166,255,0.08) 0%, transparent 60%);
+  border-left: 2px solid rgba(88,166,255,0.35);
+  padding-left: 10px;
+  border-radius: 0 6px 6px 0;
+}
+/* 气泡内的普通段落行 */
+.cp-line {
+  display: block;
+}
+.cp-line + .cp-line { margin-top: 4px; }
+/* 动作描写：气泡下方灰色小字斜体 */
+.cp-action-desc {
+  font-size: 12px;
   font-style: italic;
-  color: #9db4e0;
-  opacity: 0.9;
+  color: #8fa0c0;
+  opacity: 0.75;
+  padding: 2px 6px;
+  margin-top: 2px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
 }
 
 /* 打字中光标 */
@@ -339,12 +365,12 @@ body {
   color: #5f6b80;
 }
 
-/* ============ 状态抽屉：absolute 相对 cp-page 定位，从右滑入 ============ */
+/* ============ 状态抽屉：右侧滑出磨砂玻璃抽屉，卡片式分组 ============ */
 .cp-status-drawer {
   position: absolute; top: 0; right: 0; bottom: 0;
   width: 300px;
   z-index: 500;
-  background: rgba(12,16,28,0.88);
+  background: rgba(22, 26, 41, 0.85);
   -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
   border-left: 1px solid rgba(88,166,255,0.18);
   box-shadow: -12px 0 40px rgba(0,0,0,0.5);
@@ -352,12 +378,15 @@ body {
   transition: transform 0.3s ease-in-out;
   display: flex; flex-direction: column;
 }
+@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .cp-status-drawer { background: rgba(14, 18, 30, 0.96); }
+}
 .cp-status-drawer.open { transform: translateX(0); }
 
 .cp-drawer-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(88,166,255,0.08);
   flex-shrink: 0;
 }
 .cp-drawer-title {
@@ -379,13 +408,20 @@ body {
 
 .cp-drawer-body {
   flex: 1; overflow-y: auto;
-  padding: 14px 18px;
+  padding: 14px 16px 24px;
+  display: flex; flex-direction: column;
+  gap: 12px;
 }
+/* 卡片式状态分组：圆角 + 细边框 + 磨砂底 + 内阴影 */
 .cp-drawer-block {
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 14px 14px 16px;
+  border-radius: 14px;
+  background: rgba(18, 22, 36, 0.55);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow:
+    inset 0 0 15px rgba(255, 255, 255, 0.02),
+    0 0 14px rgba(0, 0, 0, 0.25);
 }
-.cp-drawer-block:last-child { border-bottom: none; }
 .cp-drawer-block h4 {
   margin: 0 0 10px;
   font-size: 10px; font-weight: 400;
@@ -393,6 +429,43 @@ body {
   text-transform: uppercase;
 }
 .cp-drawer-block p { margin: 0; font-size: 13px; line-height: 1.8; color: #c6d4ec; }
+
+/* ============ 状态抽屉分组颜色区分（nth-child 定位，不修改 HTML） ============ */
+/* 1. 情绪曲线：冰蓝 */
+.cp-drawer-body > .cp-drawer-block:nth-child(1) {
+  border-left: 3px solid #58a6ff;
+}
+.cp-drawer-body > .cp-drawer-block:nth-child(1) h4 {
+  color: #58a6ff;
+}
+/* 2. 身体状态：淡绿 */
+.cp-drawer-body > .cp-drawer-block:nth-child(2) {
+  border-left: 3px solid #66e08b;
+}
+.cp-drawer-body > .cp-drawer-block:nth-child(2) h4 {
+  color: #66e08b;
+}
+/* 3. 心理状态：淡紫 */
+.cp-drawer-body > .cp-drawer-block:nth-child(3) {
+  border-left: 3px solid #a371f7;
+}
+.cp-drawer-body > .cp-drawer-block:nth-child(3) h4 {
+  color: #a371f7;
+}
+/* 4. 关系阶段：暖橙 */
+.cp-drawer-body > .cp-drawer-block:nth-child(4) {
+  border-left: 3px solid #f0883e;
+}
+.cp-drawer-body > .cp-drawer-block:nth-child(4) h4 {
+  color: #f0883e;
+}
+/* 5. 环境：中性灰蓝点缀（辅助色） */
+.cp-drawer-body > .cp-drawer-block:nth-child(5) {
+  border-left: 3px solid #8fa0c0;
+}
+.cp-drawer-body > .cp-drawer-block:nth-child(5) h4 {
+  color: #8fa0c0;
+}
 .cp-drawer-env span { color: #8fb8e8; }
 
 /* 情绪曲线兜底样式 */

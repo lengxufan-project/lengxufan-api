@@ -5,24 +5,6 @@
    #notifyMarkAll / #notifyClose / #notifyList / .notify-section
    ============================================================ */
 
-/* ---- 登录入口（侧边栏顶部通知按钮旁） ---- */
-.sb-user-entry {
-  color: #58a6ff;
-  font-size: 12px;
-  text-decoration: none;
-  padding: 2px 8px;
-  border-radius: 6px;
-  transition: all 0.25s ease-in-out;
-  white-space: nowrap;
-  flex-shrink: 0;
-  line-height: 1;
-}
-.sb-user-entry:hover {
-  color: #bfe0ff;
-  background: rgba(88, 166, 255, 0.08);
-  box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
-}
-
 /* ---- 遮罩层（fixed 全屏半透明） ---- */
 .notify-mask {
   position: fixed;

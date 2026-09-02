@@ -304,6 +304,12 @@
   var skipIntro = params.get("skipIntro") === "1";
 
   function init() {
+  // 优先判断 skipIntro
+  var params = new URLSearchParams(window.location.search);
+  if (params.get("skipIntro") === "1") {
+    finalizeIntro();
+    return;
+  }
     if (skipIntro) {
       skipIntroNow();
     } else {
