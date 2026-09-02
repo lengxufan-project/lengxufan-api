@@ -1,6 +1,6 @@
 ## 更新后的《冷旭帆项目 · 完整工程化导向手册（v6.0）》
 
-> 最后更新：2026-09-01  
+> 最后更新：2026-09-02  
 > 用途：修改任意功能时，先查本文件定位到唯一应修改的文件。  
 > 原则：一个功能对应一个文件，尽量只改一个文件。
 
@@ -61,7 +61,54 @@
 
 **修改任何前端文件前，先查 `frontend/ARCHITECTURE.md`。**
 
-### 3.3 主页面脚本加载顺序（不可乱）
+### 3.3 主页面三栏骨架
+
+主页面 `index.html` 采用三栏布局：
+
+| 栏位     | 容器 ID / 选择器       | 说明                             |
+| -------- | ---------------------- | -------------------------------- |
+| 第一栏   | `.rail`                | 角色快捷栏（角色头像列表）       |
+| 第二栏   | `.sidebar`             | 多面板侧边栏（导航 + 面板切换）  |
+| 第三栏   | `.scene`               | 场景主区域（世界观察 + 状态展示）|
+
+### 3.4 三状态系统（data-status）
+
+每个角色/功能模块通过 `data-status` 属性区分实现程度：
+
+| 状态    | 说明                                             |
+| ------- | ------------------------------------------------ |
+| `LIVE`  | 已完整实现，对接真实后端 API                     |
+| `STUB`  | 骨架实现，返回静态/模拟数据，占位可用             |
+| `PLAN`  | 仅导航入口，页面尚未实现，点击提示"敬请期待"     |
+
+### 3.5 app.js 模块拆分
+
+原 `app.js` 中的功能已拆分为独立模块文件，按加载顺序排列：
+
+| 模块文件               | 职责                             |
+| ---------------------- | -------------------------------- |
+| `api.js`               | 后端请求唯一出口                  |
+| `characters.js`        | 角色数据管理                     |
+| `state.js`             | 全局状态管理                     |
+| `ui.js`                | UI 工具函数                      |
+| `scene.js`             | 场景切换                         |
+| `scene-transition.js`  | 场景过渡动画                     |
+| `world-clock.js`       | 世界时钟                         |
+| `time-lighting.js`     | 时段光照                         |
+| `emotion-particles.js` | 情绪粒子                         |
+| `scene-shortcut.js`    | 场景快捷键                       |
+| `weather-effects.js`   | 天气特效                         |
+| `search-panel.js`      | Ctrl+K 搜索面板                  |
+| `intro.js`             | 开场动画（原 app.js intro 区块） |
+| `particles.js`         | 全局粒子背景                     |
+| `rail.js`              | 角色快捷栏渲染                   |
+| `sidebar.js`           | 侧边栏多面板管理                 |
+| `world.js`             | 世界状态观察                     |
+| `world-activities.js`  | 世界动态流                       |
+| `notifications.js`     | 通知抽屉管理                     |
+| `app.js`               | 主入口（最后加载，协调各模块）   |
+
+### 3.6 主页面脚本加载顺序（不可乱）
 
 `index.html` 中 script 标签必须严格按以下顺序：
 
@@ -101,16 +148,24 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 | 历史记录      | `routes/history_routes.py` + `models.py`                     |
 | 角色列表      | `routes/character_routes.py` + `characters/__init__.py`      |
 | 群聊管理器    | `lengxufan_core/group_chat.py`（占位骨架）                   |
+| 全体角色状态  | `routes/character_routes.py`（`GET /api/characters/status`） |
+| 角色详情      | `routes/character_routes.py`（`GET /api/characters/<char_id>`） |
+| 角色记忆      | `routes/character_routes.py`（`GET /api/characters/<char_id>/memories`） |
+| 通知接口      | `routes/notification_routes.py`                               |
+| 关系阶段推导  | `services/engine_service.py`（`_derive_relationship_stage`）  |
 
 ### 4.2 前端核心（主页面）
 
 | 修改什么                                 | 文件                                                         |
 | ---------------------------------------- | ------------------------------------------------------------ |
 | 全局配色 / body 布局 / 聊天气泡 / 状态栏 | `frontend/css/main.css`                                      |
-| 开场动画（时间轴/粒子/光线/拖尾/文字）   | `frontend/css/animations.css` + `frontend/js/app.js`（intro 区块） |
-| 侧边栏外观与偏移                         | `frontend/css/sidebar.css` + `frontend/js/app.js`（侧边栏区块） |
+| 开场动画（时间轴/粒子/光线/拖尾/文字）   | `frontend/css/animations.css` + `frontend/js/intro.js`       |
+| 侧边栏外观与偏移                         | `frontend/css/sidebar.css` + `frontend/js/sidebar.js`        |
+| 角色快捷栏（第一栏）                     | `frontend/js/rail.js`                                        |
 | 骨架屏形状                               | `frontend/css/skeleton.css` + `frontend/js/skeleton.js`      |
 | 后端请求（URL/字段/错误处理）            | `frontend/js/api.js`（唯一出口，勿在其他文件直接 fetch）     |
+| 角色数据管理                             | `frontend/js/characters.js`                                  |
+| 全局状态管理                             | `frontend/js/state.js`                                       |
 | 主页面聊天发送逻辑 / 打字指示器          | `frontend/js/chat.js` + `frontend/js/ui.js`                  |
 | 独立聊天页（chat.html）逻辑              | `frontend/js/chat.js`（自包含，不依赖 api.js/ui.js）         |
 | 独立聊天页样式                           | `frontend/css/chat.css`                                      |
@@ -119,30 +174,41 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 | 场景文案 / 场景切换                      | `frontend/js/scene.js` + `frontend/js/scene-transition.js`   |
 | 天气 / 时段光照 / 情绪粒子               | `frontend/js/weather-effects.js` / `time-lighting.js` / `emotion-particles.js` |
 | 搜索面板 / 快捷键面板                    | `frontend/js/search-panel.js` / `shortcuts-panel.js`（+ 同名 CSS） |
+| 全局粒子背景                             | `frontend/js/particles.js`（+ `frontend/css/animations.css`）|
+| 世界动态流                               | `frontend/js/world-activities.js`                            |
+| 世界状态观察                             | `frontend/js/world.js`                                       |
+| 通知抽屉                                 | `frontend/js/notifications.js` + `frontend/css/notification-center.css` |
 
-### 4.3 前端独立页面（19 个）
+### 4.3 前端独立页面（26 个）
 
-| 页面                   | 修改文件（三件套）                                           | 依赖 API                 |
-| ---------------------- | ------------------------------------------------------------ | ------------------------ |
-| 404.html               | `404.html` + `css/404.css` + `js/404.js`                     | -                        |
-| about.html             | `about.html` + `css/about.css` + `js/about.js`               | -                        |
-| chat.html              | `chat.html` + `css/chat.css` + `js/chat.js`                  | `POST /api/chat`、`GET /api/state` |
-| character-gallery.html | `character-gallery.html` + `css/character-gallery.css` + `js/character-gallery.js` | `GET /api/characters`    |
-| character-profile.html | `character-profile.html` + `css/character-profile.css` + `js/character-profile.js` | -                        |
-| demo-mode.html         | `demo-mode.html` + `css/demo-mode.css` + `js/demo-mode.js`   | -                        |
-| exploration.html       | `exploration.html` + `css/exploration.css` + `js/exploration.js` | -                        |
-| export.html            | `export.html` + `css/export.css` + `js/export.js`            | `GET /api/conversations` |
-| help.html              | `help.html` + `css/help.css` + `js/help.js`                  | -                        |
-| journey.html           | `journey.html` + `css/journey.css` + `js/journey.js`         | -                        |
-| login.html             | `login.html` + `css/login.css` + `js/login.js`               | -（前端模拟）            |
-| memory-gallery.html    | `memory-gallery.html` + `css/memory-gallery.css` + `js/memory-gallery.js` | -                        |
-| observer-panel.html    | `observer-panel.html` + `css/observer-panel.css` + `js/observer-panel.js` | `GET /api/state`         |
-| profile.html           | `profile.html` + `css/profile.css` + `js/profile.js`         | `GET /api/auth/me`       |
-| relation-map.html      | `relation-map.html` + `css/relation-map.css` + `js/relation-map.js` | -                        |
-| relations.html         | `relations.html` + `css/relation-thermometer.css` + `js/relation-thermometer.js` | -                        |
-| settings.html          | `settings.html` + `css/settings.css` + `js/settings.js`      | -                        |
-| world-guide.html       | `world-guide.html` + `css/world-guide.css` + `js/world-guide.js` | -                        |
-| world-map.html         | `world-map.html` + `css/world-map.css` + `js/world-map.js`   | `GET /api/state`         |
+| 页面                     | 修改文件（三件套）                                                      | 依赖 API                 |
+| ------------------------ | ----------------------------------------------------------------------- | ------------------------ |
+| 404.html                 | `404.html` + `css/404.css` + `js/404.js`                                | -                        |
+| about.html               | `about.html` + `css/about.css` + `js/about.js`                          | -                        |
+| account-security.html    | `account-security.html` + `css/account-security.css` + `js/account-security.js` | -                |
+| achievements.html        | `achievements.html` + `css/achievements.css` + `js/achievements.js`     | -                        |
+| chat.html                | `chat.html` + `css/chat.css` + `js/chat.js`                             | `POST /api/chat`、`GET /api/state` |
+| chat-settings.html       | `chat-settings.html` + `css/chat-settings.css` + `js/chat-settings.js`  | -                        |
+| character-gallery.html   | `character-gallery.html` + `css/character-gallery.css` + `js/character-gallery.js` | `GET /api/characters` |
+| character-profile.html   | `character-profile.html` + `css/character-profile.css` + `js/character-profile.js` | `GET /api/characters/<char_id>`、`GET /api/characters/<char_id>/memories` |
+| demo-mode.html           | `demo-mode.html` + `css/demo-mode.css` + `js/demo-mode.js`              | -                        |
+| dev.html                 | `dev.html` + `css/dev.css` + `js/dev.js`                                | -                        |
+| exploration.html         | `exploration.html` + `css/exploration.css` + `js/exploration.js`        | -                        |
+| export.html              | `export.html` + `css/export.css` + `js/export.js`                       | `GET /api/conversations` |
+| help.html                | `help.html` + `css/help.css` + `js/help.js`                             | -                        |
+| journey.html             | `journey.html` + `css/journey.css` + `js/journey.js`                    | -                        |
+| login.html               | `login.html` + `css/login.css` + `js/login.js`                          | `POST /api/auth/guest`   |
+| memory-gallery.html      | `memory-gallery.html` + `css/memory-gallery.css` + `js/memory-gallery.js` | -                       |
+| observer-panel.html      | `observer-panel.html` + `css/observer-panel.css` + `js/observer-panel.js` | `GET /api/state`        |
+| profile.html             | `profile.html` + `css/profile.css` + `js/profile.js`                    | `GET /api/auth/me`       |
+| profile-edit.html        | `profile-edit.html` + `css/profile-edit.css` + `js/profile-edit.js`     | -                        |
+| relation-map.html        | `relation-map.html` + `css/relation-map.css` + `js/relation-map.js`     | -                        |
+| relations.html           | `relations.html` + `css/relation-thermometer.css` + `js/relation-thermometer.js` | -                  |
+| settings.html            | `settings.html` + `css/settings.css` + `js/settings.js`                 | -                        |
+| status-records.html      | `status-records.html` + `css/status-records.css` + `js/status-records.js` | -                      |
+| world-feed.html          | `world-feed.html` + `css/world-feed.css` + `js/world-feed.js`           | -                        |
+| world-guide.html         | `world-guide.html` + `css/world-guide.css` + `js/world-guide.js`        | -                        |
+| world-map.html           | `world-map.html` + `css/world-map.css` + `js/world-map.js`              | `GET /api/state`         |
 
 ---
 
@@ -157,7 +223,7 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 | `lengxufan_core/group_chat.py`           | 群聊管理器骨架（预留参与者上限、分组、主动插话） |
 | `characters/*/data/character.json`       | 角色单文件数据                                   |
 
-### 5.2 前端（本次大规模扩展）
+### 5.2 前端（主页面模块拆分）
 
 | 文件                                     | 作用                                                         |
 | ---------------------------------------- | ------------------------------------------------------------ |
@@ -173,31 +239,62 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 | `frontend/css/choice-branch.css`         | 对话分支选择按钮                                             |
 | `frontend/css/search-panel.css`          | Ctrl+K 搜索模态面板                                          |
 | `frontend/css/shortcuts-panel.css`       | ? 快捷键面板                                                 |
-| `frontend/css/404.css` ~ `world-map.css` | 18 个独立页面各对应一个 CSS                                  |
+| `frontend/js/intro.js`                   | 开场动画（原 app.js intro 区块独立模块）                     |
+| `frontend/js/particles.js`               | 全局粒子背景                                                 |
+| `frontend/js/rail.js`                    | 角色快捷栏（第一栏）渲染                                     |
+| `frontend/js/sidebar.js`                 | 侧边栏多面板管理（第二栏）                                   |
+| `frontend/js/world.js`                   | 世界状态观察（第三栏场景区域）                               |
+| `frontend/js/world-activities.js`        | 世界动态流（轮播 dorm_activities）                           |
+| `frontend/js/notifications.js`           | 通知抽屉管理                                                 |
+| `frontend/js/characters.js`              | 角色数据管理                                                 |
+| `frontend/js/state.js`                   | 全局状态管理                                                 |
 | `frontend/js/skeleton.js`                | 骨架屏 show/hide                                             |
 | `frontend/js/chat.js`                    | 独立聊天页启动器（自包含 fetch，不依赖 api.js）               |
 | `frontend/js/weather-effects.js`         | 天气粒子渲染                                                 |
 | `frontend/js/time-lighting.js`           | 时段光照切换                                                 |
 | `frontend/js/emotion-particles.js`       | 情绪粒子动态                                                 |
 | `frontend/js/achievement-card.js`        | 成就弹卡展示                                                 |
-| `frontend/js/notification-center.js`     | 通知抽屉管理                                                 |
+| `frontend/js/notification-center.js`     | 通知抽屉管理（独立页面版）                                   |
 | `frontend/js/choice-branch.js`           | 剧情分支渲染                                                 |
 | `frontend/js/search-panel.js`            | 搜索面板逻辑                                                 |
 | `frontend/js/shortcuts-panel.js`         | 快捷键面板逻辑                                               |
-| `frontend/js/404.js` ~ `world-map.js`    | 18 个独立页面各对应一个 JS                                   |
+
+### 5.3 前端（新增独立页面）
+
+| 文件                                                       | 作用                               |
+| ---------------------------------------------------------- | ---------------------------------- |
+| `account-security.html` + `.css` + `.js`                   | 账户安全设置页                     |
+| `chat-settings.html` + `.css` + `.js`                      | 聊天设置页                         |
+| `profile-edit.html` + `.css` + `.js`                       | 个人资料编辑页                     |
+| `status-records.html` + `.css` + `.js`                     | 状态记录页                         |
+| `world-feed.html` + `.css` + `.js`                         | 世界动态流独立页                   |
+| `achievements.html` + `.css` + `.js`                       | 成就系统页                         |
+| `dev.html` + `.css` + `.js`                                | 开发者调试页                       |
+
+### 5.4 后端新增
+
+| 文件                                     | 作用                                             |
+| ---------------------------------------- | ------------------------------------------------ |
+| `routes/notification_routes.py`          | 通知接口路由（`GET /api/notifications`）          |
+| `routes/character_routes.py`（扩展）     | 新增角色状态、详情、记忆接口                      |
 
 ---
 
 ## 六、前端 API 契约（不可变）
 
-| 端点                 | 方法 | 请求                 | 响应                                                         |
-| -------------------- | ---- | -------------------- | ------------------------------------------------------------ |
-| `/api/state`         | GET  | -                    | `{emotion, emotion_label, body, mind, relationship, world:{day,time_of_day,weather}, dorm_activities, user_state, ...}` |
-| `/api/chat`          | POST | `{message, char_id}` | `{reply, state}`                                             |
-| `/api/group_chat`    | POST | `{message}`          | `{replies:[{char_id,name,reply}]}`                           |
-| `/api/characters`    | GET  | -                    | `[{id,name}]` 或 `{value:[{id,name}]}`                       |
-| `/api/conversations` | GET  | -                    | `[{id,role,content,annotation,state_snapshot,created_at}]`   |
-| `/api/auth/me`       | GET  | -                    | 当前用户信息                                                 |
+| 端点                              | 方法 | 请求                 | 响应                                                         |
+| --------------------------------- | ---- | -------------------- | ------------------------------------------------------------ |
+| `/api/state`                      | GET  | -                    | `{emotion, emotion_label, body, mind, relationship, world:{day,time_of_day,weather}, dorm_activities, user_state, ...}` |
+| `/api/chat`                       | POST | `{message, char_id}` | `{reply, state}`                                             |
+| `/api/group_chat`                 | POST | `{message}`          | `{replies:[{char_id,name,reply}]}`                           |
+| `/api/characters`                 | GET  | -                    | `[{id,name}]` 或 `{value:[{id,name}]}`                       |
+| `/api/characters/status`          | GET  | -                    | `{characters:[{id, name, emotion_label, relationship_stage}]}`|
+| `/api/characters/<char_id>`       | GET  | -                    | `{id, name, persona, autobiographical, milestones, current_state}` |
+| `/api/characters/<char_id>/memories` | GET | -                  | `{memories:[...]}`                                           |
+| `/api/notifications`              | GET  | -                    | `{system:[{type,data,timestamp}], activities:[{name,activity}]}` |
+| `/api/conversations`              | GET  | -                    | `[{id,role,content,annotation,state_snapshot,created_at}]`   |
+| `/api/auth/me`                    | GET  | -                    | 当前用户信息                                                 |
+| `/api/auth/guest`                 | POST | -                    | 游客登录，返回用户信息与 session                             |
 
 **规则：修改任何 fetch 的 URL / 请求字段 / 响应字段时，必须与 `routes/*.py` 保持同步。**
 
@@ -209,9 +306,12 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 2. **`window._emotionHistory`**：全局临时变量，未来应纳入 `window.State`。
 3. **demo-mode**：纯前端模拟，未接 `/api/chat`。
 4. **export.html**：需要登录 session，未登录时静默展示空态。
-5. **login.html**：前端模拟，未真正调用 `/api/auth/guest`，影响真实登录态功能（export/profile）。
-6. **部分独立页面缺少移动端媒体查询**：memory-gallery、observer-panel、world-map、exploration 等。
-7. **chat.js 自包含 fetch**：chat.js 不依赖 api.js/ui.js，独立实现 fetch 调用和消息渲染。若后端 API 契约变更需同步修改两处（api.js 和 chat.js）。
+5. **部分独立页面缺少移动端媒体查询**：memory-gallery、observer-panel、world-map、exploration 等。
+6. **chat.js 自包含 fetch**：chat.js 不依赖 api.js/ui.js，独立实现 fetch 调用和消息渲染。若后端 API 契约变更需同步修改两处（api.js 和 chat.js）。
+7. **部分占位页面仅骨架**：account-security、chat-settings、profile-edit、status-records、world-feed、achievements、dev 等页面为 PLAN/STUB 状态，尚未对接真实后端数据。
+8. **移动端细节**：部分页面在移动端存在布局偏移，需逐一修复媒体查询。
+9. **三栏布局移动端适配**：主页面三栏在窄屏下的折叠/切换逻辑尚未完善。
+10. **通知中心近况/系统分离**：`GET /api/notifications` 返回的 activities 和 system 可能在不同场景下数据源不一致。
 
 ---
 
@@ -384,9 +484,10 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 
 - `routes/__init__.py`：注册蓝图
 - `routes/auth_routes.py`：认证接口
-- `routes/character_routes.py`：角色列表接口
+- `routes/character_routes.py`：角色列表/状态/详情/记忆接口
 - `routes/chat_routes.py`：对话接口
 - `routes/history_routes.py`：历史记录接口
+- `routes/notification_routes.py`：通知接口
 - `routes/state_routes.py`：状态接口
 
 ---
@@ -433,15 +534,19 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 
 ### frontend/
 
-#### frontend 根目录 HTML（20 个）
+#### frontend 根目录 HTML（27 个）
 
-- `frontend/index.html`：主页面（世界观察中心，已精简）
-- `frontend/chat.html`：独立聊天页（单角色对话 + 情绪曲线抽屉）
+- `frontend/index.html`：主页面（三栏布局：rail + sidebar + scene）
 - `frontend/404.html`：错误页
 - `frontend/about.html`：关于页面
+- `frontend/account-security.html`：账户安全设置
+- `frontend/achievements.html`：成就系统
+- `frontend/chat.html`：独立聊天页（单角色对话 + 情绪曲线抽屉）
+- `frontend/chat-settings.html`：聊天设置
 - `frontend/character-gallery.html`：角色画廊
 - `frontend/character-profile.html`：人物典籍
 - `frontend/demo-mode.html`：演示模式
+- `frontend/dev.html`：开发者调试
 - `frontend/exploration.html`：暗夜拾遗
 - `frontend/export.html`：对话导出
 - `frontend/help.html`：帮助中心
@@ -450,13 +555,16 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 - `frontend/memory-gallery.html`：时光回廊
 - `frontend/observer-panel.html`：观察者之窗
 - `frontend/profile.html`：个人中心
+- `frontend/profile-edit.html`：个人资料编辑
 - `frontend/relation-map.html`：关系图谱
 - `frontend/relations.html`：关系温度计独立页
 - `frontend/settings.html`：设置页面
+- `frontend/status-records.html`：状态记录
+- `frontend/world-feed.html`：世界动态流
 - `frontend/world-guide.html`：世界观介绍
 - `frontend/world-map.html`：星图导航
 
-#### frontend/css/（40 个）
+#### frontend/css/（47 个）
 
 主页面核心：
 
@@ -484,13 +592,17 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 - `frontend/css/search-panel.css`：搜索面板
 - `frontend/css/shortcuts-panel.css`：快捷键面板
 
-独立页面：
+独立页面（24 个）：
 
 - `frontend/css/404.css`
 - `frontend/css/about.css`
+- `frontend/css/account-security.css`
+- `frontend/css/achievements.css`
 - `frontend/css/character-gallery.css`
 - `frontend/css/character-profile.css`
+- `frontend/css/chat-settings.css`
 - `frontend/css/demo-mode.css`
+- `frontend/css/dev.css`
 - `frontend/css/exploration.css`
 - `frontend/css/export.css`
 - `frontend/css/help.css`
@@ -499,17 +611,22 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 - `frontend/css/memory-gallery.css`
 - `frontend/css/observer-panel.css`
 - `frontend/css/profile.css`
+- `frontend/css/profile-edit.css`
 - `frontend/css/relation-map.css`
 - `frontend/css/settings.css`
+- `frontend/css/status-records.css`
+- `frontend/css/world-feed.css`
 - `frontend/css/world-guide.css`
 - `frontend/css/world-map.css`
 
-#### frontend/js/（43 个）
+#### frontend/js/（57 个）
 
-主页面核心（按加载顺序）：
+主页面核心（按加载顺序，20 个）：
 
 - `frontend/js/loading-bar.js`
 - `frontend/js/api.js`
+- `frontend/js/characters.js`
+- `frontend/js/state.js`
 - `frontend/js/ui.js`
 - `frontend/js/scene.js`
 - `frontend/js/scene-transition.js`
@@ -519,16 +636,27 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 - `frontend/js/scene-shortcut.js`
 - `frontend/js/weather-effects.js`
 - `frontend/js/search-panel.js`
+- `frontend/js/intro.js`
+- `frontend/js/particles.js`
+- `frontend/js/rail.js`
+- `frontend/js/sidebar.js`
+- `frontend/js/world.js`
+- `frontend/js/world-activities.js`
+- `frontend/js/notifications.js`
 - `frontend/js/app.js`（最后加载）
 
-独立页面：
+独立页面（26 个）：
 
 - `frontend/js/chat.js`（独立聊天页，自包含 fetch，不依赖 api.js）
 - `frontend/js/404.js`
 - `frontend/js/about.js`
+- `frontend/js/account-security.js`
+- `frontend/js/achievements.js`
 - `frontend/js/character-gallery.js`
 - `frontend/js/character-profile.js`
+- `frontend/js/chat-settings.js`
 - `frontend/js/demo-mode.js`
+- `frontend/js/dev.js`
 - `frontend/js/exploration.js`
 - `frontend/js/export.js`
 - `frontend/js/help.js`
@@ -537,10 +665,27 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 - `frontend/js/memory-gallery.js`
 - `frontend/js/observer-panel.js`
 - `frontend/js/profile.js`
+- `frontend/js/profile-edit.js`
 - `frontend/js/relation-map.js`
 - `frontend/js/settings.js`
+- `frontend/js/status-records.js`
+- `frontend/js/world-feed.js`
 - `frontend/js/world-guide.js`
 - `frontend/js/world-map.js`
+
+其他主页面组件（14 个，非核心加载链，按需引用）：
+
+- `frontend/js/skeleton.js`
+- `frontend/js/emotion-chart.js`
+- `frontend/js/character-display.js`
+- `frontend/js/character-tooltip.js`
+- `frontend/js/event-log.js`
+- `frontend/js/status-dashboard.js`
+- `frontend/js/relation-thermometer.js`
+- `frontend/js/achievement-card.js`
+- `frontend/js/notification-center.js`
+- `frontend/js/choice-branch.js`
+- `frontend/js/shortcuts-panel.js`
 
 ---
 
@@ -554,5 +699,5 @@ loading-bar.js → api.js → characters.js → state.js → ui.js
 ## 手册维护说明
 
 1. 每次新增/删除前端页面、修改 API 契约、新增后端模块时，同步更新本手册“附录”和 `frontend/ARCHITECTURE.md`。
-2. 本附录基于 2026-09-01 实际仓库文件生成，已移除 v5.5 中已删除的文件（如 `index_working_backup.html`、`demo.html`、`dev.html`、`manifest.json`、`sw.js`、`icons/`、`theme-override.css`、`*.bak_dynamic` 等）。
+2. 本附录基于 2026-09-02 实际仓库文件生成，已移除 v5.5 中已删除的文件（如 `index_working_backup.html`、`demo.html`、`manifest.json`、`sw.js`、`icons/`、`theme-override.css`、`*.bak_dynamic` 等）。
 3. 若后续重新引入 PWA、Service Worker 等能力，需在附录中同步补回。

@@ -25,3 +25,7 @@
 2026-09-02 12:00:56 | INFO    | logger          | 世界状态: 开学第29天。中午。晴。阳光从训练场的铁丝网漏进来，在地上划出整齐的格子。
 2026-09-02 12:00:56 | INFO    | logger          | 已加载角色: 冷旭帆
 2026-09-02 12:00:56 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
+2026-09-02 12:03:04 | INFO    | logger          | 启动 Web 服务，端口 5000
+2026-09-02 12:03:05 | INFO    | logger          | 世界状态: 开学第29天。中午。阴。天是灰的。训练场的探照灯提前亮了，蓝光打在阴云上。
+2026-09-02 12:03:05 | INFO    | logger          | 已加载角色: 冷旭帆
+2026-09-02 12:03:06 | DEBUG   | logger          | [EventBus] 订阅: huangjingyun.action
