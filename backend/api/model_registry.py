@@ -2,17 +2,21 @@
 import os
 from pathlib import Path
 
-# 鍔犺浇 .env 鏂囦欢
+# 加载 .env 文件（支持 backend/.env 或根目录 .env）
 def _load_env_file():
-    env_path = Path(__file__).parent.parent / '.env'
-    if env_path.exists():
-        with open(env_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#') or '=' not in line:
-                    continue
-                key, _, value = line.partition('=')
-                os.environ[key.strip()] = value.strip()
+    env_paths = [
+        Path(__file__).parent.parent / '.env',          # backend/.env
+        Path(__file__).parent.parent.parent / '.env',    # 根目录 .env
+    ]
+    for env_path in env_paths:
+        if env_path.exists():
+            with open(env_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith('#') or '=' not in line:
+                        continue
+                    key, _, value = line.partition('=')
+                    os.environ[key.strip()] = value.strip()
 
 _load_env_file()
 

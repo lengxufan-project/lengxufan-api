@@ -1,8 +1,14 @@
 """记忆模块 - 从当前角色上下文读取数据"""
-import time
+import os, sys, time
 import chromadb
 from dataclasses import dataclass, field
 from .character_context import get_character_data
+
+# 将项目根目录加入 sys.path，从 paths.py 导入路径
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+from paths import CHROMA_DIR
 
 @dataclass
 class Memory:
@@ -74,9 +80,10 @@ class Memory:
 
     def _init_vector_store(self):
         try:
-            self.chroma_client = chromadb.PersistentClient(path="data/chroma_db")
+            self.chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
             self.collection = self.chroma_client.get_collection("episodic_memories")
         except Exception:
+            self.chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
             self.collection = self.chroma_client.create_collection("episodic_memories")
 
     def add_episode_to_vector(self, episode_id: str, text: str, metadata: dict = None):

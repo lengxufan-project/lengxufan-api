@@ -1,11 +1,15 @@
 """ChromaDB数据可视化工具 - 查看存储的记忆条目"""
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+from paths import CHROMA_DIR
 import chromadb
 
 def main():
     keyword = sys.argv[1] if len(sys.argv) > 1 else None
-    client = chromadb.PersistentClient(path="data/chroma_db")
+    client = chromadb.PersistentClient(path=CHROMA_DIR)
     try:
         collection = client.get_collection("episodic_memories")
         results = collection.get()

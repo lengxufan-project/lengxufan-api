@@ -1,7 +1,12 @@
 """持久化"""
-import json, os, time
+import json, os, sys, time
 
-SAVE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+# 将项目根目录加入 sys.path，从 paths.py 导入路径
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+from paths import SAVE_DIR
+
 DEFAULT_STATE = {
     "emotion": 50.0, "memory": [], "episodic_memory": [],
     "autobiographical_memory": [], "relationship_milestones": [],

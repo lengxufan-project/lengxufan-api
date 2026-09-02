@@ -11,7 +11,7 @@ Get-ChildItem -Path . -Recurse -File -Filter *.py | ForEach-Object {
 Write-Host "语法检查完成。"
 
 Write-Host "`n===== 2. 单元测试 ====="
-python -m pytest tests/test_core_logic.py -v
+python -m pytest backend/tests/test_core_logic.py -v
 if ($LASTEXITCODE -ne 0) {
     Write-Host "单元测试未通过，请检查上方报错。" -ForegroundColor Red
     exit 1
@@ -22,7 +22,7 @@ try {
     $state = Invoke-RestMethod -Uri http://127.0.0.1:5000/api/state -Method GET -TimeoutSec 5
     Write-Host "GET /api/state 返回 200，情绪值: $($state.emotion)" -ForegroundColor Green
 } catch {
-    Write-Host "接口测试失败，请确认 Flask 已启动（python run.py）。" -ForegroundColor Yellow
+    Write-Host "接口测试失败，请确认 Flask 已启动（python backend/run.py）。" -ForegroundColor Yellow
 }
 
 Write-Host "`n所有检查执行完毕。"

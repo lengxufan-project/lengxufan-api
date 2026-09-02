@@ -1,14 +1,19 @@
 """日志系统 - 同时输出可读日志和 JSON 结构化日志"""
-import logging, os, json
+import logging, os, sys, json
 from datetime import datetime
 
-LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-os.makedirs(LOG_DIR, exist_ok=True)
+# 将项目根目录加入 sys.path，从 paths.py 导入路径
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+from paths import LOGS_DIR
+
+os.makedirs(LOGS_DIR, exist_ok=True)
 
 # 可读日志文件
-LOG_FILE = os.path.join(LOG_DIR, f"lengxufan_{datetime.now().strftime('%Y%m%d')}.log")
+LOG_FILE = os.path.join(LOGS_DIR, f"lengxufan_{datetime.now().strftime('%Y%m%d')}.log")
 # JSON 事件日志文件
-JSON_LOG_FILE = os.path.join(LOG_DIR, "events.jsonl")
+JSON_LOG_FILE = os.path.join(LOGS_DIR, "events.jsonl")
 
 _logger = None
 _json_logger = None

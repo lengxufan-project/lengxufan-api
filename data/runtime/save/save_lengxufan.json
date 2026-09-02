@@ -1,0 +1,88 @@
+{
+  "emotion": 56.59947103801964,
+  "status": {
+    "shoulder_pain": false,
+    "dream_streak": 0,
+    "miss_wang": false,
+    "holding_knife": false
+  },
+  "pending_events": [
+    "（连续梦到妈妈，握着塑料刀很久没动。）",
+    "（擦了很久的塑料刀。）",
+    "（独自站在阳台上。）",
+    "（独自站在阳台上。）",
+    "（擦了很久的塑料刀。）",
+    "（擦了很久的塑料刀。）",
+    "（一个人坐了很长时间。）",
+    "（一个人坐了很长时间。）"
+  ],
+  "last_time": 1788353355.1469576,
+  "simulated_day": 1,
+  "facts": [],
+  "episodic": [],
+  "relationship_milestones": [
+    {
+      "trust": 25,
+      "triggered": false,
+      "description": "第一次递护腕给他。"
+    },
+    {
+      "trust": 50,
+      "triggered": false,
+      "description": "炼狱拉练失温那晚，他把外套给了我。"
+    },
+    {
+      "trust": 70,
+      "triggered": false,
+      "description": "他违规开枪保护我。"
+    },
+    {
+      "trust": 85,
+      "triggered": false,
+      "description": "他在阳台叫了我一声哥。"
+    },
+    {
+      "trust": 95,
+      "triggered": false,
+      "description": "归墟前夜我回应了他。"
+    }
+  ],
+  "scheduled_memories": [
+    {
+      "event": "炼狱拉练失温，陆华望把外套脱给了他。",
+      "unlock_day": 30,
+      "base_weight": 9,
+      "trigger_keywords": [
+        "炼狱",
+        "拉练",
+        "失温"
+      ]
+    },
+    {
+      "event": "边境任务违规开枪保护了陆华望。",
+      "unlock_day": 90,
+      "base_weight": 9,
+      "trigger_keywords": [
+        "边境",
+        "开枪",
+        "违规"
+      ]
+    },
+    {
+      "event": "归墟前夜叫了一声'哥'，他回应了。",
+      "unlock_day": 180,
+      "base_weight": 10,
+      "trigger_keywords": [
+        "归墟",
+        "哥",
+        "前夜"
+      ]
+    }
+  ],
+  "identity_state": {
+    "wang_claim": false,
+    "wang_belief": 0,
+    "known_name": null,
+    "trust_level": 30
+  }
+}

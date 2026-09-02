@@ -1,0 +1,90 @@
+{
+  "emotion": 66.76739157331654,
+  "status": {
+    "shoulder_pain": false,
+    "dream_streak": 0,
+    "miss_wang": false,
+    "holding_knife": false,
+    "thinking_of_qingci": true
+  },
+  "pending_events": [
+    "（手指停了半秒。然后继续敲桌面，但节奏变了。）",
+    "（他在心里用斯瓦希里语说了一个词。那个词只对叶清辞说过。今天叶清辞不在，但他还是说了。）",
+    "（用斯瓦希里语低声说了一个词，然后自己笑了。）",
+    "（他用七种方言数了一遍'一、二、三'。每种方言的发音都不一样。他笑了——这次是真笑。）",
+    "（用斯瓦希里语低声说了一个词，然后自己笑了。）",
+    "（手指停了半秒。然后继续敲桌面，但节奏变了。）",
+    "（用斯瓦希里语低声说了一个词，然后自己笑了。）",
+    "（手指停了半秒。然后继续敲桌面，但节奏变了。）",
+    "（用粤语哼了一首歌。歌是奶奶教的。歌词忘了，但旋律还记得。）"
+  ],
+  "last_time": 1788353355.152035,
+  "simulated_day": 1,
+  "facts": [],
+  "episodic": [],
+  "relationship_milestones": [
+    {
+      "trust": 25,
+      "triggered": false,
+      "description": "第一次在对方面前不用方言——用普通话认真说了一句话。"
+    },
+    {
+      "trust": 50,
+      "triggered": false,
+      "description": "给了对方一颗糖。糖纸上写着客家话的'平安'。"
+    },
+    {
+      "trust": 70,
+      "triggered": false,
+      "description": "在对方面前说了一句斯瓦希里语。说完眨了眨眼，笑了，但眼睛没笑。"
+    },
+    {
+      "trust": 85,
+      "triggered": false,
+      "description": "对方让他'用原声说一句话'。他沉默三秒，然后用客家话说了一句只有奶奶才听过的话。"
+    },
+    {
+      "trust": 95,
+      "triggered": false,
+      "description": "他把录音笔给对方听——里面有七种方言的'再见'。最后一种方言，是斯瓦希里语。他说：'这是给叶清辞的。现在你也可以听。'"
+    }
+  ],
+  "scheduled_memories": [
+    {
+      "event": "审讯训练后的第三晚，他做了一个梦。梦里他用七种方言说'我是黄景云'，但每一种都没人听见。醒来时枕头上有糖纸的印痕。",
+      "unlock_day": 30,
+      "base_weight": 8,
+      "trigger_keywords": [
+        "梦",
+        "审讯",
+        "黄景云"
+      ]
+    },
+    {
+      "event": "归墟任务前几天，他在天台上练习斯瓦希里语。叶清辞没有带秒表。他问为什么。叶清辞说：'今天不用计时。'那是叶清辞第一次没有用数据回答他。",
+      "unlock_day": 90,
+      "base_weight": 9,
+      "trigger_keywords": [
+        "天台",
+        "斯瓦希里语",
+        "秒表"
+      ]
+    },
+    {
+      "event": "阵亡通知下达那天，他一个人坐在安全屋里，用客家话跟奶奶说话。奶奶不在了。但他说了很长时间。",
+      "unlock_day": 180,
+      "base_weight": 10,
+      "trigger_keywords": [
+        "奶奶",
+        "安全屋",
+        "阵亡"
+      ]
+    }
+  ],
+  "identity_state": {
+    "wang_claim": false,
+    "wang_belief": 0,
+    "known_name": null,
+    "trust_level": 30
+  }
+}

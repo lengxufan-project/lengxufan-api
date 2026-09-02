@@ -14,3 +14,7 @@ data/*.json
 
 # 环境
 .env
+
+# 工具缓存
+.pytest_cache/
+.vscode/

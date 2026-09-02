@@ -1,4 +1,10 @@
 import os, sys, argparse
+
+# 将项目根目录加入 sys.path，确保能导入 paths.py
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
 from app import create_app
 from infra.logger import info
 from services.background_service import start_background_life
