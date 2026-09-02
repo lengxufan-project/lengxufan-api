@@ -158,6 +158,48 @@ def get_cached_engine(char_id):
     return _engine_cache.get(char_id)
 
 
+def _derive_relationship_stage(char_id, trust_level):
+    """根据信任值推导关系阶段
+
+    优先使用角色配置中的自定义 relationship_stages，
+    否则使用默认五阶段规则。
+    """
+    if trust_level is None:
+        return "--"
+
+    # 尝试从角色配置获取自定义阶段定义
+    try:
+        CharacterRegistry.load_all()
+        config = CharacterRegistry.get(char_id)
+        custom_stages = getattr(config, 'relationship_stages', None) or []
+        if custom_stages:
+            for stage in custom_stages:
+                trust_range = stage.get("trust_range")
+                if trust_range and len(trust_range) == 2:
+                    low, high = trust_range
+                    # 对于连续区间，使用左闭右开匹配，最后一个区间用闭区间
+                    if stage is custom_stages[-1]:
+                        if low <= trust_level <= high:
+                            return stage.get("stage", "--")
+                    else:
+                        if low <= trust_level < high:
+                            return stage.get("stage", "--")
+    except (ValueError, Exception):
+        pass
+
+    # 默认五阶段规则
+    if trust_level <= 20:
+        return "陌生人"
+    elif trust_level <= 40:
+        return "熟悉"
+    elif trust_level <= 60:
+        return "朋友"
+    elif trust_level <= 80:
+        return "重要之人"
+    else:
+        return "核心"
+
+
 def get_engine_status(char_id):
     """获取角色状态摘要，优先从缓存引擎读取，其次从 save 文件读取，都不存在则返回 None"""
     engine = _engine_cache.get(char_id)
@@ -171,7 +213,8 @@ def get_engine_status(char_id):
             el = "稍好"
         else:
             el = "高涨"
-        rel_stage = engine.relationship_dynamics.current_stage if engine.relationship_dynamics else "陌生人"
+        trust_level = engine.identity.trust_level if engine.identity else None
+        rel_stage = _derive_relationship_stage(char_id, trust_level)
         return {"emotion": emo, "emotion_label": el, "relationship_stage": rel_stage}
 
     # 从 save 文件读取
@@ -187,7 +230,9 @@ def get_engine_status(char_id):
             el = "稍好"
         else:
             el = "高涨"
-        return {"emotion": emo, "emotion_label": el, "relationship_stage": "--"}
+        trust_level = saved.get("identity_state", {}).get("trust_level")
+        rel_stage = _derive_relationship_stage(char_id, trust_level)
+        return {"emotion": emo, "emotion_label": el, "relationship_stage": rel_stage}
 
     return None
 
@@ -205,7 +250,8 @@ def get_engine_full_state(char_id):
             el = "稍好"
         else:
             el = "高涨"
-        rel_stage = engine.relationship_dynamics.current_stage if engine.relationship_dynamics else "陌生人"
+        trust_level = engine.identity.trust_level if engine.identity else None
+        rel_stage = _derive_relationship_stage(char_id, trust_level)
         return {"emotion": emo, "emotion_label": el, "relationship_stage": rel_stage}
 
     from infra.persistence import load_full_state
@@ -220,7 +266,9 @@ def get_engine_full_state(char_id):
             el = "稍好"
         else:
             el = "高涨"
-        return {"emotion": emo, "emotion_label": el, "relationship_stage": "--"}
+        trust_level = saved.get("identity_state", {}).get("trust_level")
+        rel_stage = _derive_relationship_stage(char_id, trust_level)
+        return {"emotion": emo, "emotion_label": el, "relationship_stage": rel_stage}
 
     return {}
 

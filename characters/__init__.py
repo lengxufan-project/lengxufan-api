@@ -60,6 +60,7 @@ class CharacterConfig:
         self.context_patterns = data.get('context_patterns', {})
         self.monologue_styles = data.get('monologue_styles', {})
         self.trust_rules = data.get('trust_rules', {})
+        self.relationship_stages = data.get('relationship_stages', [])
         # 递归将所有字典键转为小写
         def lower_keys(obj):
             if isinstance(obj, dict):

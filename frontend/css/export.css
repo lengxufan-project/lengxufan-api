@@ -3,8 +3,15 @@
    面板磨砂玻璃，按钮冰蓝渐变，进度条流动光效
    ============================================================ */
 
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #0a0c12;
+}
+
 .export-page {
   min-height: 100vh;
+  overflow-y: auto;
   background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
   padding: 100px 20px 40px;
   box-sizing: border-box;
@@ -55,11 +62,12 @@
 
 /* ---------- 标题 ---------- */
 .page-title {
-  margin: 10px 0 0;
+  margin: 60px 0 0;
   font-size: 28px;
   font-weight: 600;
   color: #eaf1ff;
   letter-spacing: 1px;
+  text-align: center;
   background: linear-gradient(90deg, #a9d0ff 0%, #c9b8ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -403,11 +411,12 @@
    移动端：单列布局
    ============================================================ */
 @media (max-width: 680px) {
+  body { max-width: none; }
   .export-page { padding: 80px 16px 32px; }
   /* 移动端返回按钮缩小 */
-  .return-btn { padding: 6px 12px; font-size: 11px; border-radius: 16px; }
+  .return-btn { padding: 6px 12px; font-size: 11px; border-radius: 16px; top: 12px; left: 12px; }
 
-  .page-title { font-size: 22px; letter-spacing: 0.5px; }
+  .page-title { font-size: 22px; letter-spacing: 0.5px; margin: 50px 0 0; }
   .page-subtitle { font-size: 12px; text-align: center; }
 
   .export-panel {

@@ -3,6 +3,8 @@
 /* 页面基底：覆盖 main.css 的 overflow:hidden，本页可滚动 */
 html, body { height: auto; min-height: 100%; overflow: auto; }
 body {
+  max-width: 1200px;
+  margin: 0 auto;
   background: #0a0c12;
   color: #d8dde6;
 }
@@ -10,7 +12,7 @@ body {
 /* ============ 顶部区域 ============ */
 .profile-header {
   position: sticky; top: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: center;
   padding: 14px 22px;
   background: linear-gradient(180deg, #11141d 0%, #0c0e16 100%);
   border-bottom: 1px solid #1d2230;
@@ -22,21 +24,33 @@ body {
   background: linear-gradient(90deg, transparent, rgba(88,166,255,0.6), transparent);
   pointer-events: none;
 }
+/* 统一返回按钮：固定左上角 */
 .profile-back {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 90;
   display: flex; align-items: center; gap: 4px;
-  color: #9fb0cc; text-decoration: none; font-size: 14px;
-  padding: 4px 10px; border-radius: 12px;
-  border: 1px solid transparent;
-  transition: all .2s ease;
+  color: #bfe0ff; text-decoration: none; font-size: 12px;
+  padding: 8px 16px; border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
+  transition: all 0.3s ease-in-out;
+  font-family: inherit;
+  line-height: 1.4;
 }
-.profile-back:hover { color: #eaf0ff; border-color: #2a3550; background: rgba(88,166,255,0.08); }
-.profile-back-arrow { font-size: 20px; line-height: 1; color: #58a6ff; }
+.profile-back:hover { color: #ffffff; border-color: rgba(88, 166, 255, 0.7); background: rgba(88, 166, 255, 0.14); box-shadow: 0 0 14px rgba(88, 166, 255, 0.35); }
+.profile-back-arrow { font-size: 16px; line-height: 1; color: #58a6ff; }
 .profile-title {
   font-family: 'Noto Serif SC', 'Georgia', serif;
   font-size: 17px; font-weight: 300; color: #eaf0ff;
   letter-spacing: 0.12em;
+  text-align: center;
+  margin-top: 6px;
 }
-.profile-header-right { min-width: 60px; text-align: right; color: #6f7d96; font-size: 12px; }
 
 /* ============ 主体 ============ */
 .profile-main {
@@ -366,8 +380,10 @@ body {
 
 /* ============ 响应式 ============ */
 @media (max-width: 768px) {
+  body { max-width: none; }
   .profile-header { padding: 12px 14px; }
   .profile-title { font-size: 16px; }
+  .profile-back { padding: 6px 12px; font-size: 11px; border-radius: 16px; top: 12px; left: 12px; }
   .profile-main { padding: 18px 14px 80px 14px; gap: 22px; }
   .profile-user { padding: 18px 14px; gap: 14px; }
   .profile-avatar { width: 52px; height: 52px; font-size: 22px; }

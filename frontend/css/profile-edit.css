@@ -2,6 +2,13 @@
    编辑资料 —— 独立页面样式
    ============================================================== */
 
+/* ============ body 居中 ============ */
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #0a0c12;
+}
+
 /* 状态系统 */
 [data-status="stub"] {
   position: relative;
@@ -51,7 +58,7 @@
   max-width: 700px;
   margin: 0 auto;
   padding: 100px 20px 40px;
-  height: 100vh;
+  min-height: 100vh;
   overflow-y: auto;
   background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
   box-sizing: border-box;
@@ -71,6 +78,10 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 .back-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 90;
   padding: 6px 14px;
   border-radius: 20px;
   border: 1px solid rgba(88, 166, 255, 0.35);
@@ -82,7 +93,8 @@
   text-decoration: none;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
-  flex-shrink: 0;
+  font-family: inherit;
+  line-height: 1.4;
 }
 .back-btn:hover {
   color: #ffffff;
@@ -152,9 +164,9 @@
 
 /* ============ 移动端适配 ============ */
 @media (max-width: 768px) {
+  body { max-width: none; }
   .page {
     padding: 80px 12px 24px;
-    height: 100vh;
     min-height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;

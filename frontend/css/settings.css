@@ -4,8 +4,10 @@
 
 /* 统一外壳：背景 + 容器 padding */
 body {
-  margin: 0;
+  max-width: 1200px;
+  margin: 0 auto;
   min-height: 100vh;
+  overflow-y: auto;
   background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
 }
 .settings-app {
@@ -52,6 +54,8 @@ body {
   font-family: 'Noto Serif SC', Georgia, serif;
   font-size: 24px; font-weight: 200; color: #eaf0ff;
   letter-spacing: 0.15em;
+  text-align: center;
+  margin-top: 40px;
   text-shadow: 0 0 10px rgba(88,166,255,0.5);
 }
 
@@ -300,9 +304,10 @@ body[data-font-size="large"]  { font-size: 16px; }
 
 /* 移动端 */
 @media (max-width: 768px) {
+  body { max-width: none; }
   .settings-app { padding: 80px 16px 32px; gap: 14px; }
   /* 移动端返回按钮缩小 */
-  .back-btn { padding: 6px 12px; font-size: 11px; border-radius: 16px; }
-  .settings-title { font-size: 20px; }
+  .back-btn { padding: 6px 12px; font-size: 11px; border-radius: 16px; top: 12px; left: 12px; }
+  .settings-title { font-size: 20px; margin-top: 30px; }
   .swatch { width: 26px; height: 26px; }
 }

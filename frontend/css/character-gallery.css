@@ -3,9 +3,16 @@
    自适应网格 · 磨砂玻璃卡片 · 可搜索/标签筛选/分页
    ============================================================ */
 
+/* ============ body 居中 ============ */
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #07080d;
+}
+
 /* ---------- 页面骨架 ---------- */
 .cg-page {
-  height: 100vh;
+  min-height: 100vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -20,14 +27,19 @@
 .cg-nav {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
   padding: 14px 28px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   background: rgba(10,12,18,0.5);
   flex-shrink: 0;
 }
 
+/* 统一返回按钮：固定左上角 */
 .cg-back {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 90;
   padding: 7px 16px;
   border-radius: 20px;
   border: 1px solid rgba(88, 166, 255, 0.35);
@@ -39,6 +51,9 @@
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
+  text-decoration: none;
+  font-family: inherit;
+  line-height: 1.4;
 }
 .cg-back:hover {
   background: rgba(88, 166, 255, 0.14);
@@ -52,13 +67,13 @@
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 4px;
+  text-align: center;
+  padding-top: 8px;
   background: linear-gradient(90deg, #8fb6ff, #c9a2ff);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-.cg-nav-spacer { flex: 1; }
 
 /* ============================================================
    搜索与标签筛选
@@ -360,8 +375,10 @@
    移动端适配
    ============================================================ */
 @media (max-width: 640px) {
+  body { max-width: none; }
   .cg-nav { padding: 12px 16px; }
   .cg-title { font-size: 17px; letter-spacing: 3px; }
+  .cg-back { padding: 5px 12px; font-size: 11px; border-radius: 16px; top: 12px; left: 12px; }
 
   .cg-filter { padding: 12px 16px 4px; }
   .cg-search { max-width: none; }

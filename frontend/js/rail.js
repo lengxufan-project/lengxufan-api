@@ -22,6 +22,7 @@
       railItems.forEach(function (item) {
         item.classList.toggle('active', item.getAttribute('data-view') === view);
       });
+      localStorage.setItem('lxf_active_view', view);
     }
     railItems.forEach(function (item) {
       item.addEventListener('click', function () {
@@ -30,7 +31,8 @@
       });
     });
     window.switchPanel = switchPanel;
-    switchPanel('world');
+    var savedView = localStorage.getItem('lxf_active_view');
+    switchPanel(savedView && panelMap[savedView] ? savedView : 'world');
   }
 
   window.Rail = { init: init };

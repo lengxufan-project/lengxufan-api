@@ -2,9 +2,16 @@
    journey.css — 生命之阶 · 时间线样式
    ============================================================ */
 
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #020408;
+}
+
 .jr-page {
   position: relative;
   min-height: 100vh;
+  overflow-y: auto;
   width: 100%;
   background: radial-gradient(ellipse at 50% 0%, #0a1628 0%, #050912 60%, #020408 100%);
   color: #c9d6f0;
@@ -16,7 +23,7 @@
 .jr-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 18px 28px;
   position: sticky;
   top: 0;
@@ -25,7 +32,12 @@
   backdrop-filter: blur(8px);
 }
 
+/* 统一返回按钮：固定左上角 */
 .jr-back {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 90;
   padding: 8px 16px;
   border-radius: 20px;
   border: 1px solid rgba(88, 166, 255, 0.35);
@@ -37,6 +49,9 @@
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
+  text-decoration: none;
+  font-family: inherit;
+  line-height: 1.4;
 }
 .jr-back:hover {
   background: rgba(88, 166, 255, 0.14);
@@ -51,11 +66,9 @@
   letter-spacing: 4px;
   color: #e8f0ff;
   margin: 0;
+  text-align: center;
+  padding-top: 6px;
   text-shadow: 0 0 12px rgba(88, 166, 255, 0.35);
-}
-
-.jr-nav-spacer {
-  width: 90px;
 }
 
 /* ---------- 时间线容器 ---------- */
@@ -298,6 +311,7 @@
 
 /* ---------- 移动端适配 ---------- */
 @media (max-width: 720px) {
+  body { max-width: none; }
   .jr-nav {
     padding: 14px 16px;
   }
@@ -309,11 +323,10 @@
 
   .jr-back {
     font-size: 12px;
-    padding: 5px 11px;
-  }
-
-  .jr-nav-spacer {
-    width: 72px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    top: 12px;
+    left: 12px;
   }
 
   .jr-timeline {

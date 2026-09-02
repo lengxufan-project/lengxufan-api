@@ -1,14 +1,34 @@
 # 冷旭帆·世界入口 前端地图与跳转关系
 
-> 生成时间：2026-09-01
+> 生成时间：2026-09-02
 > 范围：仅限 `frontend/` 目录
-> 版本记录：v2.0 — 反映多轮迭代后的完整前端状态
+> 版本记录：v3.0 — 反映当前最新完整前端状态
 
 ---
 
-## 一、前端文件总表
+## 一、文件统计
 
-### HTML（20 个）
+| 类型 | 数量 |
+|------|------|
+| HTML | 27 |
+| CSS | 45 |
+| JavaScript | 57 |
+
+---
+
+## 二、三状态系统说明
+
+本文档采用三状态标记系统表示功能实现状态：
+
+- **LIVE**：已实现且对接后端接口，可正常使用
+- **STUB**：前端结构已完成，但后端接口未对接或数据未接入，显示占位符/默认数据
+- **PLAN**：仅规划，未实现
+
+---
+
+## 三、前端文件总表
+
+### HTML（27 个）
 
 | 文件 | 说明 |
 |------|------|
@@ -32,8 +52,15 @@
 | `settings.html` | 设置页 |
 | `world-guide.html` | 世界导览 |
 | `world-map.html` | 星图导航 |
+| `world-feed.html` | 世界动态流（STUB，数据来自 /api/state dorm_activities） |
+| `status-records.html` | 状态记录（STUB，角色状态历史） |
+| `profile-edit.html` | 编辑个人资料（STUB，个人中心子页） |
+| `chat-settings.html` | 聊天设置（STUB，聊天参数配置） |
+| `account-security.html` | 账户安全（STUB，密码/安全设置） |
+| `achievements.html` | 成就博物馆（STUB，勋章/成就展示） |
+| `dev.html` | 开发者调试页（内部工具） |
 
-### CSS（40 个）
+### CSS（45 个）
 
 | 文件 | 说明 |
 |------|------|
@@ -77,8 +104,15 @@
 | `settings.css` | 设置页样式 |
 | `world-guide.css` | 世界导览样式 |
 | `world-map.css` | 星图导航样式 |
+| `world-feed.css` | 世界动态流样式 |
+| `status-records.css` | 状态记录样式 |
+| `profile-edit.css` | 编辑个人资料样式 |
+| `chat-settings.css` | 聊天设置样式 |
+| `account-security.css` | 账户安全样式 |
+| `achievements.css` | 成就博物馆样式 |
+| `dev.css` | 开发者调试页样式 |
 
-### JS（43 个）
+### JS（57 个）
 
 | 文件 | 说明 |
 |------|------|
@@ -125,14 +159,28 @@
 | `world-guide.js` | 世界导览逻辑 |
 | `world-map.js` | 星图导航逻辑 |
 | `character-display.js` | 角色展示组件 |
+| `intro.js` | 开场动画逻辑（粒子云球→曲线→淡入） |
+| `rail.js` | 第一栏导航逻辑 |
+| `sidebar.js` | 侧边栏交互逻辑 |
+| `particles.js` | 全局粒子系统逻辑 |
+| `notifications.js` | 通知管理逻辑 |
+| `world.js` | 世界状态管理逻辑 |
+| `world-activities.js` | 世界动态流数据逻辑 |
+| `world-feed.js` | 世界动态流页面逻辑 |
+| `status-records.js` | 状态记录页面逻辑 |
+| `profile-edit.js` | 编辑个人资料页面逻辑 |
+| `chat-settings.js` | 聊天设置页面逻辑 |
+| `account-security.js` | 账户安全页面逻辑 |
+| `achievements.js` | 成就博物馆页面逻辑 |
+| `dev.js` | 开发者调试页逻辑 |
 
 ---
 
-## 二、页面功能清单
+## 四、页面功能清单
 
 ### 1. `index.html` — 世界观察中心
 - **核心功能**：主入口页，包含开场动画（粒子云球→曲线→淡入）、三栏骨架（rail + sb-panel + scene）、侧边栏导航、通知抽屉、搜索面板、全局背景粒子、核心视觉粒子聚合球 + 动态曲线（#coreVisual）、场景顶部胶囊信息条（/api/state 真实数据）、底纸天气增强 + 随机碰撞微光、群聊入口（/api/group_chat）、全局 z-index 层级统一
-- **可跳转到**：chat.html, chat.html?char=xxx, character-gallery.html, character-profile.html, memory-gallery.html, relation-map.html, relations.html, observer-panel.html, world-map.html, world-guide.html, journey.html, exploration.html, export.html, settings.html, about.html, help.html, profile.html
+- **可跳转到**：chat.html, chat.html?char=xxx, character-gallery.html, character-profile.html, memory-gallery.html, relation-map.html, relations.html, observer-panel.html, world-map.html, world-guide.html, journey.html, exploration.html, export.html, settings.html, about.html, help.html, profile.html, world-feed.html, status-records.html, achievements.html
 - **被哪些页面跳转进入**：所有页面（通过 `index.html?skipIntro=1` 返回）
 
 ### 2. `chat.html` — 对话
@@ -186,9 +234,10 @@
 - **被哪些页面跳转进入**：index.html（sidebar-nav）
 
 ### 12. `login.html` — 登录/注册
-- **核心功能**：登录、注册、游客进入（游客模式未接 /api/auth/guest）
+- **核心功能**：登录、注册、游客进入（已对接 `/api/auth/guest`，POST 成功后跳转 `index.html?skipIntro=1`）
 - **可跳转到**：index.html?skipIntro=1
 - **被哪些页面跳转进入**：无直接入口（独立页面）
+- **状态**：LIVE
 
 ### 13. `memory-gallery.html` — 时光回廊
 - **核心功能**：3D 透视记忆卡片，滚轮/拖动切换，独立页面返回按钮和标题视觉统一
@@ -230,9 +279,52 @@
 - **可跳转到**：index.html?skipIntro=1
 - **被哪些页面跳转进入**：index.html（sidebar-nav）
 
+
+### 21. `world-feed.html` — 世界动态流
+- **核心功能**：滚动展示宿舍日常活动流，从 `/api/state` 的 `dorm_activities` 获取数据，每 3-5 秒自动切换一条，淡入淡出过渡
+- **可跳转到**：index.html?skipIntro=1
+- **被哪些页面跳转进入**：index.html（sidebar-nav）
+- **状态**：LIVE（已对接后端数据）
+
+### 22. `status-records.html` — 状态记录
+- **核心功能**：记录并展示角色情绪和关系状态历史变化
+- **可跳转到**：index.html?skipIntro=1
+- **被哪些页面跳转进入**：index.html（sidebar-nav）
+- **状态**：STUB（前端结构完成，待后端数据对接）
+
+### 23. `achievements.html` — 成就博物馆
+- **核心功能**：展示已解锁的成就和勋章
+- **可跳转到**：index.html?skipIntro=1
+- **被哪些页面跳转进入**：index.html（sidebar-nav）
+- **状态**：STUB（前端结构完成，待后端数据对接）
+
+### 24. `profile-edit.html` — 编辑个人资料
+- **核心功能**：编辑用户个人信息和头像
+- **可跳转到**：profile.html, index.html?skipIntro=1
+- **被哪些页面跳转进入**：profile.html
+- **状态**：STUB（前端结构完成，待后端接口对接）
+
+### 25. `chat-settings.html` — 聊天设置
+- **核心功能**：配置聊天参数（打字机速度、气泡样式等）
+- **可跳转到**：index.html?skipIntro=1
+- **被哪些页面跳转进入**：index.html（sidebar-nav）
+- **状态**：STUB（前端结构完成，待功能实现）
+
+### 26. `account-security.html` — 账户安全
+- **核心功能**：修改密码、管理登录设备等安全设置
+- **可跳转到**：profile.html, index.html?skipIntro=1
+- **被哪些页面跳转进入**：profile.html
+- **状态**：STUB（前端结构完成，待后端接口对接）
+
+### 27. `dev.html` — 开发者调试
+- **核心功能**：内部工具页面，用于调试 API 和状态
+- **可跳转到**：index.html?skipIntro=1
+- **被哪些页面跳转进入**：无公开入口（开发者专用）
+- **状态**：LIVE
+
 ---
 
-## 三、主页面三栏结构说明
+## 五、主页面三栏结构说明
 
 `index.html` 采用三栏骨架布局，外层包裹 `#app` 容器：
 
@@ -303,13 +395,13 @@
 - 开场动画：最高
 
 ### 额外组件
-- **通知抽屉**（notify-drawer）：从右侧滑入，未读/已读分组（内容目前写死）
+- **通知抽屉**（notify-drawer）：从右侧滑入，已对接 `/api/notifications` 接口，包含"近况"（dorm_activities）和"系统"（系统事件）两组
 - **搜索面板**（search-panel）：全局搜索，Ctrl+K 或点击搜索框打开
 - **全局粒子**（#globalBg）：1-3px 冰蓝粒子，3 种速度，从底部向上飘浮
 
 ---
 
-## 四、跳转关系图（文本版）
+## 六、跳转关系图（文本版）
 
 ```
 index.html
@@ -336,7 +428,10 @@ index.html
  ├── (sidebar-nav) → export.html
  ├── (sidebar-nav) → profile.html
  ├── (sidebar-nav) → about.html
- └── (sidebar-nav) → help.html
+ ├── (sidebar-nav) → help.html
+ ├── (sidebar-nav) → world-feed.html
+ ├── (sidebar-nav) → status-records.html
+ └── (sidebar-nav) → achievements.html
 
 chat.html
  └── (goBack) → index.html?skipIntro=1
@@ -395,17 +490,43 @@ profile.html
 login.html
  ├── (登录成功) → index.html?skipIntro=1
  ├── (注册成功) → index.html?skipIntro=1
- └── (游客进入) → index.html?skipIntro=1（待接 /api/auth/guest）
+ └── (游客进入) → POST /api/auth/guest → index.html?skipIntro=1（已对接）
 
 demo-mode.html
  ├── (进入世界按钮) → index.html?skipIntro=1
  ├── (Esc 退出) → index.html?skipIntro=1
  └── (双击退出) → index.html?skipIntro=1
+
+world-feed.html
+ └── (goBack) → index.html?skipIntro=1
+
+status-records.html
+ └── (goBack) → index.html?skipIntro=1
+
+achievements.html
+ └── (goBack) → index.html?skipIntro=1
+
+profile.html
+ ├── (goBack) → index.html?skipIntro=1
+ ├── (编辑资料) → profile-edit.html
+ └── (账户安全) → account-security.html
+
+profile-edit.html
+ └── (goBack) → profile.html
+
+account-security.html
+ └── (goBack) → profile.html
+
+chat-settings.html
+ └── (goBack) → index.html?skipIntro=1
+
+dev.html
+ └── (goBack) → index.html?skipIntro=1
 ```
 
 ---
 
-## 五、功能到文件映射表
+## 七、功能到文件映射表
 
 | 功能 | 涉及文件 |
 |------|----------|
@@ -458,7 +579,7 @@ demo-mode.html
 
 ---
 
-## 六、已知问题与风险
+## 八、已知问题与风险
 
 ### 已确认但不影响通行的视觉/交互问题
 
@@ -500,25 +621,39 @@ demo-mode.html
    - 说明：移动端（max-width: 768px）的 sidebar 折叠/展开动画和触控交互已跳过，待后续单独处理
    - 影响：移动端无法正常使用侧边栏导航
 
-8. **login.html 游客模式未接 /api/auth/guest**
-   - 说明：登录页的"游客进入"按钮尚未对接后端游客接口
-   - 影响：游客入口无实际功能
+8. **通知中心已对接 `/api/notifications`，但部分内容仍为静态**
+   - 说明：通知中心现已调用 `/api/notifications` 接口获取数据，其中"近况"显示 dorm_activities，"系统"显示系统事件，无数据时显示对应提示文本
+   - 影响：基本功能正常，但数据丰富度取决于后端
 
-9. **情绪/关系阶段在角色列表显示 "--"**
-   - 说明：角色列表中的情绪状态和关系阶段字段显示 "--"，等待后端支持批量状态接口
-   - 影响：角色列表信息不完整
+9. **关系阶段提取不正确，所有角色显示 "--"**
+   - 说明：角色列表中的关系阶段字段始终显示 "--"，是因为引擎输出的关系阶段键名与前端期望不匹配，导致提取失败
+   - 影响：关系阶段信息不完整，所有角色均无法正确显示当前关系阶段
+   - 优先级：高
 
-10. **通知中心内容写死**
-    - 说明：通知抽屉中的通知列表为静态写死数据，未对接后端通知接口
-    - 影响：通知不可动态更新
+10. **`getCharacterStatus(charId)` 已预留但未启用**
+    - 说明：`api.js` 中已预留 `getCharacterStatus` 函数，当前返回 `null` 占位，等待后端 `/api/state?char_id=xxx` 支持
+    - 影响：角色详情页无法获取单个角色的独立状态数据
 
-11. **成就博物馆未实现**
-    - 说明：成就/勋章系统目前仅有前端组件（`achievement-card.js`/`.css`），但无完整页面和接口对接
-    - 影响：成就功能不可用
+11. **成就博物馆已创建页面但未对接数据**
+    - 说明：`achievements.html` 页面已存在，但尚未对接后端成就数据接口
+    - 影响：成就页面展示空壳内容
 
 ---
 
-## 七、下一步建议
+## 九、后端新接口清单
+
+后端已新增以下 API 接口供前端对接：
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/api/characters/status` | GET | 获取所有角色的当前状态（情绪标签、关系阶段） |
+| `/api/characters/<char_id>` | GET | 获取指定角色的详细信息（基本信息、人格、当前状态） |
+| `/api/characters/<char_id>/memories` | GET | 获取指定角色的记忆列表 |
+| `/api/notifications` | GET | 获取通知和活动数据（包含系统通知和近期活动） |
+
+---
+
+## 十、下一步建议
 
 ### 联调建议
 1. **逐一验证所有页面跳转**：从 index.html 出发，点击每个 sidebar-nav 链接，确认目标页面正常加载，返回按钮正常工作

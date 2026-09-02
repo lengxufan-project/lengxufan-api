@@ -24,7 +24,7 @@
 | `characters/`               | 角色数据（单一数据源）                     |
 | `routes/`                   | API 路由层                                 |
 | `services/`                 | 业务服务层                                 |
-| `frontend/`                 | 前端页面（20 HTML + 40 CSS + 43 JS）       |
+| `frontend/`                 | 前端页面（27 HTML + 47 CSS + 57 JS）       |
 | `tests/`                    | 测试套件                                   |
 | `tools/`                    | 工具脚本                                   |
 | `data/`                     | 运行时数据（SQLite、状态文件、ChromaDB）   |
@@ -51,9 +51,9 @@
 
 | 类型 | 数量 | 说明                                      |
 | ---- | ---- | ----------------------------------------- |
-| HTML | 20   | 1 个主页面 + 19 个独立页面               |
-| CSS  | 40   | `css/` 目录，按页面/组件一文件            |
-| JS   | 43   | `js/` 目录，按页面/组件一文件             |
+| HTML | 27   | 1 个主页面 + 26 个独立/占位页面          |
+| CSS  | 47   | `css/` 目录，按页面/组件一文件            |
+| JS   | 57   | `js/` 目录，按页面/组件一文件             |
 
 ### 3.2 前端架构文档
 
@@ -66,9 +66,11 @@
 `index.html` 中 script 标签必须严格按以下顺序：
 
 ```
-loading-bar.js → api.js → ui.js → scene.js → scene-transition.js
-→ world-clock.js → time-lighting.js → emotion-particles.js
-→ scene-shortcut.js → weather-effects.js → search-panel.js
+loading-bar.js → api.js → characters.js → state.js → ui.js
+→ scene.js → scene-transition.js → world-clock.js → time-lighting.js
+→ emotion-particles.js → scene-shortcut.js → weather-effects.js
+→ search-panel.js → intro.js → particles.js → rail.js
+→ sidebar.js → world.js → world-activities.js → notifications.js
 → app.js（最后）
 ```
 

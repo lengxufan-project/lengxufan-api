@@ -1,8 +1,10 @@
 from flask import Blueprint, jsonify
 from characters import CharacterRegistry
 from services.engine_service import (
-    get_engine_status, get_engine_full_state, get_engine_memories
+    get_engine_status, get_engine_full_state, get_engine_memories,
+    _derive_relationship_stage
 )
+from infra.persistence import load_full_state
 
 char_bp = Blueprint('characters', __name__)
 
@@ -71,3 +73,20 @@ def character_detail(char_id):
 def character_memories(char_id):
     memories = get_engine_memories(char_id)
     return jsonify({"memories": memories})
+
+
+# Debug endpoint to check raw trust_level from save file
+@char_bp.route('/characters/<char_id>/debug-trust', methods=['GET'])
+def debug_trust(char_id):
+    saved = load_full_state(char_id)
+    if not saved:
+        return jsonify({"error": "no save found"})
+    identity_state = saved.get("identity_state", {})
+    trust_level = identity_state.get("trust_level")
+    stage = _derive_relationship_stage(char_id, trust_level)
+    return jsonify({
+        "char_id": char_id,
+        "trust_level": trust_level,
+        "derived_stage": stage,
+        "identity_state": identity_state
+    })
