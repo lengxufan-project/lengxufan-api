@@ -1,6 +1,9 @@
-/* 人物典籍页 —— 独立页面样式（深色 · 冰蓝） */
+/* ==============================================================
+   人物典籍页 · 角色详情 —— 独立页面样式（深色 · 冰蓝）
+   状态系统：LIVE / STUB / PLAN，统一 data-status 控制
+   ============================================================== */
 
-/* 统一外壳：背景 + 容器 padding */
+/* ========== 容器 ========== */
 .profile-page {
   max-width: 900px;
   margin: 0 auto;
@@ -19,24 +22,85 @@
   box-sizing: border-box;
 }
 
-/* ========== 顶部导航（返回按钮已 fixed） ========== */
-.profile-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 16px;
-  margin-bottom: 24px;
-  border: none;
-  border-radius: 0;
-  background: transparent;
+/* ==============================================================
+   状态系统 —— 统一 data-status 控制
+   ============================================================== */
+
+/* LIVE —— 正常显示，无额外标记 */
+[data-status="live"] {
+  /* 无特殊样式，走各组件自身样式 */
 }
 
-/* 统一返回按钮：固定左上角磨砂胶囊 */
+/* STUB —— 灰色、虚线边框、右上角 "开发中" 小标 */
+[data-status="stub"] {
+  position: relative;
+  border-style: dashed !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  opacity: 0.65;
+  cursor: default;
+}
+
+[data-status="stub"]::after {
+  content: "开发中";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #8fa0c0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* PLAN —— 更淡、锁图标、不可交互 */
+[data-status="plan"] {
+  position: relative;
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+
+[data-status="plan"]::after {
+  content: "🔒";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 10px;
+  line-height: 1.4;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* 对 PLAN 按钮额外禁用 */
+[data-status="plan"].action-btn {
+  color: #66799f;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+/* ========== 1. 顶部栏 ========== */
+.profile-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* 统一返回按钮 */
 .back-btn {
-  position: fixed;
-  top: 16px; left: 16px;
-  z-index: 90;
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 20px;
   border: 1px solid rgba(88, 166, 255, 0.35);
   background: rgba(20, 24, 40, 0.6);
@@ -47,7 +111,9 @@
   text-decoration: none;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
+  flex-shrink: 0;
 }
+
 .back-btn:hover {
   color: #ffffff;
   border-color: rgba(88, 166, 255, 0.7);
@@ -55,7 +121,9 @@
   box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
 
-.nav-title {
+.profile-topbar-title {
+  flex: 1;
+  text-align: center;
   font-family: 'Noto Serif SC', Georgia, serif;
   font-size: 18px;
   letter-spacing: 4px;
@@ -63,132 +131,164 @@
   text-shadow: 0 0 12px rgba(88, 166, 255, 0.35);
 }
 
-/* ========== 数据状态提示 ========== */
-.profile-notice {
-  width: 100%;
-  flex: 0 0 100%;
-  padding: 8px 16px;
-  margin-bottom: 16px;
-  border: 1px solid rgba(88, 166, 255, 0.25);
-  border-radius: 8px;
-  background: rgba(88, 166, 255, 0.06);
-  color: #8fa0c0;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-align: center;
+/* 星标按钮 */
+.star-btn {
   flex-shrink: 0;
-}
-
-/* ========== 主体布局 ========== */
-.profile-body {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  color: #66799f;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
   display: flex;
-  flex-wrap: wrap;
-  gap: 28px;
-  align-items: flex-start;
-  flex: 1;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ---------- 左侧：角色形象 ---------- */
-.profile-side {
-  width: 200px;
-  flex-shrink: 0;
+/* ========== 2. 角色展示区 ========== */
+.profile-showcase {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 12px;
-  border: 1px solid #1d2230;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #11141d 0%, #0d0f17 100%);
+  margin-bottom: 28px;
+  padding: 24px 16px;
+  background: rgba(22, 26, 41, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-/* 人形轮廓占位：CSS 渐变勾勒，冰蓝半透明 */
-.profile-figure {
-  position: relative;
+/* 立绘占位 */
+.portrait-placeholder {
   width: 160px;
-  height: 240px;
-  animation: floatBreath 3s ease-in-out infinite;
-}
-
-/* 头部 */
-.profile-figure::before {
-  content: "";
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 30%,
-    rgba(191, 224, 255, 0.5) 0%,
-    rgba(88, 166, 255, 0.25) 55%,
-    rgba(88, 166, 255, 0.08) 100%
-  );
-  border: 1px solid rgba(88, 166, 255, 0.35);
-  box-shadow: 0 0 16px rgba(88, 166, 255, 0.2);
-}
-
-/* 躯干 */
-.profile-figure::after {
-  content: "";
-  position: absolute;
-  top: 84px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 112px;
-  height: 146px;
-  border-radius: 56px 56px 30px 30px;
-  background: linear-gradient(
-    180deg,
-    rgba(88, 166, 255, 0.28) 0%,
-    rgba(88, 166, 255, 0.12) 55%,
-    rgba(88, 166, 255, 0.04) 100%
-  );
-  border: 1px solid rgba(88, 166, 255, 0.35);
-  box-shadow:
-    inset 0 0 24px rgba(88, 166, 255, 0.12),
-    0 0 18px rgba(88, 166, 255, 0.15);
-}
-
-@keyframes floatBreath {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-4px); }
-}
-
-.profile-name {
-  margin-top: 18px;
-  font-family: 'Noto Serif SC', Georgia, serif;
-  font-size: 20px;
-  color: #d8e6ff;
-  letter-spacing: 2px;
-  text-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
-}
-
-.profile-emotion {
-  margin-top: 8px;
-  padding: 3px 12px;
-  border: 1px solid rgba(88, 166, 255, 0.5);
-  border-radius: 999px;
-  background: rgba(88, 166, 255, 0.08);
-  color: #bfe0ff;
+  height: 200px;
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #66799f;
   font-size: 12px;
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* 角色名大字 */
+.char-name {
+  margin: 0 0 6px;
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 26px;
+  letter-spacing: 4px;
+  color: #e8f0ff;
+  text-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
+}
+
+/* 备注昵称 */
+.char-nickname {
+  font-size: 13px;
+  color: #7f95c4;
   letter-spacing: 1px;
-  box-shadow: 0 0 10px rgba(88, 166, 255, 0.15);
+  margin-bottom: 12px;
+  padding: 2px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-/* ---------- 右侧：资料主体 ---------- */
-.profile-main {
+/* 关系阶段 */
+.char-relation-stage {
+  font-size: 12px;
+  color: #8fa0c0;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  padding: 3px 14px;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(88, 166, 255, 0.04);
+}
+
+/* 信任值进度条 */
+.trust-bar-wrap {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.trust-bar-label {
+  font-size: 11px;
+  color: #66799f;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.trust-bar-track {
   flex: 1;
-  min-width: 0;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
 }
 
+.trust-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(88, 166, 255, 0.4), #58a6ff);
+  box-shadow: 0 0 6px rgba(88, 166, 255, 0.2);
+  transition: width 0.6s ease-in-out;
+}
+
+.trust-bar-value {
+  font-size: 11px;
+  color: #7f95c4;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 状态胶囊 */
+.status-capsules {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.capsule {
+  padding: 3px 12px;
+  border: 1px solid rgba(88, 166, 255, 0.15);
+  border-radius: 999px;
+  background: rgba(88, 166, 255, 0.04);
+  color: #8fa0c0;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+/* ========== 3. 角色设定区 ========== */
 .profile-section {
-  margin-bottom: 26px;
+  margin-bottom: 28px;
 }
 
 .section-title {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   font-size: 14px;
   font-weight: normal;
   letter-spacing: 3px;
@@ -197,141 +297,126 @@
   border-left: 2px solid rgba(88, 166, 255, 0.5);
 }
 
-/* 基本信息网格 */
-.info-grid {
-  display: flex;
-  gap: 12px;
-}
-
-.info-item {
-  flex: 1;
-  padding: 12px 14px;
-  border: 1px solid #1d2230;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #11141d 0%, #0d0f17 100%);
-  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.info-item:hover {
-  border-color: rgba(88, 166, 255, 0.5);
-  box-shadow: 0 0 10px rgba(88, 166, 255, 0.15);
-}
-
-.info-label {
-  display: block;
-  font-size: 11px;
-  color: #66799f;
-  letter-spacing: 2px;
-  margin-bottom: 6px;
-}
-
-.info-value {
-  display: block;
-  font-size: 14px;
-  color: #d8e6ff;
-}
-
-/* ========== 内心独白碎片卡片 ========== */
-.monologue-card {
-  padding: 14px;
+/* 角色简介卡片 */
+.setting-card {
+  padding: 14px 16px;
   margin-bottom: 10px;
-  border: 1px solid rgba(88, 166, 255, 0.35);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  font-style: italic;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.setting-card-label {
+  font-size: 12px;
+  color: #8fa0c0;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.setting-card-preview {
   font-size: 13px;
   line-height: 1.7;
-  color: #a8b8e0;
-  box-shadow: 0 0 10px rgba(88, 166, 255, 0.15);
-  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+  color: #66799f;
+  font-style: italic;
 }
 
-.monologue-card:hover {
-  border-color: rgba(88, 166, 255, 0.6);
-  box-shadow: 0 0 14px rgba(88, 166, 255, 0.25);
-  transform: translateY(-2px);
-}
-
-.monologue-card .mono-tag {
-  display: inline-block;
-  font-style: normal;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: #58a6ff;
-  margin-bottom: 6px;
-  opacity: 0.8;
-}
-
-/* ========== 关系网络：进度条 ========== */
-.relation-item {
+/* 设定入口项 */
+.setting-entry {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  margin-bottom: 10px;
-  border: 1px solid #1d2230;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
-  background: linear-gradient(180deg, #11141d 0%, #0d0f17 100%);
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+  cursor: pointer;
 }
 
-.relation-name {
-  width: 72px;
+.setting-entry:hover:not([data-status="stub"]):not([data-status="plan"]) {
+  border-color: rgba(88, 166, 255, 0.3);
+  background: rgba(88, 166, 255, 0.04);
+}
+
+.entry-icon {
+  font-size: 16px;
   flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.entry-text {
   font-size: 13px;
-  color: #d8e6ff;
+  color: #c8d8f0;
+  letter-spacing: 1px;
 }
 
-.relation-bar {
-  flex: 1;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.06);
-  overflow: hidden;
-}
-
-.relation-bar-fill {
-  height: 100%;
-  width: 0%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, rgba(88, 166, 255, 0.5), #58a6ff);
-  box-shadow: 0 0 8px rgba(88, 166, 255, 0.35);
-  transition: width 0.6s ease-in-out;
-}
-
-.relation-val {
-  width: 40px;
-  flex-shrink: 0;
-  text-align: right;
-  font-size: 12px;
-  color: #7f95c4;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ========== 底部翻页控制 ========== */
-.profile-pager {
-  margin-top: 12px;
-  padding-top: 18px;
-  border-top: 1px solid #1d2230;
-  flex-shrink: 0;
-}
-
-.pager-controls {
+/* ========== 4. 关系考古区 ========== */
+.archaeology-item {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.015);
+  transition: border-color 0.3s ease-in-out, background 0.3s ease-in-out;
 }
 
-.pager-btn {
-  padding: 8px 20px;
+.archaeology-item:hover:not([data-status="stub"]):not([data-status="plan"]) {
+  border-color: rgba(88, 166, 255, 0.3);
+  background: rgba(88, 166, 255, 0.04);
+}
+
+.archaeology-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+  margin-top: 1px;
+}
+
+.archaeology-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.archaeology-label {
+  font-size: 13px;
+  color: #c8d8f0;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.archaeology-preview {
+  font-size: 11px;
+  color: #66799f;
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+/* ========== 5. 底部操作栏 ========== */
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.action-btn {
+  flex: 1;
+  padding: 12px 16px;
   border: 1px solid rgba(88, 166, 255, 0.35);
   border-radius: 999px;
   background: rgba(88, 166, 255, 0.08);
   color: #bfe0ff;
-  font-size: 13px;
-  letter-spacing: 1px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 8px rgba(88, 166, 255, 0.12);
@@ -339,7 +424,7 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-.pager-btn:hover {
+.action-btn:hover:not([data-status="plan"]) {
   border-color: #58a6ff;
   background: rgba(88, 166, 255, 0.18);
   box-shadow: 0 0 18px rgba(88, 166, 255, 0.4);
@@ -347,18 +432,15 @@
   transform: translateY(-1px);
 }
 
-.pager-btn:active {
+.action-btn:active:not([data-status="plan"]) {
   transform: translateY(0);
   box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
 }
 
-.pager-text {
-  font-size: 13px;
-  letter-spacing: 2px;
-  color: #7f95c4;
-  font-variant-numeric: tabular-nums;
-  min-width: 60px;
-  text-align: center;
+.action-btn-primary {
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.18), rgba(88, 166, 255, 0.08));
+  border-color: rgba(88, 166, 255, 0.5);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.2);
 }
 
 /* ========== 移动端适配 ========== */
@@ -366,31 +448,55 @@
   .profile-page {
     padding: 80px 16px 32px;
   }
-  /* 移动端返回按钮缩小 */
+
+  .profile-topbar {
+    padding: 0 0 16px;
+    margin-bottom: 16px;
+  }
+
   .back-btn {
-    padding: 6px 12px;
+    padding: 5px 10px;
     font-size: 11px;
-    border-radius: 16px;
   }
-  .profile-body {
+
+  .profile-topbar-title {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .char-name {
+    font-size: 22px;
+  }
+
+  .portrait-placeholder {
+    width: 130px;
+    height: 170px;
+  }
+
+  .profile-showcase {
+    padding: 18px 12px;
+  }
+
+  .status-capsules {
+    gap: 6px;
+  }
+
+  .capsule {
+    font-size: 10px;
+    padding: 2px 10px;
+  }
+
+  .trust-bar-wrap {
+    max-width: 100%;
+  }
+
+  .action-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .profile-actions {
     flex-direction: column;
-    align-items: stretch;
-  }
-
-  .profile-side {
-    width: 100%;
-  }
-
-  .profile-figure {
-    margin: 0 auto;
-  }
-
-  .info-grid {
-    flex-direction: column;
-  }
-
-  .pager-btn {
-    padding: 6px 14px;
-    font-size: 12px;
+    gap: 8px;
   }
 }

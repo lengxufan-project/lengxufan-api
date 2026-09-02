@@ -3,80 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>人物典籍</title>
+<title>人物典籍 · 冷旭帆</title>
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/character-profile.css">
 </head>
 <body>
-  <div class="profile-page">
+<div class="profile-page">
 
-    <!-- 顶部导航 -->
-    <header class="profile-nav">
-      <a class="back-btn page-back-btn" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()">← 返回</a>
-      <div class="nav-title page-title">人物典籍</div>
-    </header>
+  <!-- ===== 1. 顶部栏 ===== -->
+  <header class="profile-topbar">
+    <a class="back-btn" href="index.html?skipIntro=1">← 返回</a>
+    <span class="profile-topbar-title" id="profileTitle">冷旭帆</span>
+    <button class="star-btn" data-status="plan" title="收藏此角色">☆</button>
+  </header>
 
-    <!-- 主体：左侧形象 + 右侧资料 -->
-    <main class="profile-body">
+  <!-- ===== 2. 角色展示区 ===== -->
+  <section class="profile-showcase">
 
-      <!-- 数据状态提示 -->
-      <div class="profile-notice" id="profileNotice">部分数据待后端接口，当前为占位展示</div>
+    <!-- 立绘占位 -->
+    <div class="portrait-placeholder" data-status="stub">立绘素材待补充</div>
 
-      <!-- 左侧：角色形象 -->
-      <aside class="profile-side">
-        <div class="profile-figure" id="profileFigure"></div>
-        <div class="profile-name" id="profileName">--</div>
-        <div class="profile-emotion" id="profileEmotion">--</div>
-      </aside>
+    <!-- 角色名大字 -->
+    <h1 class="char-name" id="charName">冷旭帆</h1>
 
-      <!-- 右侧：资料主体 -->
-      <section class="profile-main">
+    <!-- 备注昵称 -->
+    <div class="char-nickname" data-status="stub">--</div>
 
-        <!-- 基本信息 -->
-        <div class="profile-section">
-          <h2 class="section-title">基本信息</h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="info-label">代号</span>
-              <span class="info-value" id="infoCodename">--</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">身份</span>
-              <span class="info-value" id="infoIdentity">--</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">标志物</span>
-              <span class="info-value" id="infoToken">--</span>
-            </div>
-          </div>
-        </div>
+    <!-- 关系阶段 -->
+    <div class="char-relation-stage" data-status="stub">陌生人</div>
 
-        <!-- 内心独白碎片 -->
-        <div class="profile-section">
-          <h2 class="section-title">内心独白碎片</h2>
-          <div class="monologue-list" id="monologueList"></div>
-        </div>
-
-        <!-- 关系网络摘要 -->
-        <div class="profile-section">
-          <h2 class="section-title">关系网络</h2>
-          <div class="relation-list" id="relationList"></div>
-        </div>
-
-      </section>
-    </main>
-
-    <!-- 底部翻页控制 -->
-    <footer class="profile-pager">
-      <div class="pager-controls">
-        <button class="pager-btn pager-prev" id="pagerPrev">← 上一页</button>
-        <span class="pager-text" id="pagerText">1 / 3</span>
-        <button class="pager-btn pager-next" id="pagerNext">下一页 →</button>
+    <!-- 信任值进度条 -->
+    <div class="trust-bar-wrap" data-status="stub">
+      <div class="trust-bar-label">信任值</div>
+      <div class="trust-bar-track">
+        <div class="trust-bar-fill" style="width:0%"></div>
       </div>
-    </footer>
+      <div class="trust-bar-value">0 / 100</div>
+    </div>
 
-  </div>
+    <!-- 状态胶囊 -->
+    <div class="status-capsules" data-status="stub">
+      <span class="capsule">情绪：--</span>
+      <span class="capsule">身体：--</span>
+      <span class="capsule">心理：--</span>
+    </div>
+  </section>
 
-  <script src="js/character-profile.js"></script>
+  <!-- ===== 3. 角色设定区 ===== -->
+  <section class="profile-section">
+    <h2 class="section-title">角色设定</h2>
+
+    <div class="setting-card" data-status="stub">
+      <div class="setting-card-label">角色简介</div>
+      <div class="setting-card-preview">—— 角色背景故事待补充 ——</div>
+    </div>
+
+    <div class="setting-entry" data-status="stub">
+      <span class="entry-icon">📋</span>
+      <span class="entry-text">角色设定卡（配料表）</span>
+    </div>
+
+    <div class="setting-entry" data-status="plan">
+      <span class="entry-icon">👗</span>
+      <span class="entry-text">Ta 的装扮</span>
+    </div>
+
+    <div class="setting-entry" data-status="plan">
+      <span class="entry-icon">💬</span>
+      <span class="entry-text">Ta 的心声</span>
+    </div>
+
+    <div class="setting-entry" data-status="plan">
+      <span class="entry-icon">📸</span>
+      <span class="entry-text">Ta 的朋友圈</span>
+    </div>
+  </section>
+
+  <!-- ===== 4. 关系考古区 ===== -->
+  <section class="profile-section">
+    <h2 class="section-title">关系考古</h2>
+
+    <div class="archaeology-item" data-status="stub">
+      <span class="archaeology-icon">💭</span>
+      <div class="archaeology-content">
+        <div class="archaeology-label">内心独白碎片</div>
+        <div class="archaeology-preview">—— 碎片数据待后端同步 ——</div>
+      </div>
+    </div>
+
+    <div class="archaeology-item" data-status="stub">
+      <span class="archaeology-icon">📖</span>
+      <div class="archaeology-content">
+        <div class="archaeology-label">自传体记忆</div>
+        <div class="archaeology-preview">—— 记忆数据待后端同步 ——</div>
+      </div>
+    </div>
+
+    <div class="archaeology-item" data-status="stub">
+      <span class="archaeology-icon">🏆</span>
+      <div class="archaeology-content">
+        <div class="archaeology-label">关系里程碑</div>
+        <div class="archaeology-preview">—— 里程碑数据待后端同步 ——</div>
+      </div>
+    </div>
+
+    <div class="archaeology-item" data-status="stub">
+      <span class="archaeology-icon">📸</span>
+      <div class="archaeology-content">
+        <div class="archaeology-label">共同回忆</div>
+        <div class="archaeology-preview">—— 回忆数据待后端同步 ——</div>
+      </div>
+    </div>
+
+    <div class="archaeology-item" data-status="stub">
+      <span class="archaeology-icon">🤝</span>
+      <div class="archaeology-content">
+        <div class="archaeology-label">来源（怎么认识）</div>
+        <div class="archaeology-preview">—— 来源信息待补充 ——</div>
+      </div>
+    </div>
+
+    <div class="archaeology-item" data-status="stub">
+      <span class="archaeology-icon">🕒</span>
+      <div class="archaeology-content">
+        <div class="archaeology-label">添加时间</div>
+        <div class="archaeology-preview">--</div>
+      </div>
+    </div>
+
+    <div class="archaeology-item" data-status="stub">
+      <span class="archaeology-icon">🏷️</span>
+      <div class="archaeology-content">
+        <div class="archaeology-label">角色标签</div>
+        <div class="archaeology-preview">—— 标签数据待后端同步 ——</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. 底部操作栏 ===== -->
+  <footer class="profile-actions">
+    <a class="action-btn action-btn-primary" href="chat.html?char=lengxufan" data-status="live">发消息</a>
+    <button class="action-btn" data-status="plan">音视频通话</button>
+  </footer>
+
+</div>
+
+<script src="js/character-profile.js"></script>
 </body>
 </html>

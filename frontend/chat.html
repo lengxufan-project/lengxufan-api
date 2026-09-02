@@ -28,6 +28,7 @@
           <span class="cp-emotion-label" id="chatEmotionLabel">--</span>
         </div>
       </a>
+      <a class="cp-chat-settings-btn" href="chat-settings.html" data-status="stub" title="聊天设置">⚙</a>
       <button class="cp-status-toggle" id="statusToggle" type="button" aria-controls="statusDrawer" aria-expanded="false" title="状态">
         <span class="status-icon"></span>
       </button>
@@ -39,8 +40,9 @@
     <!-- 输入区：极大圆角 + 磨砂玻璃 + 表情/语音占位 -->
     <footer class="cp-input-bar">
       <div class="cp-input-tools" aria-hidden="true">
-        <button class="cp-tool-btn" type="button" title="表情（占位）">😊</button>
-        <button class="cp-tool-btn" type="button" title="语音（占位）">🎙️</button>
+        <button class="cp-tool-btn" type="button" title="表情（占位）" data-status="stub">😊</button>
+        <button class="cp-tool-btn" type="button" title="文件（占位）" data-status="stub">📎</button>
+        <button class="cp-tool-btn" type="button" title="语音（占位）" data-status="stub">🎙️</button>
       </div>
       <div class="cp-input-wrap">
         <textarea class="cp-input" id="chatInput" rows="1" placeholder="说点什么…（Enter 发送，Shift+Enter 换行）"></textarea>
@@ -78,6 +80,15 @@
         </section>
       </div>
     </aside>
+
+    <!-- 长按菜单占位 -->
+    <div class="cp-context-menu" id="contextMenu" data-status="stub" style="display:none">
+      <div class="context-menu-item" data-status="stub">复制</div>
+      <div class="context-menu-item" data-status="stub">引用</div>
+      <div class="context-menu-item" data-status="stub">撤回</div>
+      <div class="context-menu-item" data-status="stub">多选</div>
+      <div class="context-menu-item" data-status="stub">收藏</div>
+    </div>
   </div>
 
   <script src="js/chat.js"></script>

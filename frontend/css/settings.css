@@ -189,6 +189,91 @@ body[data-font-size="small"]  { font-size: 13px; }
 body[data-font-size="medium"] { font-size: 14px; }
 body[data-font-size="large"]  { font-size: 16px; }
 
+/* ============ 状态系统 ============ */
+[data-status="stub"] {
+  position: relative;
+  border-style: dashed !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  opacity: 0.65;
+  cursor: default;
+}
+[data-status="stub"]::after {
+  content: "开发中";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #8fa0c0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+[data-status="plan"] {
+  position: relative;
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+[data-status="plan"]::after {
+  content: "🔒";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 10px;
+  line-height: 1.4;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ============ 导航入口区域 ============ */
+.settings-nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nav-section-title {
+  font-size: 10px;
+  color: #5f6b80;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px 0 4px;
+}
+.setting-nav-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.setting-nav-card:hover:not([data-status="stub"]):not([data-status="plan"]) {
+  border-color: rgba(88, 166, 255, 0.3);
+  background: rgba(88, 166, 255, 0.04);
+}
+.setting-arrow {
+  font-size: 16px;
+  color: #66799f;
+  flex-shrink: 0;
+}
+.setting-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.setting-version {
+  font-size: 11px;
+  color: #66799f;
+  letter-spacing: 0.5px;
+}
+
 /* 开发者入口 */
 .dev-entry {
   margin-top: 12px;

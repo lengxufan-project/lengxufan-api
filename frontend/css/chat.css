@@ -117,6 +117,28 @@ body {
   display: flex; align-items: center; justify-content: center;
   transition: all 0.2s ease-in-out;
 }
+
+/* 聊天设置按钮（顶栏） */
+.cp-chat-settings-btn {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  color: #8fa0c0;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.2s ease-in-out;
+}
+.cp-chat-settings-btn:hover:not([data-status="stub"]):not([data-status="plan"]) {
+  background: rgba(88, 166, 255, 0.08);
+  border-color: rgba(88, 166, 255, 0.35);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
+  color: #fff;
+}
+
 .cp-status-toggle:hover {
   background: rgba(88,166,255,0.08);
   border-color: rgba(88,166,255,0.35);
@@ -610,4 +632,78 @@ body {
   .cp-bg-particles::after { animation: none; }
   .cp-char-glow { animation: none; opacity: 0.7; }
   .cp-char-glow::after { animation: none; display: none; }
+}
+
+/* ============ 状态系统（chat 页） ============ */
+[data-status="stub"] {
+  position: relative;
+  border-style: dashed !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  opacity: 0.65;
+  cursor: default;
+}
+[data-status="stub"]::after {
+  content: "开发中";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #8fa0c0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+[data-status="plan"] {
+  position: relative;
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+[data-status="plan"]::after {
+  content: "🔒";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 10px;
+  line-height: 1.4;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ============ 长按菜单 ============ */
+.cp-context-menu {
+  position: absolute;
+  z-index: 600;
+  min-width: 140px;
+  padding: 6px;
+  background: rgba(12, 16, 28, 0.92);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.context-menu-item {
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #c8d8f0;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+.context-menu-item:hover {
+  background: rgba(88, 166, 255, 0.08);
 }

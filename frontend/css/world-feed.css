@@ -1,0 +1,236 @@
+/* ==============================================================
+   世界动态 —— 独立页面样式
+   ============================================================== */
+
+/* 状态系统 */
+[data-status="stub"] {
+  position: relative;
+  border-style: dashed !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  opacity: 0.65;
+  cursor: default;
+}
+[data-status="stub"]::after {
+  content: "开发中";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #8fa0c0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+[data-status="plan"] {
+  position: relative;
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+[data-status="plan"]::after {
+  content: "🔒";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 10px;
+  line-height: 1.4;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* 页面容器 */
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 100px 20px 40px;
+  height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0a0c12 0%, #0d0f17 100%);
+  box-sizing: border-box;
+}
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+/* 顶部栏 */
+.page-topbar {
+  display: flex;
+  align-items: center;
+  padding: 0 0 20px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.back-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
+  font-size: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
+  flex-shrink: 0;
+}
+.back-btn:hover {
+  color: #ffffff;
+  border-color: rgba(88, 166, 255, 0.7);
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
+}
+.page-title {
+  flex: 1;
+  text-align: center;
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 4px;
+  color: #d8e6ff;
+  text-shadow: 0 0 12px rgba(88, 166, 255, 0.35);
+}
+.topbar-spacer {
+  width: 60px;
+  flex-shrink: 0;
+}
+
+/* 发布框 */
+.post-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.post-box-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.post-box-input {
+  flex: 1;
+  font-size: 13px;
+  color: #66799f;
+  letter-spacing: 1px;
+}
+.post-box-btn {
+  padding: 6px 16px;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(88, 166, 255, 0.08);
+  color: #bfe0ff;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  flex-shrink: 0;
+}
+
+/* 内容区 */
+.page-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 动态卡片 */
+.feed-card {
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 0.3s ease-in-out;
+}
+.feed-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.feed-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.feed-author {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.feed-name {
+  font-size: 13px;
+  color: #c8d8f0;
+  letter-spacing: 1px;
+}
+.feed-time {
+  font-size: 11px;
+  color: #66799f;
+}
+.feed-card-body {
+  margin-bottom: 10px;
+}
+.feed-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #a8b8e0;
+  margin-bottom: 10px;
+}
+
+/* 图片墙 */
+.feed-images {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.feed-image-placeholder {
+  flex: 1;
+  height: 80px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* 互动栏 */
+.feed-card-actions {
+  display: flex;
+  gap: 20px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+.feed-action {
+  font-size: 12px;
+  color: #66799f;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+.feed-action:hover {
+  color: #8fa0c0;
+}
+
+/* AI 卡片 */
+.feed-card-ai {
+  border-left: 2px solid rgba(88, 166, 255, 0.3);
+}
+.ai-badge {
+  font-size: 12px;
+  color: #58a6ff;
+  letter-spacing: 1px;
+}

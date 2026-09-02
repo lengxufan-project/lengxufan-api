@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>状态记录</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/status-records.css">
+</head>
+<body>
+<div class="page">
+
+  <!-- 顶部栏 -->
+  <header class="page-topbar">
+    <a class="back-btn" href="index.html?skipIntro=1">← 返回</a>
+    <span class="page-title">状态记录</span>
+    <span class="topbar-spacer"></span>
+  </header>
+
+  <!-- 顶部提示 -->
+  <div class="status-tip">继续聊天触发状态更新 | 由 AI 生成</div>
+
+  <!-- 滑动 Tab 骨架 -->
+  <div class="tabs-header">
+    <div class="tab-item tab-active" data-status="live">正常生成</div>
+    <div class="tab-item" data-status="plan">购买状态</div>
+  </div>
+
+  <!-- Tab1 内容：正常生成 -->
+  <main class="page-body">
+
+    <div class="timeline" data-status="stub">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="emotion-card" data-status="stub">
+          <div class="emotion-card-header">情绪状态</div>
+          <div class="emotion-card-body">—— 情绪变化曲线待同步 ——</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="emotion-card" data-status="stub">
+          <div class="emotion-card-header">身体状态</div>
+          <div class="emotion-card-body">—— 身体数据待同步 ——</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="emotion-card" data-status="stub">
+          <div class="emotion-card-header">心理状态</div>
+          <div class="emotion-card-body">—— 心理数据待同步 ——</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab2 内容：购买状态（隐藏，仅骨架） -->
+    <div class="tab2-content" style="display:none">
+      <div class="shop-placeholder" data-status="stub">
+        <div class="shop-icon">🛍️</div>
+        <div class="shop-text">状态库</div>
+        <div class="shop-btn" data-status="plan">去商店逛逛</div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+<script src="js/status-records.js"></script>
+</body>
+</html>

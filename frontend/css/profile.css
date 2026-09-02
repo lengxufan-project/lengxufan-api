@@ -178,6 +178,90 @@ body {
 .profile-trustbar-label #profileTrustStage { color: #c8d4ea; text-shadow: 0 0 8px rgba(88,166,255,0.4); }
 .profile-trustbar-label #profileTrustNum { color: #58a6ff; font-weight: 600; }
 
+/* ============ 状态系统 ============ */
+[data-status="stub"] {
+  position: relative;
+  border-style: dashed !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  opacity: 0.65;
+  cursor: default;
+}
+[data-status="stub"]::after {
+  content: "开发中";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #8fa0c0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+[data-status="plan"] {
+  position: relative;
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+[data-status="plan"]::after {
+  content: "🔒";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 10px;
+  line-height: 1.4;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ============ 功能入口列表 ============ */
+.profile-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.profile-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  text-decoration: none;
+  transition: border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+  cursor: pointer;
+}
+.profile-entry:hover:not([data-status="stub"]):not([data-status="plan"]) {
+  border-color: rgba(88, 166, 255, 0.3);
+  background: rgba(88, 166, 255, 0.04);
+}
+.entry-icon {
+  font-size: 16px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.entry-text {
+  flex: 1;
+  font-size: 13px;
+  color: #c8d8f0;
+  letter-spacing: 1px;
+}
+.entry-arrow {
+  font-size: 16px;
+  color: #66799f;
+  flex-shrink: 0;
+}
+
 /* ============ 回忆碎片时间线 ============ */
 .profile-timeline {
   display: flex; flex-direction: column; gap: 10px;
