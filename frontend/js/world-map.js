@@ -1,5 +1,6 @@
 /* ============================================================
    world-map.js — 星图导航（独立页面脚本）
+   融合形态：星图总览 + 场景百科详情
    场景切换：localStorage['world_scene'] + 自定义事件 worldmap:change
    ============================================================ */
 (function () {
@@ -7,27 +8,62 @@
 
   // ===== 5 个场景节点（viewBox 1000x600，五边形分布） =====
   var NODES = [
-    { id: '307',    name: '307室',  x: 500, y: 100 },  // 顶
-    { id: 'roof',   name: '天台',    x: 690, y: 238 },  // 右上
-    { id: 'train',  name: '训练场',  x: 618, y: 462 },  // 右下
-    { id: 'hill',   name: '后山',    x: 382, y: 462 },  // 左下
-    { id: 'shelter',name: '防空洞',  x: 310, y: 238 }   // 左上
+    { id: '307',    name: '307室',  x: 500, y: 100 },
+    { id: 'roof',   name: '天台',    x: 690, y: 238 },
+    { id: 'train',  name: '训练场',  x: 618, y: 462 },
+    { id: 'hill',   name: '后山',    x: 382, y: 462 },
+    { id: 'shelter',name: '防空洞',  x: 310, y: 238 }
   ];
   var VB_W = 1000, VB_H = 600;
 
-  // 连线：五边形外环 + 内部星形 + 中心辐射
+  // 连线
   var OUTER = [[0,1],[1,2],[2,3],[3,4],[4,0]];
   var INNER = [[0,2],[2,4],[4,1],[1,3],[3,0]];
-  // RADIAL 在 drawLines 中按 current 动态生成
 
-  var els = { svg: null, nodes: null, traveler: null, chips: null, stars: null };
+  // ===== 场景百科数据 =====
+  var SCENE_DATA = {
+    '307': {
+      name: '307室',
+      terrain: '宿舍平面图',
+      desc: '四人间的宿舍，窗台上摆着一盆快要枯死的绿萝。冷旭帆的床铺总是整理得一丝不苟，黄景云的桌上堆着零食和漫画，叶清辞的床位则永远拉着帘子。夜晚熄灯后，这里会响起各种声音——键盘敲击声、翻书声、偶尔的梦话。',
+      characters: ['冷旭帆常在窗边看书，偶尔会望向窗外发呆', '黄景云喜欢在床上打游戏，耳机里传来激烈的枪声', '叶清辞偶尔会在熄灯后拉琴，声音很轻']
+    },
+    'roof': {
+      name: '天台',
+      terrain: '天台俯瞰图',
+      desc: '宿舍楼的顶层天台，视野开阔，能看到整个校园和远处的山。铁门常年锁着，但有个螺丝松动的窗户可以翻出去。傍晚时分，这里是最适合看日落的地方，也是某些人独自思考的去处。',
+      characters: ['冷旭帆偶尔会来天台吹风，一个人站很久', '叶清辞曾在黄昏时独自来这里，手里拿着琴盒']
+    },
+    'train': {
+      name: '训练场',
+      terrain: '训练场布局图',
+      desc: '校园东侧的露天训练场，有单杠、双杠和沙坑。地面是硬实的黄土，边缘长着杂草。清晨和傍晚常有体育生在这里训练，铁质器械在阳光下泛着冷光。',
+      characters: ['冷旭帆每天清晨会来训练，雷打不动', '黄景云偶尔路过时会停下来，看一会儿再走']
+    },
+    'hill': {
+      name: '后山',
+      terrain: '后山地形图',
+      desc: '校园后面的小山丘，长满了野草和灌木。有一条被人踩出来的小路通往山顶。山顶有一棵歪脖子树，树下有块平整的大石头，据说坐在这里能看到整个城市的天际线。',
+      characters: ['冷旭帆曾和叶清辞一起爬过后山，两人在山顶待了很久', '黄景云说后山晚上有萤火虫，但没人真的见过']
+    },
+    'shelter': {
+      name: '防空洞',
+      terrain: '防空洞结构图',
+      desc: '校园深处的废弃防空洞，入口被铁栅栏封住，但侧面有个缺口可以钻进去。洞内阴冷潮湿，墙壁上有人用粉笔写下的字迹。最深处有一扇生锈的铁门，不知道通往哪里。',
+      characters: ['冷旭帆曾在这里躲雨，发现墙上有奇怪的涂鸦', '黄景云绘声绘色地说这里闹鬼，但没人信他', '叶清辞对此保持沉默，眼神有些微妙']
+    }
+  };
+
+  var els = { svg: null, nodes: null, traveler: null, chips: null, stars: null, detailPanel: null, detailMask: null, detailClose: null };
 
   var state = {
     current: '307',
     nodeEls: {},
     chipEls: {},
     pixelPos: {},
-    flying: false
+    flying: false,
+    detailOpen: false,
+    selectedId: null    // 当前被选中的节点（用于左移放大）
   };
 
   function nodeById(id) {
@@ -36,7 +72,7 @@
   }
   function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
 
-  // ===== 随机星点（80 个，覆盖整个背景） =====
+  // ===== 随机星点 =====
   function createStars() {
     var layer = els.stars;
     if (!layer) return;
@@ -55,24 +91,20 @@
     }
   }
 
-  // ===== SVG 元素工厂 =====
   function svgEl(tag, attrs) {
     var e = document.createElementNS('http://www.w3.org/2000/svg', tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
     return e;
   }
 
-  // ===== SVG 连线：外环 + 内部星形 + 中心辐射 =====
+  // ===== SVG 连线 =====
   function drawLines() {
     var svg = els.svg;
     if (!svg) return;
-
-    // 只清理由 JS 注入的 line（保留 defs 和静态星云 ellipse）
     var lines = svg.querySelectorAll('line.map-line');
     for (var i = lines.length - 1; i >= 0; i--) {
       lines[i].parentNode.removeChild(lines[i]);
     }
-
     function makeLine(pair, cls) {
       var a = nodeById(NODES[pair[0]].id);
       var b = nodeById(NODES[pair[1]].id);
@@ -81,11 +113,8 @@
         class: 'map-line ' + (cls || '')
       });
     }
-
     OUTER.forEach(function (p) { svg.appendChild(makeLine(p, 'outer')); });
     INNER.forEach(function (p) { svg.appendChild(makeLine(p, 'inner')); });
-
-    // 中心辐射线：从 current 节点出发到所有其他节点
     var cur = nodeById(state.current);
     if (cur) {
       var ci = -1;
@@ -119,8 +148,7 @@
       node.setAttribute('data-id', n.id);
       node.setAttribute('role', 'button');
       node.setAttribute('tabindex', '0');
-      node.setAttribute('aria-label', '切换至 ' + n.name);
-      node.title = n.name;  // 原生 tooltip
+      node.setAttribute('aria-label', '查看 ' + n.name + ' 详情');
 
       var label = document.createElement('div');
       label.className = 'map-label';
@@ -130,7 +158,10 @@
       group.appendChild(label);
       wrap.appendChild(group);
 
-      var onActivate = function () { travelTo(n.id); };
+      var onActivate = function () {
+        travelTo(n.id);
+        showDetail(n.id);
+      };
       node.addEventListener('click', onActivate);
       node.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32) {
@@ -154,14 +185,18 @@
       chip.className = 'wm-chip';
       chip.setAttribute('data-id', n.id);
       chip.textContent = n.name;
-      chip.title = '切换至 ' + n.name;
-      chip.addEventListener('click', function () { travelTo(n.id); });
+      chip.addEventListener('click', function () {
+        // 如果有点击选中节点，先重置
+        resetSelectedNode();
+        travelTo(n.id);
+        showDetail(n.id);
+      });
       box.appendChild(chip);
       state.chipEls[n.id] = chip;
     });
   }
 
-  // ===== 坐标换算（letterbox aware） =====
+  // ===== 坐标换算 =====
   function recalcPixelPositions() {
     var svg = els.svg;
     if (!svg) return;
@@ -210,8 +245,17 @@
         var s = scale;
         entry.node.style.transform = 'scale(' + s.toFixed(3) + ')';
       }
-      // current 节点不用 transform scale，让 CSS 控制尺寸 + current 波纹动画
     });
+  }
+
+  // ===== 重置选中节点位置 =====
+  function resetSelectedNode() {
+    if (state.selectedId && state.nodeEls[state.selectedId]) {
+      var entry = state.nodeEls[state.selectedId];
+      entry.wrap.style.transform = '';
+      entry.wrap.style.zIndex = '';
+      state.selectedId = null;
+    }
   }
 
   // ===== 高亮当前 =====
@@ -220,7 +264,8 @@
       var e = state.nodeEls[id];
       if (id === state.current) {
         e.node.classList.add('current');
-        e.node.style.transform = '';  // 让 CSS .current 控制
+        // current 不会同时是选中节点，清除 transform
+        if (e.wrap) e.wrap.style.transform = '';
       } else {
         e.node.classList.remove('current');
       }
@@ -229,14 +274,15 @@
       if (id === state.current) state.chipEls[id].classList.add('active');
       else state.chipEls[id].classList.remove('active');
     });
-    // 重绘连线（因为 current 变了，radial 线也要重绘）
     drawLines();
   }
 
-  // ===== 光点滑行 → 切换场景 =====
+  // ===== 光点滑行 =====
   function travelTo(targetId) {
     if (state.flying) return;
     if (targetId === state.current) return;
+    // 如果有点击选中节点，先重置
+    resetSelectedNode();
     var from = state.pixelPos[state.current];
     var to   = state.pixelPos[targetId];
     if (!from || !to) return;
@@ -279,14 +325,78 @@
     }, 620);
   }
 
-  // ===== 解析当前场景：URL > localStorage > 兜底 307室 =====
+  // ===== 场景百科详情面板 =====
+  function showDetail(sceneId) {
+    var data = SCENE_DATA[sceneId];
+    if (!data) return;
+
+    // 填充内容
+    var titleEl = document.getElementById('wmDetailTitle');
+    var descEl = document.getElementById('wmDetailDesc');
+    var charsEl = document.getElementById('wmDetailCharacters');
+    var eventEl = document.getElementById('wmDetailEvent');
+
+    if (titleEl) titleEl.textContent = data.name;
+    if (descEl) descEl.textContent = data.desc;
+
+    // 角色活动
+    if (charsEl) {
+      charsEl.innerHTML = '';
+      if (data.characters && data.characters.length > 0) {
+        data.characters.forEach(function (c) {
+          var li = document.createElement('li');
+          li.textContent = c;
+          charsEl.appendChild(li);
+        });
+      } else {
+        var li = document.createElement('li');
+        li.textContent = '暂无相关角色活动记录';
+        li.style.color = '#5f6b80';
+        charsEl.appendChild(li);
+      }
+    }
+
+    // 特殊事件
+    if (eventEl) {
+      eventEl.innerHTML = '<span class="event-placeholder">暂无特殊事件，敬请期待</span>';
+    }
+
+    // 打开面板（传入sceneId使节点放大左移）
+    openDetail(sceneId);
+  }
+
+  function openDetail(sceneId) {
+    if (state.detailOpen) {
+      resetSelectedNode();
+    }
+    state.detailOpen = true;
+    if (els.detailMask) els.detailMask.classList.add('open');
+    if (els.detailPanel) els.detailPanel.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // 选中节点放大并向左偏移80px
+    if (sceneId && state.nodeEls[sceneId]) {
+      state.selectedId = sceneId;
+      var entry = state.nodeEls[sceneId];
+      entry.wrap.style.transform = 'translate(-80px, 0) scale(1.2)';
+      entry.wrap.style.zIndex = '10';
+    }
+  }
+
+  function closeDetail() {
+    if (!state.detailOpen) return;
+    state.detailOpen = false;
+    resetSelectedNode();
+    if (els.detailMask) els.detailMask.classList.remove('open');
+    if (els.detailPanel) els.detailPanel.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ===== 解析当前场景 =====
   function resolveCurrent() {
-    // 1. URL ?scene=
     try {
       var qs = new URLSearchParams(window.location.search).get('scene');
       if (qs && nodeById(qs)) { state.current = qs; return qs; }
     } catch (e) {}
-    // 2. localStorage
     try {
       var ls = localStorage.getItem('world_scene');
       if (ls && nodeById(ls)) { state.current = ls; return ls; }
@@ -301,6 +411,9 @@
     els.traveler = document.getElementById('mapTraveler');
     els.chips   = document.getElementById('wmChips');
     els.stars   = document.getElementById('wmStars');
+    els.detailPanel = document.getElementById('wmDetailPanel');
+    els.detailMask  = document.getElementById('wmDetailMask');
+    els.detailClose = document.getElementById('wmDetailClose');
     if (!els.svg || !els.nodes) return;
 
     createStars();
@@ -309,13 +422,23 @@
     createChips();
 
     state.current = resolveCurrent();
-    // 初始布局（等一帧确保 SVG 有尺寸）
     requestAnimationFrame(function () {
       applyNodePositions();
       applyCurrent();
     });
 
-    // 响应式
+    // 关闭详情
+    if (els.detailClose) {
+      els.detailClose.addEventListener('click', closeDetail);
+    }
+    if (els.detailMask) {
+      els.detailMask.addEventListener('click', closeDetail);
+    }
+    // ESC 关闭
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDetail();
+    });
+
     var resizeTimer = null;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
@@ -330,17 +453,15 @@
     });
   }
 
-  // ===== 根因修复：自动调用 init() =====
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  window.WorldMap = { init: init };
+  window.WorldMap = { init: init, showDetail: showDetail, closeDetail: closeDetail };
 })();
 
-// ===== 返回逻辑 =====
 window.goBack = function () {
   if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
     history.back();

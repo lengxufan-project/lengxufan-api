@@ -302,18 +302,39 @@ body {
 .cg-env-purple .cg-identity { color: #9c8fc0; }
 
 /* ============================================================
-   hover：凸起 + 立绘放大 5% + 光晕增强
+   hover：凸起 + 立绘放大 5% + 光晕增强 + 角色专属边框色
    ============================================================ */
 @media (hover: hover) {
   .cg-card:hover {
     transform: translateY(-6px);
-    border-color: rgba(88,166,255,0.3);
     box-shadow:
       0 12px 32px rgba(0,0,0,0.5),
       0 0 20px rgba(88,166,255,0.15);
   }
   .cg-card:hover .cg-silhouette { transform: translateX(-50%) scale(1.05); }
   .cg-card:hover .cg-glow { opacity: 0.65; }
+
+  /* --- 冷旭帆（冰蓝）--- */
+  .cg-card.cg-env-blue:hover {
+    border-color: rgba(88, 166, 255, 0.5);
+    box-shadow:
+      0 12px 32px rgba(0,0,0,0.5),
+      0 0 20px rgba(88, 166, 255, 0.25);
+  }
+  /* --- 黄景云（暖橙）--- */
+  .cg-card.cg-env-orange:hover {
+    border-color: rgba(240, 136, 62, 0.5);
+    box-shadow:
+      0 12px 32px rgba(0,0,0,0.5),
+      0 0 20px rgba(240, 136, 62, 0.25);
+  }
+  /* --- 叶清辞（冷紫）--- */
+  .cg-card.cg-env-purple:hover {
+    border-color: rgba(163, 113, 247, 0.5);
+    box-shadow:
+      0 12px 32px rgba(0,0,0,0.5),
+      0 0 20px rgba(163, 113, 247, 0.25);
+  }
 }
 
 /* ============================================================

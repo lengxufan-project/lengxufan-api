@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -109,7 +109,7 @@
               <span class="char-name">叶清辞</span>
               <span class="char-emotion" data-emotion="低落">低落</span>
             </div>
-            <a class="sb-entry-link" href="character-gallery.html">查看全部角色 →</a>
+            <a class="sb-entry-link sb-view-all-chars" id="viewAllCharsBtn" href="javascript:void(0)" style="text-align:center;color:#58a6ff;font-weight:500;border:1px solid rgba(88,166,255,0.25);background:rgba(88,166,255,0.06);margin-top:4px">查看全部角色 →</a>
           </div>
         </div>
         <div class="sb-panel sb-panel-memory" data-panel="memory">
@@ -200,19 +200,76 @@
         <button class="notify-drawer-markall" id="notifyMarkAll" type="button">全部标为已读</button>
         <button class="notify-drawer-close" id="notifyClose" type="button" aria-label="关闭">×</button>
       </div>
+      <!-- Tab 切换 -->
+      <div class="notify-tabs" id="notifyTabs">
+        <button class="notify-tab active" data-tab="recent" type="button">近况</button>
+        <button class="notify-tab" data-tab="system" type="button">系统</button>
+      </div>
       <div class="notify-drawer-body" id="notifyList">
-        <!-- 近况分组 -->
-        <div class="notify-section" id="notifyRecent">
-          <div class="notify-section-title">近况</div>
-          <div class="notify-section-list" data-group="recent"></div>
+        <!-- 近况 Tab 内容 -->
+        <div class="notify-tab-content active" data-tab-content="recent">
+          <!-- 未读 -->
+          <div class="notify-section" id="notifyRecentUnread">
+            <div class="notify-section-title">未读</div>
+            <div class="notify-section-list" data-group="recent" data-read="false"></div>
+            <div class="notify-section-empty" id="notifyRecentUnreadEmpty">暂无未读近况</div>
+          </div>
+          <!-- 已读 -->
+          <div class="notify-section hidden" id="notifyRecentRead">
+            <div class="notify-section-title">已读</div>
+            <div class="notify-section-list" data-group="recent" data-read="true"></div>
+            <div class="notify-section-empty" id="notifyRecentReadEmpty">暂无已读近况</div>
+          </div>
           <div class="notify-section-empty" id="notifyRecentEmpty">暂无近况</div>
         </div>
-        <!-- 系统分组 -->
-        <div class="notify-section" id="notifySystem">
-          <div class="notify-section-title">系统</div>
-          <div class="notify-section-list" data-group="system"></div>
+        <!-- 系统 Tab 内容 -->
+        <div class="notify-tab-content" data-tab-content="system">
+          <!-- 未读 -->
+          <div class="notify-section" id="notifySystemUnread">
+            <div class="notify-section-title">未读</div>
+            <div class="notify-section-list" data-group="system" data-read="false"></div>
+            <div class="notify-section-empty" id="notifySystemUnreadEmpty">暂无未读系统通知</div>
+          </div>
+          <!-- 已读 -->
+          <div class="notify-section hidden" id="notifySystemRead">
+            <div class="notify-section-title">已读</div>
+            <div class="notify-section-list" data-group="system" data-read="true"></div>
+            <div class="notify-section-empty" id="notifySystemReadEmpty">暂无已读系统通知</div>
+          </div>
           <div class="notify-section-empty" id="notifySystemEmpty">暂无系统通知</div>
         </div>
+      </div>
+    </div>
+
+    <!-- 通知详情弹窗 -->
+    <div class="notify-modal" id="notifyModal">
+      <div class="notify-modal-mask" id="notifyModalMask"></div>
+      <div class="notify-modal-card">
+        <div class="notify-modal-type" id="notifyModalType">近况</div>
+        <div class="notify-modal-title" id="notifyModalTitle">通知标题</div>
+        <div class="notify-modal-body" id="notifyModalBody">通知内容</div>
+        <div class="notify-modal-actions">
+          <button class="notify-modal-read" id="notifyModalRead" type="button">标记已读</button>
+          <button class="notify-modal-close" id="notifyModalClose" type="button">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 全屏角色选择器（点击"查看全部角色"弹出） -->
+    <div class="char-selector" id="charSelector">
+      <div class="char-selector-mask"></div>
+      <div class="char-selector-panel">
+        <div class="char-selector-header">
+          <button class="char-selector-back" id="charSelectorBack" type="button" aria-label="返回">← 返回</button>
+          <span class="char-selector-title">全部角色</span>
+          <span></span>
+        </div>
+        <div class="char-selector-search">
+          <span class="cs-search-icon">🔍</span>
+          <input type="text" class="cs-search-input" id="charSelectorSearch" placeholder="搜索角色名称…" autocomplete="off" />
+        </div>
+        <div class="char-selector-grid" id="charSelectorGrid"></div>
+        <div class="char-selector-empty" id="charSelectorEmpty">无匹配角色</div>
       </div>
     </div>
 

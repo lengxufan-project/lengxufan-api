@@ -165,13 +165,29 @@
     row.className = "cp-msg " + role;
     if (opts.isGroupMsg) row.classList.add("cp-group-msg");
 
-    // 头像：彩色小圆点（群聊按角色上色）
+    // 头像（任务一：可点击跳转角色详情；任务二：多样式 CSS 类名）
     var avatar = document.createElement("div");
     avatar.className = "cp-avatar";
-    if (charId || charName) {
-      var color = getCharColor(charId || charName);
-      avatar.style.background = "radial-gradient(circle at 35% 35%, #fff 0%, " + color + " 40%, rgba(0,0,0,0.3) 85%)";
-      avatar.style.boxShadow = "0 0 10px " + color + "aa";
+    if (role === "user") {
+      avatar.classList.add("cp-avatar-user");
+    } else if (charId && CHAR_COLORS[charId]) {
+      avatar.classList.add("cp-avatar-" + charId);
+    } else if (charName && CHAR_NAME_TO_ID[charName]) {
+      avatar.classList.add("cp-avatar-" + CHAR_NAME_TO_ID[charName]);
+    } else {
+      // 兜底：冰蓝
+      avatar.classList.add("cp-avatar-lengxufan");
+    }
+    // 点击头像跳转角色详情（仅非用户消息）
+    if (role !== "user") {
+      (function (targetId) {
+        avatar.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (targetId) {
+            window.location.href = "character-profile.html?char=" + encodeURIComponent(targetId);
+          }
+        });
+      })(charId || (charName && CHAR_NAME_TO_ID[charName]) || null);
     }
 
     // 气泡包裹（群聊包含角色名）
@@ -232,71 +248,12 @@
     area.appendChild(row);
     area.scrollTop = area.scrollHeight;
 
+    // 新消息气泡淡入动画（仅 AI 新消息，历史记录跳过）
+    if (role === "ai" && !opts.skipAnim) {
+      row.classList.add("cp-msg-anim");
+    }
+
     return { row: row, bubble: bubble };
-  }
-
-  /* ---------- 打字机：支持段落/独白（不处理动作，打字仅输出气泡正文） ---------- */
-  function typewriter(bubble, text, done) {
-    var parsed = parseMessage(text);
-    var caret = document.createElement("span");
-    caret.className = "cp-caret";
-    bubble.innerHTML = "";
-    bubble.appendChild(caret);
-
-    var flat = [];
-    parsed.segments.forEach(function (seg, i) {
-      seg.chars = seg.text.split("");
-      flat.push(seg);
-    });
-
-    var si = 0, ci = 0;
-    var curSpan = null;
-    var timer = setInterval(function () {
-      if (si >= flat.length) {
-        clearInterval(timer);
-        if (caret.parentNode) caret.parentNode.removeChild(caret);
-        // 动作描写需要在外层处理（这里只打字气泡正文）
-        if (done) done();
-        return;
-      }
-      var seg = flat[si];
-      if (ci === 0) {
-        curSpan = document.createElement("span");
-        if (seg.type === "inner") {
-          curSpan.className = "cp-inner";
-          curSpan.textContent = "\u201c";
-        } else {
-          curSpan.className = "cp-line";
-        }
-        bubble.insertBefore(curSpan, caret);
-      }
-      curSpan.appendChild(document.createTextNode(seg.chars[ci]));
-      ci++;
-      var area = $("chatArea");
-      if (area) area.scrollTop = area.scrollHeight;
-      if (ci >= seg.chars.length) {
-        if (seg.type === "inner") {
-          curSpan.appendChild(document.createTextNode("\u201d"));
-        }
-        si++;
-        ci = 0;
-        if (si < flat.length) bubble.insertBefore(document.createElement("br"), caret);
-      }
-    }, 24);
-  }
-
-  /* ---------- 把动作描写从已渲染气泡中抽出，移到 wrap 下 ---------- */
-  function finalizeActionDescriptions(row, fullText) {
-    var parsed = parseMessage(fullText);
-    if (!parsed.actions.length || !row) return;
-    var wrap = row.querySelector(".cp-bubble-wrap");
-    if (!wrap) return;
-    // 避免重复添加
-    if (wrap.querySelector(".cp-action-desc")) return;
-    var actBox = document.createElement("div");
-    actBox.className = "cp-action-desc";
-    actBox.textContent = parsed.actions.join("；");
-    wrap.appendChild(actBox);
   }
 
   /* ---------- 情绪曲线模块动态加载 ---------- */
@@ -374,10 +331,11 @@
           isGroupMsg: true,
           charId: entry.charId,
           charName: entry.charName,
-          showCharName: true
+          showCharName: true,
+          skipAnim: true
         });
       } else {
-        addBubble(role, entry.content, {});
+        addBubble(role, entry.content, { skipAnim: true });
       }
     });
     return true;
@@ -421,7 +379,7 @@
     });
   }
 
-  /* ---------- 发送 ---------- */
+  /* ---------- 发送（单聊：直接发送，等待回复气泡） ---------- */
   function sendMessage() {
     var input = $("chatInput"), btn = $("sendBtn");
     if (!input || runtime.sending) return;
@@ -433,6 +391,7 @@
     input.value = "";
     autosize(input);
 
+    // 1. 立即显示用户自己的消息
     addBubble("user", text, {});
     saveHistory("user", text);
 
@@ -441,9 +400,7 @@
       return;
     }
 
-    var typing = addBubble("ai", "", {});
-    if (typing) typing.bubble.textContent = "\u2026";
-
+    // 2. 直接等待回复气泡
     if (!window.fetch) {
       runtime.sending = false;
       if (btn) btn.disabled = false;
@@ -454,20 +411,14 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: text, char_id: runtime.charId })
     }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); }).then(function (data) {
-      if (typing && typing.row.parentNode) typing.row.parentNode.removeChild(typing.row);
+      // 3. 完整显示回复
       var replyText = data.reply || "\uff08\u4ed6\u6ca1\u6709\u56de\u5e94\u3002\uff09";
-      var bubble = addBubble("ai", "", {});
-      if (bubble) {
-        typewriter(bubble.bubble, replyText, function () {
-          finalizeActionDescriptions(bubble.row, replyText);
-        });
-      }
+      addBubble("ai", replyText, {});
       saveHistory("ai", replyText, { charId: runtime.charId, charName: CHARS[runtime.charId] ? CHARS[runtime.charId].name : null });
       refreshState();
     }).catch(function () {
-      if (typing && typing.row.parentNode) typing.row.parentNode.removeChild(typing.row);
       var errText = "\uff08\u4fe1\u53f7\u4f3c\u4e4e\u65ad\u4e86\u2026\u2026\u7a0d\u540e\u518d\u8bd5\u3002\uff09";
-      var b = addBubble("ai", errText, {});
+      addBubble("ai", errText, {});
       saveHistory("ai", errText);
     }).then(function () {
       runtime.sending = false;
@@ -476,7 +427,7 @@
     });
   }
 
-  /* ---------- 群聊发送（每条带角色颜色 + 名字） ---------- */
+  /* ---------- 群聊串行发送：全部获取后，依次完整弹出，带随机间隔 ---------- */
   function sendGroupMessage(text) {
     if (!window.fetch) {
       runtime.sending = false;
@@ -490,39 +441,182 @@
       body: JSON.stringify({ message: text })
     }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); }).then(function (data) {
       var replies = data.replies || [];
-      replies.forEach(function (r) {
-        var rname = r.name || r.char_id || "?";
-        var rid = r.char_id || CHAR_NAME_TO_ID[rname] || null;
-        var replyText = r.reply || "\uff08\u6ca1\u6709\u56de\u5e94\uff09";
-        var bubble = addBubble("ai", "", {
-          isGroupMsg: true,
-          charId: rid,
-          charName: rname,
-          showCharName: true
-        });
-        if (bubble) {
-          typewriter(bubble.bubble, replyText, function () {
-            finalizeActionDescriptions(bubble.row, replyText);
-          });
-        }
-        saveHistory("ai", replyText, { charId: rid, charName: rname });
-      });
+      // 串行处理：按角色顺序依次完整弹出
+      processRepliesSequentially(replies, 0);
       refreshState();
     }).catch(function () {
-      var err = "\uff08\u7fa4\u804a\u4f3c\u4e4e\u4e2d\u65ad\u4e86\u2026\u2026\u7a0d\u540e\u518d\u8bd5\u3002\uff09";
-      addBubble("ai", err, {});
-      saveHistory("ai", err);
-    }).then(function () {
       runtime.sending = false;
       var b = $("sendBtn");
       if (b) b.disabled = !($("chatInput") && $("chatInput").value.trim());
+      var err = "\uff08\u7fa4\u804a\u4f3c\u4e4e\u4e2d\u65ad\u4e86\u2026\u2026\u7a0d\u540e\u518d\u8bd5\u3002\uff09";
+      addBubble("ai", err, {});
+      saveHistory("ai", err);
     });
+  }
+
+  /* ---------- 群聊回复串行渲染（依次完整弹出，800-1500ms 随机间隔） ---------- */
+  function processRepliesSequentially(replies, index) {
+    if (index >= replies.length) {
+      runtime.sending = false;
+      var b = $("sendBtn");
+      if (b) b.disabled = !($("chatInput") && $("chatInput").value.trim());
+      return;
+    }
+    var reply = replies[index];
+    var rname = reply.name || reply.char_id || "?";
+    var rid = reply.char_id || CHAR_NAME_TO_ID[rname] || null;
+    var replyText = reply.reply || "\uff08\u6ca1\u6709\u56de\u5e94\uff09";
+
+    addBubble("ai", replyText, {
+      isGroupMsg: true,
+      charId: rid,
+      charName: rname,
+      showCharName: true
+    });
+    saveHistory("ai", replyText, { charId: rid, charName: rname });
+
+    var delay = 800 + Math.random() * 700; // 800-1500ms
+    setTimeout(function () {
+      processRepliesSequentially(replies, index + 1);
+    }, delay);
   }
 
   function autosize(el) {
     if (!el) return;
     el.style.height = "auto";
     el.style.height = Math.min(el.scrollHeight, 120) + "px";
+  }
+
+  /* ---------- 长按/右键菜单 + Toast提示 ---------- */
+  var ctxMenu = null;
+  var ctxActiveRow = null;
+  var toastTimer = null;
+
+  function showToast(text) {
+    var toast = $("cpToast");
+    if (!toast) return;
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+      toastTimer = null;
+    }
+    toast.textContent = text;
+    toast.style.display = "block";
+    toast.classList.remove("hide");
+    // Force reflow
+    void toast.offsetWidth;
+    toast.classList.add("show");
+    toastTimer = setTimeout(function () {
+      toast.classList.remove("show");
+      toast.classList.add("hide");
+      setTimeout(function () {
+        toast.style.display = "none";
+        toastTimer = null;
+      }, 250);
+    }, 1500);
+  }
+
+  function initContextMenu() {
+    ctxMenu = $("contextMenu");
+    if (!ctxMenu) return;
+
+    // 点击菜单项
+    ctxMenu.addEventListener("click", function (e) {
+      var item = e.target.closest(".context-menu-item");
+      if (!item) return;
+      var action = item.getAttribute("data-action");
+      var stub = item.getAttribute("data-stub");
+      if (stub) {
+        showToast("功能开发中");
+        hideContextMenu();
+        return;
+      }
+      if (action === "copy") {
+        copyMessageText();
+        showToast("已复制");
+      }
+      hideContextMenu();
+    });
+
+    // 点击菜单外关闭
+    document.addEventListener("click", function (e) {
+      if (ctxMenu.style.display !== "none" && !ctxMenu.contains(e.target)) {
+        hideContextMenu();
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") hideContextMenu();
+    });
+  }
+
+  function showContextMenu(x, y, row) {
+    if (!ctxMenu) return;
+    ctxActiveRow = row;
+    ctxMenu.style.display = "flex";
+    // 边界处理：防止菜单溢出视口
+    var mw = ctxMenu.offsetWidth || 150;
+    var mh = ctxMenu.offsetHeight || 200;
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var fx = Math.min(x, vw - mw - 8);
+    var fy = Math.min(y, vh - mh - 8);
+    ctxMenu.style.left = Math.max(8, fx) + "px";
+    ctxMenu.style.top = Math.max(8, fy) + "px";
+  }
+
+  function hideContextMenu() {
+    if (!ctxMenu) return;
+    ctxMenu.style.display = "none";
+    ctxActiveRow = null;
+  }
+
+  function copyMessageText() {
+    if (!ctxActiveRow) return;
+    var bubble = ctxActiveRow.querySelector(".cp-bubble");
+    if (!bubble) return;
+    var text = bubble.textContent || "";
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(function () {});
+    } else {
+      // fallback
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  }
+
+  function setupMessageContextMenu() {
+    var area = $("chatArea");
+    if (!area) return;
+
+    // 桌面端：右键
+    area.addEventListener("contextmenu", function (e) {
+      var row = e.target.closest(".cp-msg");
+      if (!row) return;
+      e.preventDefault();
+      showContextMenu(e.clientX, e.clientY, row);
+    });
+
+    // 移动端：长按
+    var longPressTimer = null;
+    area.addEventListener("touchstart", function (e) {
+      var row = e.target.closest(".cp-msg");
+      if (!row) return;
+      longPressTimer = setTimeout(function () {
+        var touch = e.touches[0];
+        showContextMenu(touch.clientX, touch.clientY, row);
+      }, 600);
+    }, { passive: true });
+    area.addEventListener("touchmove", function () {
+      if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+    }, { passive: true });
+    area.addEventListener("touchend", function () {
+      if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+    });
   }
 
   /* ---------- 抽屉 ---------- */
@@ -555,15 +649,14 @@
 
     applyCharGlow(runtime.isGroup ? null : runtime.charId);
 
-    var charLink = $("chatCharLink");
-    if (charLink) {
+    // 任务三：标题详情按钮 / 设置按钮
+    var detailBtn = $("chatDetailBtn");
+    if (detailBtn) {
       if (runtime.isGroup) {
-        // 群聊模式下点击标题不跳转
-        charLink.removeAttribute("href");
-        charLink.style.cursor = "default";
-        charLink.addEventListener("click", function (e) { e.preventDefault(); });
+        detailBtn.style.display = "none";
       } else {
-        charLink.href = "character-profile.html?char=" + encodeURIComponent(runtime.charId);
+        detailBtn.href = "character-profile.html?char=" + encodeURIComponent(runtime.charId);
+        detailBtn.style.display = "";
       }
     }
 
@@ -582,10 +675,10 @@
     loadAndRenderHistory(function (loaded) {
       if (!loaded) {
         if (runtime.isGroup) {
-          addBubble("ai", "\u6b22\u8fce\u8fdb\u5165\u7fa4\u804a\uff0c\u5927\u5bb6\u6b63\u5728\u804a\u5929\u2026\u2026", {});
+          addBubble("ai", "\u6b22\u8fce\u8fdb\u5165\u7fa4\u804a\uff0c\u5927\u5bb6\u6b63\u5728\u804a\u5929\u2026\u2026", { skipAnim: true });
         } else {
           var conf2 = CHARS[runtime.charId];
-          addBubble("ai", conf2 ? conf2.greeting : "\u2026\u2026", {});
+          addBubble("ai", conf2 ? conf2.greeting : "\u2026\u2026", { skipAnim: true });
         }
       }
     });
@@ -623,6 +716,10 @@
       if (e.key === "Escape") toggleDrawer(false);
     });
 
+    // 长按/右键菜单（任务六）
+    initContextMenu();
+    setupMessageContextMenu();
+
     // 情绪曲线
     if (window.EmotionChart && $("drawerChart")) {
       initDrawerChart();
@@ -642,6 +739,31 @@
   }
 
   window.ChatPage = { init: init };
+})();
+
+/* 移动端键盘弹起时保持输入框可见 */
+(function () {
+  if (!window.visualViewport) return;
+  var chatPage = document.querySelector('.cp-page');
+  if (!chatPage) return;
+  var inputBar = document.querySelector('.cp-input-bar');
+  if (!inputBar) return;
+  function adjustForKeyboard() {
+    var diff = window.innerHeight - window.visualViewport.height;
+    if (diff > 100) {
+      inputBar.style.position = 'fixed';
+      inputBar.style.bottom = (window.innerHeight - window.visualViewport.height) + 'px';
+      inputBar.style.left = '0';
+      inputBar.style.right = '0';
+    } else {
+      inputBar.style.position = '';
+      inputBar.style.bottom = '';
+      inputBar.style.left = '';
+      inputBar.style.right = '';
+    }
+  }
+  window.visualViewport.addEventListener('resize', adjustForKeyboard);
+  window.visualViewport.addEventListener('scroll', adjustForKeyboard);
 })();
 
 /* 统一返回逻辑 */

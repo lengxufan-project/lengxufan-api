@@ -1,183 +1,210 @@
 /* ============================================================
    world-guide.js — 世界导览（独立页面脚本）
-   仅操作本页 #wg* / .wg-* 元素
-   依赖 css/world-guide.css 的类名与主题变量
+   水平轮播（scroll-snap）+ 场景内纵向详情 + 指示器 + 箭头导航
    ============================================================ */
 (function () {
   'use strict';
 
-  // ===== 场景 → 粒子运动方向（px / 帧）=====
-  var DIRS = {
-    rise:  { x: 0.05, y: -0.42 },  // 宿舍：暖尘缓缓上浮
-    drift: { x: -0.5, y: 0.16 },   // 天台：月光风斜向飘
-    sink:  { x: 0.04, y: 0.34 }    // 防空洞：尘埃缓慢下沉
+  var carousel, scenes, indicators, sceneLabel;
+  var arrowLeft, arrowRight;
+  var currentIndex = 0;
+  var ticking = false;
+
+  // ===== 场景名称映射 =====
+  var SCENE_NAMES = {
+    dorm: '宿舍',
+    roof: '天台',
+    shelter: '防空洞'
   };
 
-  var PARTICLE_COUNT = 26;
-  var DOT_COLOR_DEFAULT = '88,166,255';
+  // ===== 初始化 =====
+  function init() {
+    carousel = document.getElementById('wgCarousel');
+    sceneLabel = document.getElementById('wgSceneLabel');
+    arrowLeft = document.getElementById('wgArrowLeft');
+    arrowRight = document.getElementById('wgArrowRight');
 
-  var els = { scroll: null, dots: null, particles: null };
-  var scenes = [];
-  var dots = [];
-  var dusts = [];
-  var activeIndex = -1;
-  var targetDir = DIRS.rise;
-  var particles = [];
-  var rafId = null;
-  var ticking = false;
-  var reduceMotion = false;
+    if (!carousel) return;
 
-  // ===== 构建：垂直导航点 =====
-  function buildDots() {
-    scenes.forEach(function (scene, i) {
-      var nameEl = scene.querySelector('.wg-name');
+    scenes = carousel.querySelectorAll('.wg-scene');
+    if (scenes.length === 0) return;
+
+    // 构建指示器
+    buildIndicators();
+
+    // 设置初始场景标签
+    updateSceneLabel(0);
+
+    // 更新箭头可见性
+    updateArrows();
+
+    // 绑定事件
+    bindEvents();
+
+    // 初始检测
+    updateActiveScene();
+  }
+
+  // ===== 构建底部指示器 =====
+  function buildIndicators() {
+    var container = document.getElementById('wgIndicators');
+    if (!container) return;
+
+    container.innerHTML = '';
+    indicators = [];
+
+    for (var i = 0; i < scenes.length; i++) {
       var dot = document.createElement('button');
       dot.type = 'button';
-      dot.className = 'wg-dot';
-      dot.setAttribute('aria-label', nameEl ? nameEl.textContent : '场景 ' + (i + 1));
-      dot.addEventListener('click', function () {
-        scene.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      });
-      els.dots.appendChild(dot);
-      dots.push(dot);
-    });
-  }
+      dot.className = 'wg-indicator' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', '跳转到场景 ' + (i + 1));
 
-  // ===== 构建：全局粒子 =====
-  function buildParticles() {
-    for (var i = 0; i < PARTICLE_COUNT; i++) {
-      var el = document.createElement('i');
-      el.className = 'wg-particle';
-      var size = 2 + Math.random() * 2.5;
-      el.style.width = size.toFixed(1) + 'px';
-      el.style.height = size.toFixed(1) + 'px';
-      el.style.opacity = (0.25 + Math.random() * 0.4).toFixed(2);
+      // 使用闭包捕获 i
+      (function (idx) {
+        dot.addEventListener('click', function () {
+          scrollToScene(idx);
+        });
+      })(i);
 
-      var p = {
-        el: el,
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        vx: targetDir.x,
-        vy: targetDir.y,
-        mul: 0.5 + Math.random() * 1.2   // 个体速度差异
-      };
-      el.style.transform = 'translate3d(' + p.x.toFixed(1) + 'px,' + p.y.toFixed(1) + 'px,0)';
-      els.particles.appendChild(el);
-      particles.push(p);
+      container.appendChild(dot);
+      indicators.push(dot);
     }
   }
 
-  // ===== 粒子运动：方向随当前场景平滑过渡 =====
-  function tickParticles() {
-    var w = window.innerWidth;
-    var h = window.innerHeight;
-    for (var i = 0; i < particles.length; i++) {
-      var p = particles[i];
-      p.vx += (targetDir.x * p.mul - p.vx) * 0.02;
-      p.vy += (targetDir.y * p.mul - p.vy) * 0.02;
-      p.x += p.vx;
-      p.y += p.vy;
-      // 越界环绕
-      if (p.x < -12) { p.x = w + 12; } else if (p.x > w + 12) { p.x = -12; }
-      if (p.y < -12) { p.y = h + 12; } else if (p.y > h + 12) { p.y = -12; }
-      p.el.style.transform = 'translate3d(' + p.x.toFixed(1) + 'px,' + p.y.toFixed(1) + 'px,0)';
-    }
-    rafId = requestAnimationFrame(tickParticles);
+  // ===== 滚动到指定场景 =====
+  function scrollToScene(index) {
+    if (index < 0 || index >= scenes.length) return;
+    var target = scenes[index];
+    target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
   }
 
-  // ===== 切换当前场景：高亮导航点 + 粒子换色换向 =====
-  function setActive(index) {
-    if (index === activeIndex || index < 0 || index >= scenes.length) return;
-    activeIndex = index;
-
-    dots.forEach(function (d, i) {
-      d.classList.toggle('active', i === index);
-    });
-
+  // ===== 更新场景标签 =====
+  function updateSceneLabel(index) {
+    if (index < 0 || index >= scenes.length) return;
     var scene = scenes[index];
-    targetDir = DIRS[scene.getAttribute('data-dir')] || DIRS.rise;
+    var sceneId = scene.getAttribute('data-scene') || '';
+    var name = SCENE_NAMES[sceneId] || '场景 ' + (index + 1);
+    sceneLabel.textContent = name;
 
-    // 从场景主题变量读取粒子 / 导航点颜色
-    var color = getComputedStyle(scene).getPropertyValue('--sc-particle').trim();
-    if (!color) color = DOT_COLOR_DEFAULT;
-    els.particles.style.setProperty('--wg-particle-color', color);
-    els.dots.style.setProperty('--wg-dot-color', color);
+    // 更新场景标签颜色（通过切换类）
+    sceneLabel.className = 'wg-scene-label';
+    if (scene.classList.contains('wg-scene-dorm')) {
+      sceneLabel.classList.add('wg-scene-dorm');
+    } else if (scene.classList.contains('wg-scene-roof')) {
+      sceneLabel.classList.add('wg-scene-roof');
+    } else if (scene.classList.contains('wg-scene-shelter')) {
+      sceneLabel.classList.add('wg-scene-shelter');
+    }
   }
 
-  // ===== 滚动监听：当前场景判定 + 背景视差 =====
-  function update() {
-    var scrollTop = els.scroll.scrollTop;
-    var vh = els.scroll.clientHeight;
-    var center = scrollTop + vh / 2;
+  // ===== 更新指示器 =====
+  function updateIndicators(index) {
+    if (!indicators) return;
+    for (var i = 0; i < indicators.length; i++) {
+      indicators[i].classList.toggle('active', i === index);
+    }
+  }
 
-    // 视口中心落在哪个场景区间 → 即为当前场景
+  // ===== 更新箭头可见性 =====
+  function updateArrows() {
+    if (!arrowLeft || !arrowRight) return;
+    arrowLeft.classList.toggle('visible', currentIndex > 0);
+    arrowRight.classList.toggle('visible', currentIndex < scenes.length - 1);
+  }
+
+  // ===== 检测当前活跃场景 =====
+  function updateActiveScene() {
+    if (!carousel) return;
+
+    var scrollLeft = carousel.scrollLeft;
+    var w = carousel.clientWidth;
+    // 当前场景 = 最接近视口中心的场景
+    var center = scrollLeft + w / 2;
+    var bestIndex = 0;
+    var bestDist = Infinity;
+
     for (var i = 0; i < scenes.length; i++) {
-      var top = scenes[i].offsetTop;
-      if (center >= top && center < top + scenes[i].offsetHeight) {
-        setActive(i);
-        break;
+      var sceneCenter = scenes[i].offsetLeft + scenes[i].offsetWidth / 2;
+      var dist = Math.abs(center - sceneCenter);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestIndex = i;
       }
     }
 
-    // 场景内视觉层视差：偏离视口中心越远，位移越大
-    for (var j = 0; j < scenes.length; j++) {
-      var layer = scenes[j].querySelector('.wg-parallax');
-      if (!layer) continue;
-      var speed = parseFloat(layer.getAttribute('data-speed')) || 0;
-      var rect = scenes[j].getBoundingClientRect();
-      var offset = rect.top + rect.height / 2 - vh / 2;
-      layer.style.transform = 'translate3d(0,' + (-offset * speed).toFixed(1) + 'px,0)';
-    }
-
-    // 全局尘埃层视差：随滚动反向缓慢移动
-    for (var k = 0; k < dusts.length; k++) {
-      var dSpeed = parseFloat(dusts[k].getAttribute('data-speed')) || 0;
-      dusts[k].style.transform = 'translate3d(0,' + (-scrollTop * dSpeed).toFixed(1) + 'px,0)';
+    if (bestIndex !== currentIndex) {
+      currentIndex = bestIndex;
+      updateSceneLabel(currentIndex);
+      updateIndicators(currentIndex);
+      updateArrows();
     }
   }
 
+  // ===== 滚动事件 =====
   function onScroll() {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(function () {
       ticking = false;
-      update();
+      updateActiveScene();
     });
   }
 
-  // ===== 初始化 =====
-  function init() {
-    els.scroll = document.getElementById('wgScroll');
-    els.dots = document.getElementById('wgDots');
-    els.particles = document.getElementById('wgParticles');
-    if (!els.scroll || !els.dots) return;
-
-    scenes = Array.prototype.slice.call(els.scroll.querySelectorAll('.wg-scene'));
-    dusts = Array.prototype.slice.call(document.querySelectorAll('.wg-dust'));
-    reduceMotion = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    buildDots();
-
-    // 粒子（尊重减弱动效偏好）
-    if (els.particles && !reduceMotion) {
-      buildParticles();
-      rafId = requestAnimationFrame(tickParticles);
+  // ===== 箭头导航 =====
+  function goPrev() {
+    if (currentIndex > 0) {
+      scrollToScene(currentIndex - 1);
     }
-
-    els.scroll.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    update();
   }
 
-  // ===== 导出 =====
-  window.WorldGuide = { init: init };
+  function goNext() {
+    if (currentIndex < scenes.length - 1) {
+      scrollToScene(currentIndex + 1);
+    }
+  }
 
-  // 脚本置于 body 末尾，DOM 就绪后直接初始化
-  init();
+  // ===== 键盘导航 =====
+  function onKeyDown(e) {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      goPrev();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      goNext();
+    }
+  }
+
+  // ===== 绑定事件 =====
+  function bindEvents() {
+    // 轮播滚动
+    carousel.addEventListener('scroll', onScroll, { passive: true });
+
+    // 窗口大小变化
+    window.addEventListener('resize', onScroll);
+
+    // 左右箭头
+    if (arrowLeft) arrowLeft.addEventListener('click', goPrev);
+    if (arrowRight) arrowRight.addEventListener('click', goNext);
+
+    // 键盘导航
+    document.addEventListener('keydown', onKeyDown);
+
+    // 触摸滑动补偿：确保 scroll-snap 后有正确的检测
+    carousel.addEventListener('scrollend', function () {
+      updateActiveScene();
+    }, { passive: true });
+  }
+
+  // ===== 启动 =====
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
 })();
 
-/* 统一返回逻辑：有同源来源页则回退，否则回主界面（导航闭环） */
+/* 统一返回逻辑 */
 window.goBack = function () {
   if (document.referrer && document.referrer.includes(window.location.host)) {
     history.back();

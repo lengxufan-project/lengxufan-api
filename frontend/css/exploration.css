@@ -1,32 +1,226 @@
-/* ============ 暗夜拾遗（独立页面） ============ */
-/* 覆盖 main.css 的全局 body 设定 */
+/* ============================================================
+   exploration.css — 暗夜拾遗（独立页面）
+   融合形态：藏品图鉴 + 场景点击探索
+   ============================================================ */
+
+/* ============ 页面骨架 ============ */
 body {
   max-width: none;
   margin: 0;
   overflow: hidden;
 }
 
-/* ---------- 全屏场景区：307 室夜晚 ---------- */
-.scene-area {
+.ex-page {
   position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  /* 深色渐变模拟夜晚宿舍：上方夜色 + 下方地面微光 */
+  background:
+    radial-gradient(ellipse 60% 40% at 72% 22%, rgba(88, 166, 255, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 45% at 50% 108%, rgba(58, 72, 105, 0.22) 0%, transparent 65%),
+    linear-gradient(180deg, #05060a 0%, #0a0d16 55%, #0d1019 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============ 顶部导航 ============ */
+.ex-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  border-bottom: 1px solid rgba(88, 166, 255, 0.15);
+  background: rgba(10, 12, 18, 0.55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+.ex-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  background: linear-gradient(90deg, #bfe0ff, #58a6ff, #bfe0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+/* "去探索" 按钮 / "返回图鉴" 按钮 */
+.ex-explore-btn,
+.ex-back-gallery {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.15);
+  font-family: inherit;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.ex-explore-btn:hover,
+.ex-back-gallery:hover {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: rgba(88, 166, 255, 0.7);
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(88, 166, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ============ 图鉴模式（默认） ============ */
+.ex-gallery {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 80px;
+  display: block;
+}
+.ex-gallery.hidden {
+  display: none;
+}
+
+.ex-gallery-hint {
+  font-size: 12px;
+  color: #5f6b80;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 图鉴网格 */
+.ex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 藏品卡片 */
+.ex-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 16px 18px;
+  border-radius: 14px;
+  background: rgba(22, 26, 41, 0.45);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(88, 166, 255, 0.12);
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.02), 0 0 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ex-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(88, 166, 255, 0.35);
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.15), inset 0 0 12px rgba(88, 166, 255, 0.05);
+}
+
+/* 卡片图标占位 */
+.ex-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #bfe0ff;
+  background: rgba(88, 166, 255, 0.08);
+  border: 1px solid rgba(88, 166, 255, 0.15);
+  transition: all 0.5s ease-in-out;
+}
+
+/* 卡片名称 */
+.ex-card-name {
+  font-size: 14px;
+  color: #7e95b8;
+  letter-spacing: 1px;
+  transition: color 0.5s ease-in-out;
+}
+
+/* 卡片状态指示 */
+.ex-card-status {
+  font-size: 10px;
+  color: #5f6b80;
+  letter-spacing: 0.5px;
+  transition: color 0.5s ease-in-out;
+}
+
+/* ---- 已收集状态 ---- */
+.ex-card.found {
+  border-color: rgba(88, 166, 255, 0.5);
+  background: rgba(22, 26, 41, 0.6);
+  box-shadow: 0 0 18px rgba(88, 166, 255, 0.2), inset 0 0 12px rgba(88, 166, 255, 0.05);
+}
+.ex-card.found .ex-card-icon {
+  background: rgba(88, 166, 255, 0.15);
+  border-color: rgba(88, 166, 255, 0.4);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.3);
+}
+.ex-card.found .ex-card-name {
+  color: #bfe0ff;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+}
+.ex-card.found .ex-card-status {
+  color: #58a6ff;
+}
+
+/* ---- 未收集状态（灰色剪影） ---- */
+.ex-card:not(.found) .ex-card-icon {
+  filter: grayscale(1) brightness(0.4);
+  opacity: 0.5;
+}
+.ex-card:not(.found) .ex-card-name {
+  color: #3d4761;
+}
+.ex-card:not(.found) .ex-card-status {
+  color: #2a3040;
+}
+.ex-card:not(.found) {
+  cursor: default;
+}
+.ex-card:not(.found):hover {
+  transform: none;
+  border-color: rgba(88, 166, 255, 0.12);
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.02), 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ============ 探索模式 ============ */
+.ex-scene-area {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: none;
   background:
     radial-gradient(ellipse 60% 40% at 72% 22%, rgba(88, 166, 255, 0.07) 0%, transparent 60%),
     radial-gradient(ellipse 80% 45% at 50% 108%, rgba(58, 72, 105, 0.22) 0%, transparent 65%),
     linear-gradient(180deg, #05060a 0%, #0a0d16 55%, #0d1019 100%);
 }
-/* 迷雾层：径向渐变暗角 */
-.scene-area::after {
+.ex-scene-area.active {
+  display: block;
+}
+.ex-scene-area::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: radial-gradient(ellipse at center, transparent 38%, rgba(0, 0, 0, 0.35) 72%, rgba(0, 0, 0, 0.62) 100%);
 }
-/* 月光斜照光斑 */
+
+/* 月光斜照 */
 .moonlight {
   position: absolute;
   top: -12%;
@@ -38,55 +232,10 @@ body {
   transform: rotate(14deg);
   border-radius: 50%;
   filter: blur(6px);
+  z-index: 1;
 }
 
-/* ---------- 顶部：返回 + 标题 ---------- */
-.ex-header {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 14px;
-  background: linear-gradient(180deg, rgba(5, 6, 10, 0.85) 0%, transparent 100%);
-}
-/* 统一返回按钮：磨砂胶囊 */
-.back-btn {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(88, 166, 255, 0.35);
-  background: rgba(20, 24, 40, 0.6);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: #bfe0ff;
-  font-size: 12px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
-}
-.back-btn:hover {
-  color: #ffffff;
-  border-color: rgba(88, 166, 255, 0.7);
-  background: rgba(88, 166, 255, 0.14);
-  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
-}
-.ex-title {
-  font-family: 'Noto Serif SC', Georgia, serif;
-  font-size: 17px;
-  font-weight: 200;
-  letter-spacing: 0.15em;
-  color: #eaf0ff;
-  text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
-}
-.ex-sub {
-  font-size: 10px;
-  letter-spacing: 0.4em;
-  color: #3d4761;
-}
-
-/* ---------- 探索点 ---------- */
+/* 探索光点 */
 .explore-point {
   position: absolute;
   width: 14px;
@@ -95,19 +244,39 @@ body {
   background: #9fd8ff;
   box-shadow:
     0 0 8px rgba(88, 166, 255, 0.9),
-    0 0 22px rgba(88, 166, 255, 0.45);
+    0 0 22px rgba(88, 166, 255, 0.45),
+    0 0 40px rgba(88, 166, 255, 0.2);
   cursor: pointer;
   z-index: 5;
   animation: pointPulse 2s ease-in-out infinite;
-  transition: background 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+  transition: transform 0.3s ease-in-out, background 0.6s ease-in-out, box-shadow 0.3s ease-in-out;
   -webkit-tap-highlight-color: transparent;
 }
-/* 呼吸动画 */
 @keyframes pointPulse {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50% { transform: scale(1.25); opacity: 1; }
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 8px rgba(88, 166, 255, 0.9),
+      0 0 22px rgba(88, 166, 255, 0.45),
+      0 0 40px rgba(88, 166, 255, 0.2);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.35);
+    box-shadow:
+      0 0 12px rgba(88, 166, 255, 1),
+      0 0 30px rgba(88, 166, 255, 0.6),
+      0 0 50px rgba(88, 166, 255, 0.3);
+    opacity: 1;
+  }
 }
-/* 扩散波纹 */
+.explore-point:hover {
+  transform: scale(1.5);
+  box-shadow:
+    0 0 12px rgba(88, 166, 255, 1),
+    0 0 32px rgba(88, 166, 255, 0.7),
+    0 0 56px rgba(88, 166, 255, 0.4);
+}
 .explore-point::after {
   content: "";
   position: absolute;
@@ -121,8 +290,23 @@ body {
   0% { transform: scale(0.8); opacity: 0.7; }
   70%, 100% { transform: scale(2.6); opacity: 0; }
 }
+.explore-point.found {
+  background: #333c52;
+  box-shadow: 0 0 4px rgba(51, 60, 82, 0.5);
+  cursor: default;
+  animation: none;
+  transform: scale(0.85);
+}
+.explore-point.found:hover {
+  transform: scale(0.85);
+  box-shadow: 0 0 4px rgba(51, 60, 82, 0.5);
+}
+.explore-point.found::after {
+  animation: none;
+  opacity: 0;
+}
 
-/* 悬浮提示：磨砂黑底 + 冰蓝边框 */
+/* 悬浮提示 */
 .item-tooltip {
   position: absolute;
   bottom: calc(100% + 12px);
@@ -159,20 +343,7 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
-/* 已收集：变暗、光晕消失 */
-.explore-point.found {
-  background: #333c52;
-  box-shadow: 0 0 4px rgba(51, 60, 82, 0.5);
-  cursor: default;
-  animation: none;
-  transform: scale(0.85);
-}
-.explore-point.found::after {
-  animation: none;
-  opacity: 0;
-}
-
-/* ---------- 收集爆破粒子 ---------- */
+/* 爆破粒子 */
 .burst-particle {
   position: absolute;
   width: 6px;
@@ -189,7 +360,107 @@ body {
   100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(0.25); opacity: 0; }
 }
 
-/* ---------- 底部收集栏：半透明胶囊 ---------- */
+/* ============ 引导浮层（首次探索） ============ */
+.ex-guide-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: guideFadeIn 0.5s ease-in-out;
+}
+@keyframes guideFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ex-guide-content {
+  text-align: center;
+  pointer-events: none;
+}
+.ex-guide-text {
+  font-size: 18px;
+  color: #eaf0ff;
+  letter-spacing: 4px;
+  text-shadow: 0 0 16px rgba(88, 166, 255, 0.6), 0 0 32px rgba(88, 166, 255, 0.3);
+  margin-bottom: 20px;
+  animation: guideTextFloat 2s ease-in-out infinite;
+}
+@keyframes guideTextFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.ex-guide-hint {
+  font-size: 12px;
+  color: rgba(143, 160, 192, 0.6);
+  letter-spacing: 2px;
+}
+
+/* ============ 收集提示 Toast ============ */
+.ex-collect-toast {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-12px);
+  z-index: 20;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: rgba(10, 12, 18, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  color: #bfe0ff;
+  font-size: 14px;
+  letter-spacing: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.ex-collect-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+/* ============ 返回图鉴按钮（在场景中） ============ */
+.ex-back-gallery {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.ex-back-gallery:hover {
+  transform: translateX(-50%) translateY(-1px);
+}
+
+/* 拾遗完成文字 */
+.ex-done-text {
+  position: absolute;
+  left: 50%;
+  bottom: 100px;
+  transform: translateX(-50%) translateY(6px);
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 15px;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  color: #bfe0ff;
+  text-shadow: 0 0 12px rgba(88, 166, 255, 0.7), 0 0 32px rgba(88, 166, 255, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+}
+.ex-done-text.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============ 底部收集栏（共享） ============ */
 .collect-bar {
   position: fixed;
   left: 50%;
@@ -207,6 +478,7 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   z-index: 30;
 }
+/* 收集槽位：始终显示名称文字 */
 .slot {
   display: flex;
   align-items: center;
@@ -217,20 +489,14 @@ body {
   border: 1px solid rgba(88, 166, 255, 0.14);
   background: rgba(255, 255, 255, 0.02);
   font-size: 15px;
-  color: transparent;
+  color: rgba(88, 166, 255, 0.25);
   user-select: none;
-  transition: background 0.6s ease-in-out, border-color 0.6s ease-in-out,
-              box-shadow 0.6s ease-in-out, color 0.6s ease-in-out, transform 0.6s ease-in-out;
+  transition: background 0.4s ease-in-out, border-color 0.4s ease-in-out,
+              box-shadow 0.4s ease-in-out, color 0.4s ease-in-out, transform 0.4s ease-in-out;
 }
 .slot::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(88, 166, 255, 0.18);
-  transition: opacity 0.6s ease-in-out;
+  display: none;
 }
-/* 已收集：发光 */
 .slot.filled {
   color: #bfe0ff;
   border-color: rgba(88, 166, 255, 0.5);
@@ -239,61 +505,187 @@ body {
   text-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
   transform: translateY(-2px);
 }
-.slot.filled::before {
-  display: none;
-}
 
-/* ---------- 拾遗完成文字 ---------- */
-.done-text {
+/* ============ 藏品详情弹窗 ============ */
+.ex-detail-mask {
   position: fixed;
-  left: 50%;
-  bottom: 88px;
-  transform: translateX(-50%) translateY(6px);
-  font-family: 'Noto Serif SC', Georgia, serif;
-  font-size: 15px;
-  letter-spacing: 0.5em;
-  text-indent: 0.5em;
-  color: #bfe0ff;
-  text-shadow: 0 0 12px rgba(88, 166, 255, 0.7), 0 0 32px rgba(88, 166, 255, 0.35);
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.5);
   opacity: 0;
   pointer-events: none;
-  z-index: 25;
-  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+  transition: opacity 0.35s ease-in-out;
 }
-.done-text.show {
+.ex-detail-mask.open {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
 }
 
-/* ---------- 移动端适配 ---------- */
-@media (max-width: 768px) {
-  /* 顶部紧凑 */
-  .ex-header { padding: 10px 16px; }
-  .ex-title { font-size: 15px; letter-spacing: 0.1em; }
-  .ex-sub { font-size: 9px; letter-spacing: 0.3em; }
-  .back-btn { padding: 5px 12px; font-size: 11px; }
+.ex-detail-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  z-index: 55;
+  width: 340px;
+  max-width: 85vw;
+  padding: 36px 28px 28px;
+  border-radius: 18px;
+  background: rgba(10, 12, 18, 0.95);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(88, 166, 255, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease-in-out, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.ex-detail-popup.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
 
-  /* 月光光斑缩小，避免溢出 */
+.ex-detail-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  background: rgba(20, 24, 40, 0.6);
+  color: #bfe0ff;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+}
+.ex-detail-close:hover {
+  background: rgba(88, 166, 255, 0.14);
+  border-color: rgba(88, 166, 255, 0.7);
+  color: #ffffff;
+}
+
+.ex-detail-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: rgba(88, 166, 255, 0.12);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.2);
+  color: #bfe0ff;
+}
+
+.ex-detail-name {
+  font-size: 20px;
+  font-weight: 400;
+  color: #eaf0ff;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+}
+
+.ex-detail-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #a8b4cc;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.ex-detail-source {
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: rgba(88, 166, 255, 0.05);
+  border: 1px solid rgba(88, 166, 255, 0.1);
+  font-size: 12px;
+  color: #6f7d96;
+}
+.ex-detail-source-label {
+  color: #5f6b80;
+}
+.ex-detail-source-value {
+  color: #8fa0c0;
+}
+
+/* ============ 移动端适配 ============ */
+@media (max-width: 768px) {
+  .ex-header { padding: 10px 16px; }
+  .ex-title { font-size: 17px; letter-spacing: 4px; }
+
+  .ex-explore-btn,
+  .ex-back-gallery {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .ex-gallery { padding: 16px 16px 70px; }
+  .ex-gallery-hint { font-size: 11px; margin-bottom: 14px; }
+
+  .ex-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+  }
+
+  .ex-card { padding: 18px 12px 14px; }
+  .ex-card-icon { width: 40px; height: 40px; font-size: 17px; }
+  .ex-card-name { font-size: 13px; }
+
   .moonlight { width: 300px; height: 440px; }
 
-  /* 收集栏紧凑 */
   .collect-bar { bottom: 16px; padding: 8px 14px; gap: 8px; }
   .slot { width: 36px; height: 36px; font-size: 14px; }
 
-  /* 提示框适度缩小 */
   .item-tooltip { min-width: 110px; padding: 7px 10px; }
   .item-tooltip .tip-name { font-size: 12px; }
   .item-tooltip .tip-desc { font-size: 10px; }
+
+  .ex-detail-popup { padding: 30px 20px 22px; }
+  .ex-detail-icon { width: 48px; height: 48px; font-size: 20px; }
+  .ex-detail-name { font-size: 17px; }
+  .ex-detail-desc { font-size: 13px; }
+
+  .ex-done-text { bottom: 80px; font-size: 13px; letter-spacing: 0.3em; }
+  .ex-guide-text { font-size: 15px; letter-spacing: 3px; }
+  .ex-collect-toast { font-size: 13px; padding: 8px 16px; }
 }
 
-/* 极窄屏额外收紧 */
 @media (max-width: 600px) {
   .ex-header { padding: 8px 12px; }
-  .ex-title { font-size: 13px; }
+  .ex-title { font-size: 15px; letter-spacing: 3px; }
+
+  .ex-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+  .ex-card { padding: 14px 10px 12px; }
+  .ex-card-icon { width: 36px; height: 36px; font-size: 15px; }
+  .ex-card-name { font-size: 12px; }
+
   .moonlight { width: 240px; height: 340px; }
   .slot { width: 32px; height: 32px; font-size: 12px; }
   .collect-bar { bottom: 12px; gap: 6px; padding: 6px 10px; }
-  .done-text { bottom: 70px; font-size: 12px; letter-spacing: 0.3em; }
+  .ex-done-text { bottom: 70px; font-size: 12px; }
   .item-tooltip { min-width: 100px; }
   .item-tooltip .tip-desc { display: none; }
+
+  .ex-detail-popup { width: 90vw; padding: 26px 16px 20px; }
+}
+
+/* 减弱动效 */
+@media (prefers-reduced-motion: reduce) {
+  .explore-point, .explore-point::after,
+  .burst-particle, .ex-card,
+  .ex-detail-popup, .ex-detail-mask {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
 }

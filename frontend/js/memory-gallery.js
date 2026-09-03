@@ -312,6 +312,110 @@
     window.addEventListener('keydown', onKey);
   }
 
+  // ===== 从 /api/events?type=memory 拉取真实记忆碎片 =====
+  var _apiMemories = null;
+  var _useApiMemories = false;
+  var _apiCheckTimer = null;
+
+  function fetchEvents() {
+    if (!window.API || !window.API.getEvents) return;
+    window.API.getEvents("memory").then(function (data) {
+      if (!data || !data.events || data.events.length === 0) return;
+      // 检查是否有非占位数据（data-status="stub" 标记由后端返回）
+      var realEvents = data.events.filter(function (ev) {
+        return ev.content && ev.content.indexOf("尚未生成") === -1;
+      });
+      if (realEvents.length === 0) return;
+
+      _apiMemories = realEvents;
+      if (!_useApiMemories) {
+        _useApiMemories = true;
+        // 重新构建卡片
+        createCards();
+        createIndicator();
+        layout();
+      }
+    });
+  }
+
+  // 修改 createCards 以支持 API 数据
+  var _origCreateCards = createCards;
+  createCards = function () {
+    if (_useApiMemories && _apiMemories && _apiMemories.length > 0) {
+      // 用 API 数据构建卡片
+      var track = els.track;
+      track.innerHTML = '';
+      state.cards = [];
+      for (var i = 0; i < _apiMemories.length; i++) {
+        var ev = _apiMemories[i];
+        var card = document.createElement('div');
+        card.className = 'memory-card';
+        card.setAttribute('data-index', String(i));
+        var dateStr = ev.created_at ? '第 ? 天' : '--';
+        var name = ev.character_name || '系统';
+        card.innerHTML =
+          '<div class="mc-date">' + dateStr + '</div>' +
+          '<div class="mc-snippet">' + (ev.content || '') + '</div>' +
+          '<div class="mc-name">— ' + name + '</div>';
+        card.addEventListener('click', (function (idx) {
+          return function (e) {
+            if (state._justDragged) { state._justDragged = false; return; }
+            openModalApi(idx);
+          };
+        })(i));
+        track.appendChild(card);
+        state.cards.push(card);
+      }
+      return;
+    }
+    // 否则使用默认预设数据
+    _origCreateCards();
+  };
+
+  // API 数据模态框
+  function openModalApi(idx) {
+    if (!_apiMemories || !_apiMemories[idx]) return;
+    var ev = _apiMemories[idx];
+    var mask = document.createElement('div');
+    mask.className = 'mg-modal-mask';
+    mask.innerHTML =
+      '<div class="mg-modal" role="dialog" aria-modal="true">' +
+        '<div class="mg-modal-date">' + (ev.character_name || '系统') + ' · 记忆碎片</div>' +
+        '<div class="mg-modal-body">' + (ev.content || '') + '</div>' +
+        '<div class="mg-modal-name">— ' + (ev.character_name || '系统') + '</div>' +
+        '<button class="mg-modal-close" type="button">关闭</button>' +
+      '</div>';
+    document.body.appendChild(mask);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { mask.classList.add('show'); });
+    });
+    var close = function () {
+      mask.classList.remove('show');
+      setTimeout(function () {
+        if (mask.parentNode) mask.parentNode.removeChild(mask);
+      }, 420);
+    };
+    mask.querySelector('.mg-modal-close').addEventListener('click', close);
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask) close();
+    });
+    document.addEventListener('keydown', function esc(e) {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        close();
+        document.removeEventListener('keydown', esc);
+      }
+    });
+  }
+
+  // 修改 init 以启动 API 轮询
+  var _origInit = init;
+  init = function () {
+    _origInit();
+    // 启动定时拉取真实记忆数据
+    fetchEvents();
+    _apiCheckTimer = setInterval(fetchEvents, 15000);
+  };
+
   // ===== 导出 =====
   window.MemoryGallery = { init: init };
 })();

@@ -22,13 +22,13 @@
     <!-- 顶栏：返回 ← + 角色名 + 情绪标签 + 状态抽屉按钮 -->
     <header class="cp-topbar">
       <a class="cp-back" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()" title="返回">&larr; 返回</a>
-      <a class="cp-char-link" id="chatCharLink" href="character-profile.html?char=lengxufan">
-        <div class="cp-char-info">
-          <span class="cp-char-name" id="chatCharName">冷旭帆</span>
-          <span class="cp-emotion-label" id="chatEmotionLabel">--</span>
-        </div>
-      </a>
-      <a class="cp-chat-settings-btn" href="chat-settings.html" data-status="stub" title="聊天设置">⚙</a>
+      <div class="cp-char-info">
+        <span class="cp-char-name" id="chatCharName">冷旭帆</span>
+        <span class="cp-emotion-label" id="chatEmotionLabel">--</span>
+        <a class="cp-detail-btn" id="chatDetailBtn" href="character-profile.html?char=lengxufan" title="详情" style="display:none">ℹ</a>
+      </div>
+      <a class="cp-chat-settings-btn" id="chatSettingsBtn" href="chat-settings.html" data-status="stub" title="聊天设置">⚙</a>
+      <a class="cp-export-btn" href="export.html" title="导出聊天记录">📥</a>
       <button class="cp-status-toggle" id="statusToggle" type="button" aria-controls="statusDrawer" aria-expanded="false" title="状态">
         <span class="status-icon"></span>
       </button>
@@ -81,14 +81,16 @@
       </div>
     </aside>
 
-    <!-- 长按菜单占位 -->
-    <div class="cp-context-menu" id="contextMenu" data-status="stub" style="display:none">
-      <div class="context-menu-item" data-status="stub">复制</div>
-      <div class="context-menu-item" data-status="stub">引用</div>
-      <div class="context-menu-item" data-status="stub">撤回</div>
-      <div class="context-menu-item" data-status="stub">多选</div>
-      <div class="context-menu-item" data-status="stub">收藏</div>
+    <!-- 长按菜单 -->
+    <div class="cp-context-menu" id="contextMenu" style="display:none">
+      <div class="context-menu-item" data-action="copy">复制</div>
+      <div class="context-menu-item" data-action="quote" data-stub="1">引用（开发中）</div>
+      <div class="context-menu-item" data-action="recall" data-stub="1">撤回（开发中）</div>
+      <div class="context-menu-item" data-action="multiselect" data-stub="1">多选（开发中）</div>
     </div>
+
+    <!-- Toast 提示 -->
+    <div class="cp-toast" id="cpToast" style="display:none"></div>
   </div>
 
   <script src="js/chat.js"></script>

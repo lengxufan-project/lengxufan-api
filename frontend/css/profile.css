@@ -236,6 +236,45 @@ body {
   pointer-events: none;
 }
 
+/* 开发者模式覆盖 */
+body[data-role="developer"] [data-status="stub"] {
+  border-style: solid !important;
+  border-color: rgba(88, 166, 255, 0.2) !important;
+  opacity: 0.85;
+  cursor: default;
+  background: rgba(88, 166, 255, 0.04) !important;
+  box-shadow: none !important;
+}
+body[data-role="developer"] [data-status="stub"]::after {
+  content: "● 待接入";
+  color: rgba(88, 166, 255, 0.8);
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-style: normal;
+  font-weight: 500;
+  box-shadow: 0 0 6px rgba(88, 166, 255, 0.1);
+}
+body[data-role="developer"] [data-status="plan"] {
+  opacity: 0.6;
+  filter: none;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+body[data-role="developer"] [data-status="plan"]::after {
+  content: "🔒 规划中";
+  color: rgba(143, 160, 192, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 500;
+  opacity: 1;
+}
+
 /* ============ 功能入口列表 ============ */
 .profile-entries {
   display: flex;
@@ -377,6 +416,103 @@ body {
   color: #fff; font-size: 13px; cursor: pointer;
 }
 .profile-modal-close:hover { filter: brightness(1.15); }
+
+/* ============ 未登录引导卡片 ============ */
+.profile-login-guide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px 80px;
+  gap: 24px;
+  min-height: 60vh;
+}
+.plg-orb {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(88, 166, 255, 0.4), rgba(88, 166, 255, 0.1) 40%, transparent 70%);
+  box-shadow: 0 0 40px rgba(88, 166, 255, 0.3), 0 0 80px rgba(88, 166, 255, 0.1);
+  animation: plgPulse 3s ease-in-out infinite;
+}
+@keyframes plgPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.plg-text {
+  font-size: 16px;
+  color: #8fa0c0;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+.plg-buttons {
+  display: flex;
+  gap: 14px;
+}
+.plg-btn {
+  padding: 10px 28px;
+  border-radius: 999px;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-family: inherit;
+  letter-spacing: 0.06em;
+}
+.plg-btn-login {
+  color: #fff;
+  background: linear-gradient(135deg, #58a6ff, #2b5bbf);
+  border: 1px solid rgba(88, 166, 255, 0.5);
+  box-shadow: 0 0 16px rgba(88, 166, 255, 0.3);
+}
+.plg-btn-login:hover {
+  box-shadow: 0 0 24px rgba(88, 166, 255, 0.5);
+  transform: translateY(-1px);
+}
+.plg-btn-guest {
+  color: #bfe0ff;
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: rgba(20, 24, 40, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
+}
+.plg-btn-guest:hover {
+  color: #fff;
+  background: rgba(88, 166, 255, 0.14);
+  border-color: rgba(140, 200, 255, 0.7);
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ============ 访客提示横幅 ============ */
+.profile-guest-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: rgba(88, 166, 255, 0.06);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  font-size: 13px;
+  color: #8fa0c0;
+  letter-spacing: 0.06em;
+}
+.pgb-login {
+  color: #58a6ff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  transition: all 0.2s ease-in-out;
+}
+.pgb-login:hover {
+  color: #fff;
+  background: rgba(88, 166, 255, 0.12);
+  border-color: rgba(88, 166, 255, 0.6);
+}
 
 /* ============ 响应式 ============ */
 @media (max-width: 768px) {

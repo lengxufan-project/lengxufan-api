@@ -9,31 +9,64 @@
 </head>
 <body>
 
-  <!-- 全屏场景区：307 室夜晚 -->
-  <div class="scene-area" id="sceneArea">
+<div class="ex-page">
 
-    <!-- 顶部：返回 + 标题 -->
-    <header class="ex-header">
-      <a class="back-btn page-back-btn" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()">← 返回</a>
-      <h1 class="ex-title page-title">暗夜拾遗</h1>
-      <span class="ex-sub">NIGHT ECHOES</span>
-    </header>
+  <!-- 顶部：返回 + 标题 + 模式切换按钮 -->
+  <header class="ex-header">
+    <a class="ex-back page-back-btn" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()">← 返回</a>
+    <h1 class="ex-title page-title">暗夜拾遗</h1>
+    <button class="ex-explore-btn" id="exExploreBtn">去探索</button>
+  </header>
 
-    <!-- 月光斑（纯装饰） -->
+  <!-- ========== 图鉴模式（默认） ========== -->
+  <div class="ex-gallery" id="exGallery">
+    <p class="ex-gallery-hint">点击收集的藏品查看详情</p>
+    <div class="ex-grid" id="exGrid">
+      <!-- 5 张卡片由 JS 注入 -->
+    </div>
+  </div>
+
+  <!-- ========== 探索模式（隐藏） ========== -->
+  <div class="ex-scene-area" id="exSceneArea">
     <div class="moonlight"></div>
-
-    <!-- 5 个探索点由 js/exploration.js 注入 -->
-
-    <!-- 全部收集完成文字 -->
-    <div class="done-text" id="doneText">拾遗完成</div>
-
+    <!-- 收集提示 Toast -->
+    <div class="ex-collect-toast" id="exCollectToast" style="display:none"></div>
+    <!-- 5 个探索点由 JS 注入 -->
+    <div class="ex-done-text" id="exDoneText">拾遗完成</div>
+    <!-- 返回图鉴按钮 -->
+    <button class="ex-back-gallery" id="exBackGallery">返回图鉴</button>
   </div>
 
-  <!-- 底部：已收集物品栏 -->
+  <!-- ========== 底部收集栏（两模式共享） ========== -->
   <div class="collect-bar" id="collectBar">
-    <!-- 5 个格子由 js/exploration.js 注入 -->
+    <!-- 5 个格子由 JS 注入 -->
   </div>
 
-  <script src="js/exploration.js"></script>
+  <!-- ========== 藏品详情弹窗 ========== -->
+  <div class="ex-detail-mask" id="exDetailMask"></div>
+  <div class="ex-detail-popup" id="exDetailPopup">
+    <button class="ex-detail-close" id="exDetailClose" aria-label="关闭">✕</button>
+    <div class="ex-detail-icon" id="exDetailIcon">?</div>
+    <h2 class="ex-detail-name" id="exDetailName"></h2>
+    <p class="ex-detail-desc" id="exDetailDesc"></p>
+    <div class="ex-detail-source">
+      <span class="ex-detail-source-label">发现地点：</span>
+      <span class="ex-detail-source-value" id="exDetailSource"></span>
+    </div>
+  </div>
+
+</div>
+
+  <!-- ========== 引导浮层（首次探索） ========== -->
+  <div class="ex-guide-overlay" id="exGuideOverlay" style="display:none">
+    <div class="ex-guide-content">
+      <p class="ex-guide-text">点击场景中的光点，收集失落之物</p>
+      <span class="ex-guide-hint">点击任意处关闭</span>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/exploration.js"></script>
 </body>
 </html>

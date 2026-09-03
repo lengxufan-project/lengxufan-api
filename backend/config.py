@@ -12,3 +12,6 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(RUNTIME_DIR, 'lengxufan.db')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_AS_ASCII = False
+
+    # 开发者识别：登录时若用户名匹配 DEV_USERNAME，自动赋予 developer 角色
+    DEV_USERNAME = os.environ.get('DEV_USERNAME', 'yingying')

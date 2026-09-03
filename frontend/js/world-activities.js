@@ -7,32 +7,22 @@
   var currentIndex = -1;
   var timer = null;
   var updateTimer = null;
+  var fetchTimer = null;
 
   function init() {
     actsEl = document.getElementById("sceneActs");
     if (!actsEl) return;
     actsEl.innerHTML = '<div class="scene-act-wrap" id="sceneActWrap"></div>';
+    // 启动事件流定时拉取
+    fetchAndUpdate();
+    fetchTimer = setInterval(fetchAndUpdate, 10000);
   }
 
-  function update(s) {
-    if (!actsEl) init();
+  /* ---------- 核心渲染：将活动列表渲染到 DOM ---------- */
+  function renderActivities(activities) {
     if (!actsEl) return;
 
-    var activities = [];
-    if (s.dorm_activities && Array.isArray(s.dorm_activities)) {
-      activities = s.dorm_activities;
-    } else if (s.recent_events && Array.isArray(s.recent_events)) {
-      activities = s.recent_events;
-    } else if (s.world && s.world.dorm_activities && Array.isArray(s.world.dorm_activities)) {
-      activities = s.world.dorm_activities;
-    } else if (s.dorm_activities && typeof s.dorm_activities === "object" && !Array.isArray(s.dorm_activities)) {
-      var keys = Object.keys(s.dorm_activities);
-      activities = keys.map(function (k) {
-        return { name: k, action: s.dorm_activities[k] };
-      });
-    }
-
-    if (activities.length === 0) {
+    if (!activities || activities.length === 0) {
       actsEl.innerHTML = '<div class="scene-act"><span class="who">——</span>室内一片安静</div>';
       stopTimer();
       items = [];
@@ -49,6 +39,9 @@
       }
       if (act.character && act.description) {
         return '<span class="who">' + (act.character) + '</span>：' + (act.description);
+      }
+      if (act.character_name && act.content) {
+        return '<span class="who">' + (act.character_name) + '</span>：' + (act.content);
       }
       if (typeof act === "string") return act;
       return '——室内一片安静';
@@ -75,6 +68,44 @@
 
     showNext();
     startTimer();
+  }
+
+  /* ---------- 从 /api/events?type=activity 拉取动态 ---------- */
+  function fetchAndUpdate() {
+    if (!window.API || !window.API.getEvents) return;
+    window.API.getEvents("activity").then(function (data) {
+      if (!data || !data.events || !data.events.length) return;
+      // 将事件流数据转为 renderActivities 接受的格式
+      var activities = data.events.map(function (ev) {
+        return {
+          name: ev.character_name || "未知",
+          action: ev.content || ""
+        };
+      });
+      renderActivities(activities);
+    });
+  }
+
+  /* ---------- 兼容旧接口：从 /api/state 对象刷新 ---------- */
+  function update(s) {
+    if (!actsEl) init();
+    if (!actsEl) return;
+
+    var activities = [];
+    if (s.dorm_activities && Array.isArray(s.dorm_activities)) {
+      activities = s.dorm_activities;
+    } else if (s.recent_events && Array.isArray(s.recent_events)) {
+      activities = s.recent_events;
+    } else if (s.world && s.world.dorm_activities && Array.isArray(s.world.dorm_activities)) {
+      activities = s.world.dorm_activities;
+    } else if (s.dorm_activities && typeof s.dorm_activities === "object" && !Array.isArray(s.dorm_activities)) {
+      var keys = Object.keys(s.dorm_activities);
+      activities = keys.map(function (k) {
+        return { name: k, action: s.dorm_activities[k] };
+      });
+    }
+
+    renderActivities(activities);
   }
 
   function showNext() {

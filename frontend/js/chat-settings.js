@@ -2,6 +2,15 @@
 (function () {
   "use strict";
 
+  /* ========== 权限检测：非开发者跳转 ========== */
+  (function checkRole() {
+    var role = localStorage.getItem("lxf_user_role");
+    if (role !== "developer") {
+      window.location.href = "index.html?skipIntro=1";
+      return;
+    }
+  })();
+
   function init() {
     document.title = "聊天设置";
   }

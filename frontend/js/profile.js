@@ -54,8 +54,54 @@
     modalMask: document.getElementById("profileModalMask"),
     modalTitle: document.getElementById("profileModalTitle"),
     modalBody: document.getElementById("profileModalBody"),
-    modalClose: document.getElementById("profileModalClose")
+    modalClose: document.getElementById("profileModalClose"),
+    userSection: document.getElementById("profileUser"),
+    entriesSection: document.querySelector(".profile-entries")
   };
+
+  // ---------- 渲染：未登录引导卡片 ----------
+  function renderLoginGuide() {
+    // 隐藏常规内容，显示引导卡片
+    var sections = document.querySelectorAll(".profile-section");
+    Array.prototype.forEach.call(sections, function (s) { s.style.display = "none"; });
+    if (el.userSection) el.userSection.style.display = "none";
+    if (el.headerRight) el.headerRight.textContent = "";
+
+    // 检查是否已有引导卡片，避免重复创建
+    var existing = document.querySelector(".profile-login-guide");
+    if (existing) {
+      existing.style.display = "flex";
+      return;
+    }
+
+    var guide = document.createElement("div");
+    guide.className = "profile-login-guide";
+
+    guide.innerHTML =
+      '<div class="plg-orb"></div>' +
+      '<div class="plg-text">登录后解锁本世界</div>' +
+      '<div class="plg-buttons">' +
+        '<a class="plg-btn plg-btn-login" href="login.html">登录</a>' +
+        '<a class="plg-btn plg-btn-guest" href="index.html?skipIntro=1">游客进入</a>' +
+      '</div>';
+
+    var main = document.querySelector(".profile-main");
+    if (main) main.appendChild(guide);
+  }
+
+  // ---------- 渲染：访客提示 ----------
+  function renderGuestBanner() {
+    var existing = document.querySelector(".profile-guest-banner");
+    if (existing) {
+      existing.style.display = "flex";
+    } else {
+      var banner = document.createElement("div");
+      banner.className = "profile-guest-banner";
+      banner.innerHTML = '你正在以访客身份浏览 <a class="pgb-login" href="login.html">立即登录</a>';
+      var main = document.querySelector(".profile-main");
+      if (main) main.insertBefore(banner, main.firstChild);
+    }
+  }
 
   // ---------- 渲染：用户信息 ----------
   function renderUser(user) {
@@ -174,8 +220,7 @@
       .catch(function () { return null; })
       .then(function (data) {
         if (data && data.username) return data;
-        // 占位数据
-        return { username: "旅人", role: "guest" };
+        return null; // 未登录
       });
   }
 
@@ -200,11 +245,39 @@
 
   // ---------- 初始化 ----------
   function init() {
-    Promise.all([loadUser(), loadCharacters(), loadState()])
+    // 先检查本地角色缓存
+    var role = localStorage.getItem("lxf_user_role") || "guest";
+
+    loadUser().then(function (user) {
+      // 未登录（user 为 null）或 role 为 guest
+      if (!user || !user.username || user.role === "guest") {
+        if (!user || !user.username) {
+          // 完全未登录 -> 引导卡片
+          renderLoginGuide();
+          return;
+        }
+        // 已登录但为访客 -> 显示访客 banner + 正常内容
+        renderGuestBanner();
+        renderNormalContent(user);
+        return;
+      }
+      // 正常登录用户
+      renderNormalContent(user);
+    });
+  }
+
+  function renderNormalContent(user) {
+    // 显示常规内容
+    var sections = document.querySelectorAll(".profile-section");
+    Array.prototype.forEach.call(sections, function (s) { s.style.display = ""; });
+    if (el.userSection) el.userSection.style.display = "";
+    var guide = document.querySelector(".profile-login-guide");
+    if (guide) guide.style.display = "none";
+
+    Promise.all([loadCharacters(), loadState()])
       .then(function (results) {
-        var user = results[0];
-        var characters = results[1];
-        var state = results[2] || {};
+        var characters = results[0];
+        var state = results[1] || {};
         renderUser(user);
         renderRelations(characters, state);
         renderTrustbar(state);

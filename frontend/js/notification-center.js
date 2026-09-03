@@ -6,6 +6,7 @@
    - 支持：全部标为已读 / 点击遮罩关闭 / ESC 关闭
    - 数据来源：近况从 /api/state 的 dorm_activities / recent_events 刷新
    - 系统通知由其他模块通过 addSystemNotification 添加
+   - 升级功能：Tab 切换（近况/系统）、未读/已读分区、详情弹窗
    ============================================================ */
 (function () {
   "use strict";
@@ -22,6 +23,16 @@
 
   /* 是否已从后端获取过数据 */
   var hasFetchedData = false;
+
+  /* ---------- 已读追踪 ---------- */
+  var readIds = {}; // { id: true }
+
+  /* ---------- 当前活跃 Tab ---------- */
+  var activeTab = "recent";
+
+  /* ---------- 详情弹窗当前通知 ---------- */
+  var modalCurrentItem = null;
+  var modalCurrentGroup = null;
 
   /* ---------- 初始化 ---------- */
   function init() {
@@ -52,6 +63,12 @@
       markAllBtn.addEventListener("click", markAllAsRead);
     }
 
+    // Tab 切换
+    initTabs();
+
+    // 详情弹窗
+    initModal();
+
     // MutationObserver：监听 .open class 变化 -> 同步遮罩
     var observer = new MutationObserver(syncMask);
     observer.observe(drawer, { attributes: true, attributeFilter: ["class"] });
@@ -65,18 +82,158 @@
     syncTriggerBadge();
   }
 
+  /* ---------- Tab 切换 ---------- */
+  function initTabs() {
+    var tabs = document.querySelectorAll(".notify-tab");
+    if (!tabs.length) return;
+    Array.prototype.forEach.call(tabs, function (tab) {
+      tab.addEventListener("click", function () {
+        var target = tab.getAttribute("data-tab");
+        if (!target) return;
+        // 切换 tab 激活态
+        Array.prototype.forEach.call(tabs, function (t) { t.classList.remove("active"); });
+        tab.classList.add("active");
+        // 切换 content
+        var contents = document.querySelectorAll(".notify-tab-content");
+        Array.prototype.forEach.call(contents, function (c) {
+          c.classList.toggle("active", c.getAttribute("data-tab-content") === target);
+        });
+        activeTab = target;
+      });
+    });
+  }
+
+  /* ---------- 详情弹窗 ---------- */
+  function initModal() {
+    var modal = document.getElementById("notifyModal");
+    var maskEl = document.getElementById("notifyModalMask");
+    var closeBtn = document.getElementById("notifyModalClose");
+    var readBtn = document.getElementById("notifyModalRead");
+    if (!modal) return;
+
+    function closeModal() {
+      modal.classList.remove("show");
+      modalCurrentItem = null;
+      modalCurrentGroup = null;
+    }
+
+    if (maskEl) {
+      maskEl.addEventListener("click", closeModal);
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeModal);
+    }
+    if (readBtn) {
+      readBtn.addEventListener("click", function () {
+        if (modalCurrentItem) {
+          markAsRead(modalCurrentItem, modalCurrentGroup);
+        }
+        closeModal();
+      });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && modal.classList.contains("show")) {
+        closeModal();
+      }
+    });
+  }
+
+  function openModal(item, group) {
+    var modal = document.getElementById("notifyModal");
+    var typeEl = document.getElementById("notifyModalType");
+    var titleEl = document.getElementById("notifyModalTitle");
+    var bodyEl = document.getElementById("notifyModalBody");
+    var readBtn = document.getElementById("notifyModalRead");
+    if (!modal) return;
+
+    modalCurrentItem = item;
+    modalCurrentGroup = group;
+
+    typeEl.textContent = group === "system" ? "系统通知" : "近况";
+    typeEl.style.color = group === "system" ? "#8fa0c0" : "#58a6ff";
+    titleEl.textContent = item.sender || "未知";
+    bodyEl.textContent = item.content || "";
+    readBtn.style.display = item.read ? "none" : "";
+    modal.classList.add("show");
+  }
+
+  /* ---------- 从 /api/events 刷新数据 ---------- */
+  function fetchEvents() {
+    if (!window.API || !window.API.getEvents) return;
+
+    // 并行拉取 activity 和 system
+    Promise.all([
+      window.API.getEvents("activity"),
+      window.API.getEvents("system")
+    ]).then(function (results) {
+      var activityData = results[0];
+      var systemData = results[1];
+
+      if (activityData && activityData.events && activityData.events.length > 0) {
+        hasFetchedData = true;
+        var newRecent = activityData.events.map(function (ev, idx) {
+          var sender = ev.character_name || "未知";
+          var content = ev.content || "";
+          return {
+            id: ev.id || Date.now() + idx,
+            sender: sender,
+            time: ev.created_at ? new Date(ev.created_at * 1000).toLocaleString() : "刚刚",
+            content: content,
+            avatar: (sender && sender.charAt(0)) || "?",
+            read: false
+          };
+        });
+        recentEvents = newRecent;
+        hasBadge = true;
+      }
+
+      if (systemData && systemData.events && systemData.events.length > 0) {
+        hasFetchedData = true;
+        var newSystem = systemData.events.map(function (ev, idx) {
+          var content = ev.content || "";
+          return {
+            id: ev.id || "sys_" + Date.now() + idx,
+            sender: "系统",
+            time: ev.created_at || "刚刚",
+            content: content,
+            avatar: "系",
+            read: false
+          };
+        });
+        systemNotifications = newSystem;
+        hasBadge = true;
+      }
+
+      render();
+      syncTriggerBadge();
+    });
+  }
+
   /* ---------- 占位数据（仅当后端未返回数据时使用） ---------- */
   function loadPlaceholderData() {
     if (hasFetchedData) return;
-    recentEvents = [
-      { id: 1, sender: "开发中", time: "刚刚", content: "近况数据将在接入后端后自动更新", avatar: "开" }
-    ];
-    systemNotifications = [];
+    // 先尝试从 /api/events 拉取
+    fetchEvents();
+    // 如果 fetchEvents 已经设了数据，就不再覆盖
+    var checkLoaded = function () {
+      if (hasFetchedData) return;
+      recentEvents = [
+        { id: 1, sender: "开发中", time: "刚刚", content: "近况数据将在接入后端后自动更新", avatar: "开", read: false }
+      ];
+      systemNotifications = [];
+      render();
+      syncTriggerBadge();
+    };
+    // 给 fetchEvents 一点时间，如果还没返回则用占位
+    setTimeout(checkLoaded, 500);
   }
 
-  /* ---------- 从 /api/state 数据刷新近况 ---------- */
+  /* ---------- 从 /api/state 数据刷新近况（兼容旧接口） ---------- */
   function refreshFromState(state) {
     if (!state) return;
+
+    // 如果已经通过事件接口获取过数据，不再覆盖
+    if (hasFetchedData) return;
 
     var activities = [];
     // 尝试获取 dorm_activities 或 recent_events
@@ -107,7 +264,8 @@
         sender: sender,
         time: time,
         content: content,
-        avatar: (sender && sender.charAt(0)) || "?"
+        avatar: (sender && sender.charAt(0)) || "?",
+        read: false
       };
     });
 
@@ -144,41 +302,75 @@
     markAllBtn.disabled = !hasBadge;
   }
 
-  /* ---------- 渲染 ---------- */
-  function render() {
-    var recentList = drawer.querySelector('[data-group="recent"]');
-    var systemList = drawer.querySelector('[data-group="system"]');
-    var recentSection = document.getElementById("notifyRecent");
-    var systemSection = document.getElementById("notifySystem");
-    var recentEmpty = document.getElementById("notifyRecentEmpty");
-    var systemEmpty = document.getElementById("notifySystemEmpty");
-    if (!recentList || !systemList) return;
-
-    recentList.innerHTML = "";
-    systemList.innerHTML = "";
-
-    recentEvents.forEach(function (n) {
-      recentList.appendChild(createItem(n));
+  /* ---------- 标记单个通知为已读 ---------- */
+  function markAsRead(item, group) {
+    if (item.read) return;
+    item.read = true;
+    readIds[item.id] = true;
+    // 检查是否所有通知都已读
+    var allRead = true;
+    var allItems = group === "system" ? systemNotifications : recentEvents;
+    allItems.forEach(function (n) {
+      if (!n.read) allRead = false;
     });
-    systemNotifications.forEach(function (n) {
-      systemList.appendChild(createItem(n));
-    });
-
-    // 分组空状态显隐
-    if (recentEmpty) {
-      recentEmpty.classList.toggle("hidden", recentEvents.length > 0);
+    if (allRead) {
+      hasBadge = false;
     }
-    if (systemEmpty) {
-      systemEmpty.classList.toggle("hidden", systemNotifications.length > 0);
-    }
-
+    render();
+    syncTriggerBadge();
     syncMarkAllBtn();
   }
 
+  /* ---------- 渲染 ---------- */
+  function render() {
+    renderGroup("recent", recentEvents);
+    renderGroup("system", systemNotifications);
+    syncMarkAllBtn();
+  }
+
+  function renderGroup(group, items) {
+    var unreadList = drawer.querySelector('[data-group="' + group + '"][data-read="false"]');
+    var readList = drawer.querySelector('[data-group="' + group + '"][data-read="true"]');
+    var unreadSection = document.getElementById("notify" + capitalize(group) + "Unread");
+    var readSection = document.getElementById("notify" + capitalize(group) + "Read");
+    var unreadEmpty = document.getElementById("notify" + capitalize(group) + "UnreadEmpty");
+    var readEmpty = document.getElementById("notify" + capitalize(group) + "ReadEmpty");
+    var totalEmpty = document.getElementById("notify" + capitalize(group) + "Empty");
+
+    if (!unreadList || !readList) return;
+
+    unreadList.innerHTML = "";
+    readList.innerHTML = "";
+
+    var unreadItems = items.filter(function (n) { return !n.read; });
+    var readItems = items.filter(function (n) { return n.read; });
+
+    unreadItems.forEach(function (n) {
+      unreadList.appendChild(createItem(n, group));
+    });
+    readItems.forEach(function (n) {
+      readList.appendChild(createItem(n, group));
+    });
+
+    // 未读/已读区显隐
+    if (unreadSection) unreadSection.classList.toggle("hidden", unreadItems.length === 0);
+    if (readSection) readSection.classList.toggle("hidden", readItems.length === 0);
+    if (unreadEmpty) unreadEmpty.classList.toggle("hidden", unreadItems.length > 0);
+    if (readEmpty) readEmpty.classList.toggle("hidden", readItems.length > 0);
+    if (totalEmpty) totalEmpty.classList.toggle("hidden", items.length > 0);
+  }
+
+  function capitalize(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
   /* ---------- 创建单条通知 DOM ---------- */
-  function createItem(n) {
+  function createItem(n, group) {
     var el = document.createElement("div");
-    el.className = "notify-item";
+    el.className = "notify-item" + (n.read ? "" : " unread");
+    if (group === "system") {
+      el.classList.add("notify-system");
+    }
     el.dataset.id = n.id;
 
     el.innerHTML =
@@ -196,13 +388,22 @@
     el.querySelector(".notify-time").textContent   = n.time   || "";
     el.querySelector(".notify-preview").textContent = n.content || "";
 
+    // 点击弹出详情
+    el.addEventListener("click", function () {
+      openModal(n, group);
+    });
+
     return el;
   }
 
   /* ---------- 全部标为已读（清除红点标记） ---------- */
   function markAllAsRead() {
     if (!hasBadge) return;
+    // 标记所有通知为已读
+    recentEvents.forEach(function (n) { n.read = true; readIds[n.id] = true; });
+    systemNotifications.forEach(function (n) { n.read = true; readIds[n.id] = true; });
     hasBadge = false;
+    render();
     syncTriggerBadge();
     syncMarkAllBtn();
   }
@@ -222,7 +423,8 @@
         sender: sender || "未知",
         content: content || "",
         time: time || "刚刚",
-        avatar: avatar || (sender && sender.charAt(0)) || "?"
+        avatar: avatar || (sender && sender.charAt(0)) || "?",
+        read: false
       });
       hasBadge = true;
       render();
@@ -236,7 +438,8 @@
         sender: sender || "系统",
         content: content || "",
         time: time || "刚刚",
-        avatar: avatar || "系"
+        avatar: avatar || "系",
+        read: false
       });
       hasBadge = true;
       render();

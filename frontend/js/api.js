@@ -52,6 +52,13 @@
         .finally(function () { window.LoadingBar.finish(); });
     },
 
+    // GET /api/events?type=activity|system|memory —— 统一事件流接口
+    getEvents: function (type) {
+      return fetch("/api/events?type=" + encodeURIComponent(type))
+        .then(function (r) { return r.json(); })
+        .catch(function () { return null; });
+    },
+
     // 【预留】获取指定角色的状态详情
     // 当前后端尚未支持 /api/state?char_id=xxx，返回 null 占位
     getCharacterStatus: function (charId) {

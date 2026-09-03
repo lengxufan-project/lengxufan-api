@@ -7,6 +7,7 @@ from .state_routes import state_bp
 from .history_routes import history_bp
 from .character_routes import char_bp
 from .notification_routes import notif_bp
+from .events_routes import events_bp
 
 def register_routes(app):
     app.register_blueprint(achievement_bp, url_prefix='/api')
@@ -17,3 +18,4 @@ def register_routes(app):
     app.register_blueprint(history_bp, url_prefix='/api')
     app.register_blueprint(char_bp, url_prefix='/api')
     app.register_blueprint(notif_bp, url_prefix='/api')
+    app.register_blueprint(events_bp, url_prefix='/api')

@@ -1,22 +1,26 @@
 /* ============================================================
    world-guide.css — 世界导览（独立页面样式）
-   仅服务于 world-guide.html，类名前缀 wg-
-   场景主题色：
-     宿舍   暖光        --sc-primary #ffc98a
-     天台   冰蓝月光    --sc-primary #9cc7ff
-     防空洞 深灰绿      --sc-primary #8fbf9f
+   水平轮播 + 场景内纵向详情
+   场景主题色：宿舍暖光 / 天台冰蓝 / 防空洞灰绿
    ============================================================ */
 
 /* ============ 页面骨架 ============ */
-.wg-page {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   overflow: hidden;
   background: #05060a;
+}
+
+.wg-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #05060a;
   color: #d8e0ee;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 /* ============ 顶部导航 ============ */
@@ -27,10 +31,12 @@
   padding: 14px 28px;
   border-bottom: 1px solid rgba(88, 166, 255, 0.15);
   background: rgba(10, 12, 18, 0.6);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   z-index: 10;
+  flex-shrink: 0;
 }
+
 .wg-back {
   padding: 8px 16px;
   border-radius: 20px;
@@ -41,15 +47,18 @@
   color: #bfe0ff;
   font-size: 13px;
   cursor: pointer;
+  text-decoration: none;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 8px rgba(88, 166, 255, 0.1);
 }
+
 .wg-back:hover {
   background: rgba(88, 166, 255, 0.14);
   border-color: rgba(88, 166, 255, 0.7);
   color: #ffffff;
   box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
 }
+
 .wg-title {
   font-size: 22px;
   font-weight: 600;
@@ -59,160 +68,118 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.wg-nav-spacer { width: 80px; }
 
-/* ============ 全局背景：视差尘埃层 ============ */
-.wg-backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.wg-dust {
-  position: absolute;
-  inset: -15%;
-  will-change: transform;
-}
-.wg-dust-far {
-  background-image:
-    radial-gradient(1px 1px at 22% 28%, rgba(216, 230, 255, 0.55), transparent),
-    radial-gradient(1px 1px at 68% 62%, rgba(216, 230, 255, 0.4), transparent),
-    radial-gradient(1.5px 1.5px at 44% 82%, rgba(216, 230, 255, 0.35), transparent),
-    radial-gradient(1px 1px at 84% 14%, rgba(216, 230, 255, 0.45), transparent),
-    radial-gradient(1px 1px at 10% 55%, rgba(216, 230, 255, 0.3), transparent);
-  background-size: 320px 320px;
-  opacity: 0.4;
-}
-.wg-dust-near {
-  background-image:
-    radial-gradient(2px 2px at 35% 20%, rgba(216, 230, 255, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 75% 45%, rgba(216, 230, 255, 0.35), transparent),
-    radial-gradient(2px 2px at 55% 78%, rgba(216, 230, 255, 0.4), transparent),
-    radial-gradient(1.5px 1.5px at 15% 85%, rgba(216, 230, 255, 0.3), transparent);
-  background-size: 220px 220px;
-  opacity: 0.55;
+.wg-scene-label {
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: #8fa0c0;
+  padding: 5px 14px;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  border-radius: 999px;
+  transition: color 0.4s, border-color 0.4s;
+  white-space: nowrap;
 }
 
-/* ============ 全局粒子层：颜色 / 方向随场景变化 ============ */
-.wg-particles {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  --wg-particle-color: 255, 200, 140;
-}
-.wg-particle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgb(var(--wg-particle-color));
-  box-shadow: 0 0 6px rgba(var(--wg-particle-color), 0.55);
-  transition: background 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-  will-change: transform;
-}
-
-/* ============ 右侧垂直导航点 ============ */
-.wg-dots {
-  position: fixed;
-  right: 22px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
+/* ============ 水平轮播容器 ============ */
+.wg-carousel {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  --wg-dot-color: 88, 166, 255;
-}
-.wg-dot {
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border: none;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.18);
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-}
-.wg-dot:hover {
-  background: rgba(255, 255, 255, 0.45);
-  transform: scale(1.2);
-}
-.wg-dot.active {
-  height: 22px;
-  background: rgb(var(--wg-dot-color));
-  box-shadow: 0 0 10px rgba(var(--wg-dot-color), 0.7);
-}
-
-/* ============ 场景滚动区 ============ */
-.wg-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
   position: relative;
   z-index: 1;
-  flex: 1;
+}
+
+.wg-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============ 场景 ============ */
+.wg-scene {
+  min-width: 100vw;
+  height: 100%;
+  scroll-snap-align: start;
   overflow-y: auto;
   overflow-x: hidden;
-}
-
-/* 场景通用：满屏分屏，主题变量由各场景类覆盖 */
-.wg-scene {
+  flex-shrink: 0;
   position: relative;
-  min-height: 100%;
-  display: flex;
-  align-items: center;
-  padding: 70px 7vw;
   background: linear-gradient(180deg, var(--sc-bg-2) 0%, var(--sc-bg-1) 45%, var(--sc-bg-2) 100%);
 }
-.wg-scene + .wg-scene {
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+
+/* 场景内滚动条 */
+.wg-scene::-webkit-scrollbar {
+  width: 4px;
 }
-.wg-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  gap: 6vw;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+.wg-scene::-webkit-scrollbar-track {
+  background: transparent;
+}
+.wg-scene::-webkit-scrollbar-thumb {
+  background: rgba(88, 166, 255, 0.2);
+  border-radius: 2px;
 }
 
-/* ---- 场景主题变量 ---- */
+.wg-scene-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 30px 80px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ============ 场景主题变量 ============ */
 .wg-scene-dorm {
   --sc-primary: #ffc98a;
   --sc-glow: rgba(255, 184, 107, 0.45);
   --sc-bg-1: #241608;
   --sc-bg-2: #0c0805;
-  --sc-particle: 255, 200, 140;
-  --glow-x: 76%;
-  --glow-y: 40%;
+  --sc-accent: #ffc98a;
+  --sc-terrain-from: #3d2a16;
+  --sc-terrain-to: #1a1208;
 }
+.wg-scene-label.wg-scene-dorm { border-color: rgba(255, 200, 140, 0.3); color: #ffc98a; }
+
 .wg-scene-roof {
   --sc-primary: #9cc7ff;
   --sc-glow: rgba(140, 190, 255, 0.5);
   --sc-bg-1: #0c1526;
   --sc-bg-2: #060a12;
-  --sc-particle: 190, 220, 255;
-  --glow-x: 45%;
-  --glow-y: 22%;
+  --sc-accent: #9cc7ff;
+  --sc-terrain-from: #1a2840;
+  --sc-terrain-to: #0c1520;
 }
+.wg-scene-label.wg-scene-roof { border-color: rgba(156, 199, 255, 0.3); color: #9cc7ff; }
+
 .wg-scene-shelter {
   --sc-primary: #8fbf9f;
   --sc-glow: rgba(110, 165, 125, 0.4);
   --sc-bg-1: #141d17;
   --sc-bg-2: #080c09;
-  --sc-particle: 165, 210, 180;
-  --glow-x: 30%;
-  --glow-y: 72%;
+  --sc-accent: #8fbf9f;
+  --sc-terrain-from: #1e2d24;
+  --sc-terrain-to: #0f1812;
+}
+.wg-scene-label.wg-scene-shelter { border-color: rgba(143, 191, 159, 0.3); color: #8fbf9f; }
+
+/* ============ 场景内各部分 ============ */
+.wg-section {
+  margin-bottom: 40px;
 }
 
-/* ============ 左侧：场景文字 ============ */
-.wg-text {
+.wg-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- 介绍区 ---- */
+.wg-section-intro {
   position: relative;
   padding: 10px 0 10px 26px;
 }
-.wg-text::before {
+
+.wg-section-intro::before {
   content: '';
   position: absolute;
   left: 0;
@@ -223,6 +190,7 @@
   background: linear-gradient(180deg, var(--sc-primary), transparent);
   opacity: 0.7;
 }
+
 .wg-index {
   display: inline-block;
   padding: 3px 12px;
@@ -233,9 +201,10 @@
   color: var(--sc-primary);
   margin-bottom: 18px;
 }
+
 .wg-name {
   margin: 0 0 12px;
-  font-size: clamp(40px, 6vw, 72px);
+  font-size: clamp(36px, 5vw, 60px);
   font-weight: 700;
   letter-spacing: 8px;
   line-height: 1.15;
@@ -244,144 +213,303 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
 .wg-sub {
   margin: 0 0 20px;
   font-size: 14px;
   letter-spacing: 2px;
   color: #8fa0c0;
 }
+
 .wg-desc {
   margin: 0;
-  max-width: 42ch;
+  max-width: 56ch;
   font-size: 15px;
   line-height: 2;
   color: #c3cde0;
 }
 
-/* ============ 右侧：视觉区（CSS 渐变氛围） ============ */
-.wg-visual {
+/* ---- 通用区块标题 ---- */
+.wg-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--sc-primary);
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---- 地形示意 ---- */
+.wg-terrain-visual {
   position: relative;
-  height: min(60vh, 540px);
-  border-radius: 20px;
-  border: 1px solid var(--sc-glow);
+  height: 200px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-  /* 默认模糊半透明，悬停左侧文字时清晰淡入 */
-  opacity: 0.4;
-  filter: blur(9px) saturate(120%);
-  transform: scale(0.985);
-  transition:
-    opacity 0.5s ease-in-out,
-    filter 0.5s ease-in-out,
-    transform 0.5s ease-in-out,
-    box-shadow 0.5s ease-in-out;
-}
-/* 鼠标移到场景文字 → 右侧视觉区模糊淡入 */
-.wg-text:hover ~ .wg-visual {
-  opacity: 1;
-  filter: blur(0) saturate(140%);
-  transform: scale(1);
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.45),
-    0 0 34px var(--sc-glow);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 16px;
 }
 
-/* 视差层：随滚动位移 */
-.wg-parallax {
-  position: absolute;
-  inset: -14%;
-  will-change: transform;
-}
-.wg-visual-bg {
-  position: absolute;
-  inset: 0;
+.wg-terrain-dorm {
+  background:
+    /* 窗户光 */
+    radial-gradient(ellipse 12% 30% at 30% 50%, rgba(255, 200, 140, 0.3), transparent 70%),
+    radial-gradient(ellipse 12% 30% at 70% 50%, rgba(255, 200, 140, 0.2), transparent 70%),
+    /* 地面 */
+    linear-gradient(180deg, var(--sc-terrain-from) 0%, var(--sc-terrain-to) 100%);
+  box-shadow: inset 0 0 40px rgba(255, 184, 107, 0.06);
 }
 
-/* ---- 各场景渐变氛围 ---- */
-/* 宿舍：暖黄台灯光 + 斜向光柱 */
-.wg-scene-dorm .wg-visual-bg {
+.wg-terrain-roof {
   background:
-    linear-gradient(115deg, transparent 40%, rgba(255, 200, 140, 0.12) 50%, transparent 60%),
-    radial-gradient(ellipse 55% 45% at 76% 40%, rgba(255, 184, 107, 0.5), transparent 72%),
-    linear-gradient(180deg, #2a1a0c 0%, #0c0805 100%);
-}
-/* 天台：月亮 + 冷色城市灯海 */
-.wg-scene-roof .wg-visual-bg {
-  background:
-    radial-gradient(circle 56px at 24% 26%, rgba(230, 242, 255, 0.95), rgba(150, 195, 255, 0.3) 55%, transparent 72%),
-    radial-gradient(ellipse 60% 40% at 70% 88%, rgba(88, 166, 255, 0.28), transparent 70%),
-    linear-gradient(180deg, #0b1322 0%, #060a12 100%);
-}
-/* 防空洞：绿色应急灯点 + 深处暗角 */
-.wg-scene-shelter .wg-visual-bg {
-  background:
-    radial-gradient(7px 14px at 16% 38%, rgba(150, 225, 175, 0.9), transparent 78%),
-    radial-gradient(7px 14px at 38% 58%, rgba(150, 225, 175, 0.55), transparent 78%),
-    radial-gradient(7px 14px at 62% 44%, rgba(150, 225, 175, 0.4), transparent 78%),
-    radial-gradient(7px 14px at 84% 66%, rgba(150, 225, 175, 0.28), transparent 78%),
-    radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.65) 100%),
-    linear-gradient(180deg, #16211b 0%, #080c09 100%);
+    /* 月亮 */
+    radial-gradient(circle 30px at 50% 20%, rgba(230, 242, 255, 0.6), transparent 60%),
+    /* 城市灯火 */
+    radial-gradient(ellipse 60% 8% at 50% 85%, rgba(88, 166, 255, 0.15), transparent 70%),
+    radial-gradient(ellipse 30% 5% at 20% 82%, rgba(200, 220, 255, 0.1), transparent 60%),
+    radial-gradient(ellipse 30% 5% at 70% 84%, rgba(200, 220, 255, 0.08), transparent 60%),
+    /* 地面 */
+    linear-gradient(180deg, var(--sc-terrain-from) 0%, var(--sc-terrain-to) 100%);
+  box-shadow: inset 0 0 40px rgba(140, 190, 255, 0.06);
 }
 
-/* 呼吸光晕：叠加在视觉区上 */
-.wg-visual-glow {
+.wg-terrain-shelter {
+  background:
+    /* 应急灯点 */
+    radial-gradient(6px 12px at 15% 40%, rgba(150, 225, 175, 0.6), transparent 70%),
+    radial-gradient(6px 12px at 40% 55%, rgba(150, 225, 175, 0.4), transparent 70%),
+    radial-gradient(6px 12px at 65% 45%, rgba(150, 225, 175, 0.3), transparent 70%),
+    radial-gradient(6px 12px at 88% 60%, rgba(150, 225, 175, 0.2), transparent 70%),
+    /* 暗角 */
+    radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.5) 100%),
+    /* 地面 */
+    linear-gradient(180deg, var(--sc-terrain-from) 0%, var(--sc-terrain-to) 100%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+.wg-terrain-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at var(--glow-x, 70%) var(--glow-y, 40%), var(--sc-glow), transparent 55%);
+  background: radial-gradient(ellipse at 50% 30%, var(--sc-glow), transparent 60%);
   mix-blend-mode: screen;
+  opacity: 0.3;
   animation: wgBreathe 6s ease-in-out infinite;
-}
-@keyframes wgBreathe {
-  0%, 100% { opacity: 0.5; }
-  50%      { opacity: 0.95; }
+  pointer-events: none;
 }
 
-/* ============ 尾部留白 ============ */
-.wg-footer {
-  min-height: 46vh;
+@keyframes wgBreathe {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 0.5; }
+}
+
+.wg-terrain-desc {
+  position: relative;
+  z-index: 2;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ---- 角色活动列表 ---- */
+.wg-activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wg-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(22, 26, 41, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+}
+
+.wg-activity-item:hover {
+  background: rgba(22, 26, 41, 0.6);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.wg-activity-char {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sc-primary);
+  letter-spacing: 1px;
+  padding: 2px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  min-width: 56px;
+  text-align: center;
+}
+
+.wg-activity-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #b0c4e0;
+}
+
+/* ---- 背景故事 ---- */
+.wg-backstory-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 2;
+  color: #b0c4e0;
+  padding: 16px 20px;
+  background: rgba(22, 26, 41, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+}
+
+/* ============ 底部指示器 ============ */
+.wg-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.wg-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.wg-indicator:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.2);
+}
+
+.wg-indicator.active {
+  background: #58a6ff;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.7);
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ============ 左右箭头 ============ */
+.wg-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  background: rgba(10, 12, 18, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #bfe0ff;
+  font-size: 22px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, transparent, rgba(5, 6, 10, 0.9));
-}
-.wg-footer-hint {
-  font-size: 12px;
-  letter-spacing: 4px;
-  color: #6d7c99;
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* ============ 移动端：单列上下滚动，文字与视觉区交替 ============ */
+.wg-arrow.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.wg-arrow:hover {
+  background: rgba(88, 166, 255, 0.14);
+  border-color: rgba(88, 166, 255, 0.7);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
+}
+
+.wg-arrow-left {
+  left: 16px;
+}
+
+.wg-arrow-right {
+  right: 16px;
+}
+
+/* ============ 移动端适配 ============ */
 @media (max-width: 768px) {
-  .wg-scene {
-    padding: 56px 6vw;
+  .wg-nav {
+    padding: 12px 16px;
   }
-  .wg-inner {
-    grid-template-columns: 1fr;
-    gap: 26px;
+  .wg-title {
+    font-size: 17px;
+    letter-spacing: 3px;
   }
-  /* 偶数场景视觉区排到文字上方，形成交替节奏 */
-  .wg-scene:nth-of-type(even) .wg-visual { order: -1; }
-  .wg-visual { height: 240px; }
-  .wg-name { letter-spacing: 5px; }
-  .wg-desc { font-size: 14px; }
-  .wg-dots {
-    right: 10px;
-    gap: 10px;
+  .wg-scene-label {
+    font-size: 11px;
+    padding: 4px 10px;
   }
-  .wg-dot { width: 6px; height: 6px; }
-  .wg-dot.active { height: 16px; }
-}
+  .wg-back {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
 
-/* 触屏设备无悬停：视觉区直接完整显示 */
-@media (hover: none) {
-  .wg-visual {
-    opacity: 1;
-    filter: none;
-    transform: none;
+  .wg-scene-inner {
+    padding: 28px 18px 60px;
+  }
+
+  .wg-section {
+    margin-bottom: 28px;
+  }
+
+  .wg-name {
+    font-size: 32px;
+    letter-spacing: 5px;
+  }
+
+  .wg-desc {
+    font-size: 14px;
+  }
+
+  .wg-terrain-visual {
+    height: 140px;
+  }
+
+  .wg-activity-item {
+    padding: 10px 12px;
+  }
+
+  .wg-arrow {
+    display: none;
+  }
+
+  .wg-indicators {
+    bottom: 12px;
+  }
+
+  .wg-indicator {
+    width: 6px;
+    height: 6px;
+  }
+  .wg-indicator.active {
+    width: 18px;
   }
 }
 
 /* 减弱动效偏好 */
 @media (prefers-reduced-motion: reduce) {
-  .wg-visual-glow { animation: none; }
+  .wg-terrain-glow { animation: none; }
 }

@@ -30,17 +30,18 @@
   bottom: 0;
   width: 340px;
   max-width: none;               /* 覆盖 sidebar.css max-width:80% */
-  background: rgba(10, 12, 18, 0.85);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border-left: 1px solid rgba(88, 166, 255, 0.2);
+  background: rgba(22, 26, 41, 0.6);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 201;
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+  border-radius: 14px 0 0 14px;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03), 0 0 20px rgba(0, 0, 0, 0.3);
 }
 .notify-drawer.open {
   transform: translateX(0);
@@ -51,7 +52,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 18px 20px 16px;
+  padding: 18px 20px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
 }
@@ -122,11 +123,47 @@
   box-shadow: 0 0 12px rgba(88, 166, 255, 0.25);
 }
 
+/* ---- Tab 切换 ---- */
+.notify-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  padding: 0 16px;
+}
+.notify-tab {
+  flex: 1;
+  padding: 10px 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #5f6b80;
+  font-size: 13px;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+.notify-tab:hover {
+  color: #8fa0c0;
+}
+.notify-tab.active {
+  color: #58a6ff;
+  border-bottom-color: #58a6ff;
+}
+
+/* ---- Tab 内容容器 ---- */
+.notify-tab-content {
+  display: none;
+}
+.notify-tab-content.active {
+  display: block;
+}
+
 /* ---- 抽屉 Body ---- */
 .notify-drawer-body {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 0 30px;
+  padding: 8px 0 30px;
 }
 .notify-drawer-body::-webkit-scrollbar { width: 4px; }
 .notify-drawer-body::-webkit-scrollbar-thumb {
@@ -136,7 +173,7 @@
 
 /* ---- 分组 ---- */
 .notify-section {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .notify-section-title {
   font-size: 10px;
@@ -145,9 +182,6 @@
   text-transform: uppercase;
   padding: 14px 20px 6px;
   font-weight: 500;
-}
-.notify-read .notify-section-title {
-  opacity: 0.7;
 }
 .notify-section-list {
   display: flex;
@@ -166,10 +200,19 @@
   cursor: pointer;
   position: relative;
   transition: background 0.25s ease-in-out, transform 0.25s ease-in-out;
+  border-left: 3px solid transparent;
 }
 .notify-item:hover {
   background: rgba(88, 166, 255, 0.06);
   transform: translateX(-1px);
+}
+/* 近况：冰蓝边条 */
+.notify-item:not(.notify-system) {
+  border-left-color: #58a6ff;
+}
+/* 系统：淡灰边条 */
+.notify-item.notify-system {
+  border-left-color: #8fa0c0;
 }
 
 /* 头像小圆点 */
@@ -279,6 +322,98 @@
 .notify-section.hidden { display: none; }
 .notify-section-empty.hidden { display: none; }
 
+/* ---- 通知详情弹窗 ---- */
+.notify-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+}
+.notify-modal.show {
+  display: flex;
+}
+.notify-modal-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 6, 12, 0.7);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.notify-modal-card {
+  position: relative;
+  width: min(380px, 88vw);
+  padding: 24px 22px 18px;
+  border-radius: 16px;
+  background: rgba(22, 26, 41, 0.85);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  box-shadow: 0 0 30px rgba(88, 166, 255, 0.2), 0 0 80px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.notify-modal-type {
+  font-size: 11px;
+  color: #58a6ff;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.notify-modal-title {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  font-size: 16px;
+  color: #eaf0ff;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(88, 166, 255, 0.45);
+}
+.notify-modal-body {
+  font-size: 13.5px;
+  color: #c8d4ea;
+  line-height: 1.7;
+  min-height: 40px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.notify-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+.notify-modal-read {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #58a6ff, #2b5bbf);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: filter 0.2s ease-in-out;
+}
+.notify-modal-read:hover {
+  filter: brightness(1.15);
+}
+.notify-modal-close {
+  padding: 7px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: transparent;
+  color: #8fa0c0;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease-in-out;
+}
+.notify-modal-close:hover {
+  color: #fff;
+  border-color: rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.08);
+}
+
 /* ============================================================
    移动端适配（覆盖 sidebar.css 中的移动端抽屉样式）
    ============================================================ */
@@ -288,7 +423,7 @@
     max-width: 280px;
   }
   .notify-drawer-head {
-    padding: 14px 16px 12px;
+    padding: 14px 16px 10px;
     gap: 8px;
   }
   .notify-drawer-title {
@@ -297,6 +432,13 @@
   .notify-drawer-markall {
     font-size: 11px;
     padding: 3px 6px;
+  }
+  .notify-tabs {
+    padding: 0 12px;
+  }
+  .notify-tab {
+    font-size: 12px;
+    padding: 8px 6px;
   }
   .notify-section-title {
     padding: 12px 16px 6px;
@@ -316,6 +458,10 @@
   }
   .notify-sender { font-size: 12px; }
   .notify-preview { font-size: 11px; }
+  .notify-modal-card {
+    width: 92vw;
+    padding: 20px 16px 16px;
+  }
 }
 
 /* 减弱动效偏好 */
@@ -324,7 +470,8 @@
   .notify-mask,
   .notify-item,
   .notify-drawer-close,
-  .notify-drawer-markall {
+  .notify-drawer-markall,
+  .notify-modal {
     transition: none !important;
   }
 }

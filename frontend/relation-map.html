@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>星光交织图谱</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>关系图谱</title>
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/relation-map.css">
 </head>
@@ -12,21 +12,63 @@
 
   <!-- 顶部导航 -->
   <header class="rm-nav">
-    <a class="rm-back page-back-btn" href="index.html?skipIntro=1" onclick="event.preventDefault();goBack()">← 返回</a>
-    <h1 class="rm-title page-title">星光交织图谱</h1>
-    <span class="rm-nav-spacer"></span>
+    <a class="rm-back" href="javascript:void(0)" onclick="goBack()">← 返回</a>
+    <h1 class="rm-title">关系图谱</h1>
+    <div class="rm-nav-actions">
+      <button class="rm-toggle" id="rmToggle">列表模式</button>
+    </div>
   </header>
 
-  <!-- 中央：SVG 关系网络画布 -->
+  <!-- 图模式 -->
   <div class="rm-stage" id="rmStage">
-    <div class="rm-world" id="rmWorld">
-      <svg id="rmSvg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
-      <!-- 角色节点由 js/relation-map.js 注入 -->
+    <div class="rm-canvas-wrap" id="rmCanvasWrap">
+      <canvas id="rmCanvas"></canvas>
+    </div>
+
+    <!-- 关系信息卡片 -->
+    <div class="rm-info-card" id="rmInfoCard">
+      <button class="rm-info-close" id="rmInfoClose">✕</button>
+      <div class="rm-info-content">
+        <div class="rm-info-avatar" id="rmInfoAvatar"></div>
+        <div class="rm-info-name" id="rmInfoName"></div>
+        <div class="rm-info-stage" id="rmInfoStage"></div>
+        <div class="rm-info-bar-wrap">
+          <div class="rm-info-bar-bg">
+            <div class="rm-info-bar-fill" id="rmInfoBarFill"></div>
+          </div>
+          <span class="rm-info-bar-label" id="rmInfoBarLabel"></span>
+        </div>
+        <div class="rm-info-desc" id="rmInfoDesc"></div>
+      </div>
+    </div>
+
+    <div class="rm-hint" id="rmHint">滚轮缩放 · 拖拽平移 · 单击节点居中 · 双击节点查看详情</div>
+  </div>
+
+  <!-- 右侧角色详情面板 -->
+  <div class="rm-side-panel" id="rmSidePanel">
+    <button class="rm-side-close" id="rmSideClose" aria-label="关闭">✕</button>
+    <div class="rm-side-inner">
+      <div class="rm-side-avatar" id="rmSideAvatar"></div>
+      <h2 class="rm-side-name" id="rmSideName"></h2>
+      <div class="rm-side-stage" id="rmSideStage"></div>
+      <div class="rm-side-bar-wrap">
+        <div class="rm-side-bar-bg">
+          <div class="rm-side-bar-fill" id="rmSideBarFill"></div>
+        </div>
+        <span class="rm-side-bar-label" id="rmSideBarLabel"></span>
+      </div>
+      <p class="rm-side-desc" id="rmSideDesc"></p>
     </div>
   </div>
 
-  <!-- 底部提示：角色名列表，点击切换焦点 -->
-  <footer class="rm-legend">
+  <!-- 列表模式 -->
+  <div class="rm-list-view" id="rmListView">
+    <div class="rm-list-cards" id="rmListCards"></div>
+  </div>
+
+  <!-- 底部角色名列表 -->
+  <footer class="rm-legend" id="rmLegend">
     <span class="rm-legend-hint">点击角色切换焦点：</span>
     <div class="rm-chips" id="rmChips"></div>
   </footer>

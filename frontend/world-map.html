@@ -20,54 +20,79 @@
     <span class="wm-nav-spacer"></span>
   </header>
 
-  <!-- 中央：SVG 星空，5 个场景节点 -->
+  <!-- 中央：SVG 星空 + 场景节点 -->
   <div class="wm-stage" id="wmStage">
     <svg id="wmSvg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <defs>
-        <!-- 星云渐变（紫色） -->
         <radialGradient id="nebulaPurple" cx="50%" cy="50%" r="50%">
           <stop offset="0%"  stop-color="rgba(120,80,200,0.35)" />
           <stop offset="60%" stop-color="rgba(120,80,200,0.06)" />
           <stop offset="100%" stop-color="rgba(120,80,200,0)" />
         </radialGradient>
-        <!-- 星云渐变（青蓝） -->
         <radialGradient id="nebulaCyan" cx="50%" cy="50%" r="50%">
           <stop offset="0%"  stop-color="rgba(88,166,255,0.3)" />
           <stop offset="60%" stop-color="rgba(88,166,255,0.05)" />
           <stop offset="100%" stop-color="rgba(88,166,255,0)" />
         </radialGradient>
-        <!-- 节点光晕渐变 -->
         <radialGradient id="nodeGlow" cx="35%" cy="30%" r="65%">
           <stop offset="0%"  stop-color="#ffffff" />
           <stop offset="35%" stop-color="#bfe0ff" />
           <stop offset="75%" stop-color="#58a6ff" />
           <stop offset="100%" stop-color="#1a2a4a" />
         </radialGradient>
-        <!-- 连线渐变 -->
         <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%"   stop-color="rgba(88,166,255,0.15)" />
           <stop offset="50%"  stop-color="rgba(191,224,255,0.6)" />
           <stop offset="100%" stop-color="rgba(88,166,255,0.15)" />
         </linearGradient>
       </defs>
-      <!-- 星云光晕（装饰层，在连线下方） -->
       <ellipse cx="220" cy="160" rx="220" ry="140" fill="url(#nebulaPurple)" />
       <ellipse cx="780" cy="440" rx="260" ry="160" fill="url(#nebulaCyan)" />
       <ellipse cx="500" cy="300" rx="340" ry="180" fill="url(#nebulaCyan)" opacity="0.3" />
-      <!-- 连线由 js/world-map.js 注入 -->
     </svg>
-    <div class="wm-nodes" id="wmNodes">
-      <!-- 节点由 js/world-map.js 注入 -->
-    </div>
-    <!-- 光点滑行轨迹 -->
+    <div class="wm-nodes" id="wmNodes"></div>
     <div class="map-traveler" id="mapTraveler" aria-hidden="true"></div>
   </div>
 
   <!-- 底部：场景名称列表 -->
   <footer class="wm-legend">
-    <span class="wm-legend-hint">点击星点切换场景</span>
+    <span class="wm-legend-hint">点击星点查看场景详情</span>
     <div class="wm-chips" id="wmChips"></div>
   </footer>
+
+  <!-- 场景百科详情面板 -->
+  <div class="wm-detail-mask" id="wmDetailMask"></div>
+  <div class="wm-detail-panel" id="wmDetailPanel">
+    <button class="wm-detail-close" id="wmDetailClose" aria-label="关闭详情">✕</button>
+    <div class="wm-detail-inner" id="wmDetailInner">
+      <!-- 场景名 -->
+      <h2 class="wm-detail-title" id="wmDetailTitle"></h2>
+      <!-- 地形占位图 -->
+      <div class="wm-detail-terrain" id="wmDetailTerrain">
+        <div class="terrain-placeholder">
+          <span class="terrain-icon">🗺</span>
+          <span class="terrain-text">地形图待补充</span>
+        </div>
+      </div>
+      <!-- 场景介绍 -->
+      <div class="wm-detail-section">
+        <h3 class="wm-detail-section-title">场景介绍</h3>
+        <p class="wm-detail-desc" id="wmDetailDesc"></p>
+      </div>
+      <!-- 相关角色活动 -->
+      <div class="wm-detail-section">
+        <h3 class="wm-detail-section-title">相关角色活动</h3>
+        <ul class="wm-detail-characters" id="wmDetailCharacters"></ul>
+      </div>
+      <!-- 特殊事件入口 -->
+      <div class="wm-detail-section">
+        <h3 class="wm-detail-section-title">特殊事件</h3>
+        <div class="wm-detail-event" id="wmDetailEvent">
+          <span class="event-placeholder">暂无特殊事件</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>
 <script src="js/world-map.js"></script>
