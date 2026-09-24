@@ -1,12 +1,17 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, Response, stream_with_context
 from models import db, Conversation
 from services.engine_service import get_engine, group_chat_manager
 from characters import CharacterRegistry
 import json
-from infra.logger import info
+from infra.logger import info, error
 import time
 
 chat_bp = Blueprint('chat', __name__)
+
+
+def _sse(payload):
+    """格式化一条 SSE 事件。"""
+    return "data: " + json.dumps(payload, ensure_ascii=False) + "\n\n"
 
 @chat_bp.route('/chat', methods=['POST'])
 def chat():
@@ -38,6 +43,75 @@ def chat():
         db.session.commit()
 
     return jsonify({"reply": reply_text, "state": state})
+
+
+@chat_bp.route('/chat/stream', methods=['POST'])
+def chat_stream():
+    """SSE 流式单角色对话。
+
+    请求：{"message": "...", "char_id": "lengxufan"}
+    响应（text/event-stream）：
+        data: {"delta": "文本块"}\n\n
+        ...
+        data: {"done": true, "reply": "最终完整回复", "state": {...}}\n\n
+    """
+    data = request.get_json(silent=True) or {}
+    user_input = (data.get('message') or '').strip()
+    char_id = data.get('char_id', 'lengxufan')
+
+    if not user_input:
+        return jsonify({"error": "消息不能为空"}), 400
+
+    engine_svc = get_engine(char_id)
+    user_id = session.get('user_id')
+
+    def generate():
+        # 先持久化用户消息
+        if user_id:
+            db.session.add(Conversation(user_id=user_id, role='user', content=user_input))
+
+        start_time = time.time()
+        full_reply = ""
+        stream = engine_svc.get_reply_stream(user_input)
+        try:
+            while True:
+                try:
+                    chunk = next(stream)
+                except StopIteration as stop:
+                    # 生成器返回值 = 最终完整回复（含动作描写/内心独白）
+                    full_reply = stop.value or ""
+                    break
+                if chunk:
+                    yield _sse({"delta": chunk})
+        except Exception as e:
+            error(f"[ChatStream] 流式生成异常: {e}")
+            yield _sse({"error": "流式响应中断"})
+
+        elapsed = time.time() - start_time
+        model_used = engine_svc.engine.model_router.get_status().get("current_model", "unknown")
+        info(f"[ChatStream] char={char_id} model={model_used} elapsed={elapsed:.2f}s")
+
+        state = engine_svc.get_state_snapshot()
+        reply_text = full_reply.strip()
+
+        if user_id and reply_text:
+            db.session.add(Conversation(
+                user_id=user_id, role='lxf', content=reply_text,
+                state_snapshot=json.dumps(state, ensure_ascii=False),
+            ))
+            db.session.commit()
+
+        yield _sse({"done": True, "reply": reply_text, "state": state})
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no',
+            'Connection': 'keep-alive',
+        },
+    )
 
 
 @chat_bp.route('/group_chat', methods=['POST'])

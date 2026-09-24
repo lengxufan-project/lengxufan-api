@@ -114,6 +114,14 @@ class EngineService:
         set_current_character(self.char_config)
         return self.engine.process(user_input)
 
+    def get_reply_stream(self, user_input):
+        """流式回复：返回 process_stream 生成器，逐块产出模型文本。
+
+        生成器结束时的返回值（StopIteration.value）为最终完整回复。
+        """
+        set_current_character(self.char_config)
+        return self.engine.process_stream(user_input)
+
     def get_state_snapshot(self):
         emo = self.perception.emotion
         if emo < 30: el = "低落"

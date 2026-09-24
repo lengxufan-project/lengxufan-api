@@ -1,4 +1,4 @@
-"""对话流程引擎 v5.4 - 角色上下文版"""
+"""对话流程引擎 v5.4 - 角色上下文版（含 SSE 流式处理 process_stream）"""
 import re, random
 from infra.logger import info
 from infra.persistence import save_full_state
@@ -21,6 +21,15 @@ def parse_ai_response(raw):
         text = text[e + 1 :].strip()
         if not text: text = "……"
     return action, text.strip(), summary
+
+
+class _EarlyReply(str):
+    """标记：无需调用模型即可确定的本地回复（自称名字/信任验证等分支）。
+
+    它本身是 str，_prepare_prompt 把它放在返回元组的首位；
+    process / process_stream 检测到后直接返回/产出，不再请求模型。
+    """
+    pass
 
 
 class DialogueEngine:
@@ -53,7 +62,16 @@ class DialogueEngine:
         self.char_id = char_id or "unknown"
         self.last_milestone = None
 
-    def process(self, user_input, group_context=None):
+    # ------------------------------------------------------------------
+    # 前置逻辑：感知 / 记忆 / 身份 / 上下文 / 信任 / 思考链 / Prompt 构建
+    # ------------------------------------------------------------------
+    def _prepare_prompt(self, user_input, group_context=None):
+        """完成调用模型前的全部前置处理。
+
+        返回 (msgs, scene_context, context_result, thought_result)：
+        - 正常路径：msgs 为可直接发给 model_router 的消息列表；
+        - 本地短路分支（自称名字/信任验证问题）：msgs 为 _EarlyReply 字符串。
+        """
         self.perception.advance_time()
         self.behavior.check_intents(30, self.perception.emotion)
 
@@ -101,7 +119,7 @@ class DialogueEngine:
                         self.memory.add_episode("用户自称陆华望")
                         sync_trust_systems(self)
                         self._save()
-                        return f"{action} ……你说你是望仔。你证明给我看。"
+                        return _EarlyReply(f"{action} ……你说你是望仔。你证明给我看。"), scene_context, context_result, None
 
                 special = self.identity.handle_self_introduction(name_part, text)
                 if not special:
@@ -113,7 +131,7 @@ class DialogueEngine:
                     if self.relationship_dynamics:
                         self.relationship_dynamics.process_event("告知名字", trust_delta=10, description=f"用户说「我叫{name_part}」")
                     self._save()
-                    return f"{action} {reply_text}"
+                    return _EarlyReply(f"{action} {reply_text}"), scene_context, context_result, None
 
         # 信任验证处理
         trust_result = {}
@@ -121,7 +139,7 @@ class DialogueEngine:
             trust_result = self.trust_suspicion.process_turn(text)
             if trust_result.get("question"):
                 action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__)
-                return f"{action} {trust_result['question']}"
+                return _EarlyReply(f"{action} {trust_result['question']}"), scene_context, context_result, None
             if trust_result.get("evidence_matched") and trust_result["evidence_matched"].get("passed"):
                 if self.relationship_dynamics:
                     self.relationship_dynamics.process_event("正确验证身份", trust_delta=trust_result["evidence_matched"]["trust_delta"], description=f"答对了验证问题: {trust_result['evidence_matched']['evidence_id']}")
@@ -183,7 +201,13 @@ class DialogueEngine:
         if thought_result: sp = sp + f"\n\n【思考过程】{thought_result['thought_summary']}"
 
         msgs = build_messages(text, sp)
-        ai_raw = self.model_router.call(msgs)
+        return msgs, scene_context, context_result, thought_result
+
+    # ------------------------------------------------------------------
+    # 收尾逻辑：解析模型输出 / 动作 / 内心独白 / 记忆 / 事件 / 存档
+    # ------------------------------------------------------------------
+    def _finalize_reply(self, user_input, ai_raw, context_result, thought_result):
+        text = user_input.strip()
         ai_action, ai_text, ai_summary = parse_ai_response(ai_raw)
 
         action = self.behavior.generate_action(self.perception.emotion, self.perception.status, self.identity.__dict__, ai_action)
@@ -214,6 +238,43 @@ class DialogueEngine:
             for name in ["向云舟", "黄景云", "秦狐戏", "叶清辞", "冉昭然", "陆华希"]:
                 if name in text: self.social_network.update_from_dialogue(name, text); break
 
+        return full_reply
+
+    # ------------------------------------------------------------------
+    # 同步入口（保持原有行为不变）
+    # ------------------------------------------------------------------
+    def process(self, user_input, group_context=None):
+        msgs, scene_context, context_result, thought_result = self._prepare_prompt(user_input, group_context)
+        if isinstance(msgs, _EarlyReply):
+            return str(msgs)
+        ai_raw = self.model_router.call(msgs)
+        return self._finalize_reply(user_input, ai_raw, context_result, thought_result)
+
+    # ------------------------------------------------------------------
+    # 流式入口：逐块 yield 模型文本，生成器返回值为最终完整回复
+    # ------------------------------------------------------------------
+    def process_stream(self, user_input, group_context=None):
+        """SSE 流式对话。
+
+        - 先复用 _prepare_prompt 完成全部前置认知逻辑；
+        - 本地短路分支：yield 一次完整回复后结束；
+        - 正常路径：逐块 yield model_router.call_stream 的文本增量，
+          结束后复用 _finalize_reply 完成保存记忆/更新状态/发布事件，
+          并以生成器返回值（StopIteration.value）交付最终完整回复。
+        """
+        msgs, scene_context, context_result, thought_result = self._prepare_prompt(user_input, group_context)
+        if isinstance(msgs, _EarlyReply):
+            reply = str(msgs)
+            yield reply
+            return reply
+
+        chunks = []
+        for delta in self.model_router.call_stream(msgs):
+            chunks.append(delta)
+            yield delta
+
+        ai_raw = "".join(chunks)
+        full_reply = self._finalize_reply(user_input, ai_raw, context_result, thought_result)
         return full_reply
 
     def _publish_action(self, reply_text):

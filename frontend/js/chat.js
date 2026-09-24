@@ -152,6 +152,32 @@
     return "#58a6ff";
   }
 
+  /* ---------- 将文本渲染进已有气泡（流式打字机增量更新用） ---------- */
+  function renderBubbleText(bubble, text) {
+    if (!bubble) return;
+    var parsed = parseMessage(text);
+    bubble.innerHTML = "";
+    if (parsed.segments.length === 0 && parsed.actions.length === 0) {
+      // 空气泡（打字中占位等）
+      bubble.textContent = "";
+      return;
+    }
+    parsed.segments.forEach(function (seg, i) {
+      var sp = document.createElement("span");
+      if (seg.type === "inner") {
+        sp.className = "cp-inner";
+        sp.textContent = "\u201c" + seg.text + "\u201d";
+      } else {
+        sp.className = "cp-line";
+        sp.textContent = seg.text;
+      }
+      bubble.appendChild(sp);
+      if (i < parsed.segments.length - 1) {
+        bubble.appendChild(document.createElement("br"));
+      }
+    });
+  }
+
   function addBubble(role, text, opts) {
     var area = $("chatArea");
     if (!area) return null;
@@ -178,16 +204,12 @@
       // 兜底：冰蓝
       avatar.classList.add("cp-avatar-lengxufan");
     }
-    // 点击头像跳转角色详情（仅非用户消息）
+    // 点击头像：角色典籍页已冻结（移入 _archived/），仅给出提示
     if (role !== "user") {
-      (function (targetId) {
-        avatar.addEventListener("click", function (e) {
-          e.stopPropagation();
-          if (targetId) {
-            window.location.href = "character-profile.html?char=" + encodeURIComponent(targetId);
-          }
-        });
-      })(charId || (charName && CHAR_NAME_TO_ID[charName]) || null);
+      avatar.addEventListener("click", function (e) {
+        e.stopPropagation();
+        showToast("角色档案页已冻结");
+      });
     }
 
     // 气泡包裹（群聊包含角色名）
@@ -208,25 +230,7 @@
     // 气泡：渲染段落
     var bubble = document.createElement("div");
     bubble.className = "cp-bubble";
-    if (parsed.segments.length === 0 && parsed.actions.length === 0) {
-      // 空气泡（打字中占位等）
-      bubble.textContent = "";
-    } else {
-      parsed.segments.forEach(function (seg, i) {
-        var sp = document.createElement("span");
-        if (seg.type === "inner") {
-          sp.className = "cp-inner";
-          sp.textContent = "\u201c" + seg.text + "\u201d";
-        } else {
-          sp.className = "cp-line";
-          sp.textContent = seg.text;
-        }
-        bubble.appendChild(sp);
-        if (i < parsed.segments.length - 1) {
-          bubble.appendChild(document.createElement("br"));
-        }
-      });
-    }
+    renderBubbleText(bubble, text);
     wrap.appendChild(bubble);
 
     // 动作描写：气泡下方灰色小字斜体
@@ -400,10 +404,111 @@
       return;
     }
 
-    // 2. 直接等待回复气泡
+    // 2. 单聊：优先 SSE 流式（打字机效果），不支持时降级 /api/chat
+    sendSingleMessage(text);
+  }
+
+  /* ---------- 解锁发送按钮 ---------- */
+  function unlockSend() {
+    runtime.sending = false;
+    var b = $("sendBtn");
+    if (b) b.disabled = !($("chatInput") && $("chatInput").value.trim());
+  }
+
+  /* ---------- 单聊：SSE 流式（/api/chat/stream） ---------- */
+  function sendSingleMessage(text) {
+    if (!window.fetch || typeof TextDecoder === "undefined" ||
+        typeof ReadableStream === "undefined") {
+      sendSingleMessageLegacy(text);
+      return;
+    }
+
+    // 占位空气泡，流式增量直接渲染到该气泡
+    var ref = addBubble("ai", "", {});
+    var fullText = "";
+    var receivedAny = false;
+    var area = $("chatArea");
+
+    fetch("/api/chat/stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, char_id: runtime.charId })
+    }).then(function (response) {
+      if (!response.ok || !response.body || typeof response.body.getReader !== "function") {
+        throw new Error("stream-unsupported");
+      }
+
+      var reader = response.body.getReader();
+      var decoder = new TextDecoder("utf-8");
+      var buffer = "";
+
+      function handleEventBlock(block) {
+        // 一个事件块内可能有多行，只处理 data: 行
+        block.split("\n").forEach(function (rawLine) {
+          var line = rawLine.replace(/\r$/, "");
+          if (line.indexOf("data:") !== 0) return;
+          var payload;
+          try {
+            payload = JSON.parse(line.slice(5).trim());
+          } catch (e) { return; }
+          if (payload.delta) {
+            receivedAny = true;
+            fullText += payload.delta;
+            renderBubbleText(ref && ref.bubble, fullText);
+            if (area) area.scrollTop = area.scrollHeight;
+          }
+          if (payload.done) {
+            // 用后端收尾后的完整回复（动作描写/内心独白）替换流式气泡
+            var finalText = payload.reply || fullText || "\uff08\u4ed6\u6c89\u9ed8\u7740\uff0c\u6ca1\u6709\u56de\u7b54\uff09";
+            if (ref && ref.row && ref.row.parentNode) {
+              ref.row.parentNode.removeChild(ref.row);
+            }
+            addBubble("ai", finalText, {});
+            saveHistory("ai", finalText, { charId: runtime.charId, charName: CHARS[runtime.charId] ? CHARS[runtime.charId].name : null });
+            refreshState();
+            unlockSend();
+          }
+          if (payload.error) {
+            // 服务端标记中断：保留已收到的文本
+            if (!fullText) fullText = "\uff08\u4fe1\u53f7\u4f3c\u4e4e\u65ad\u4e86\u2026\u2026\u7a0d\u540e\u518d\u8bd5\u3002\uff09";
+          }
+        });
+      }
+
+      function pump() {
+        return reader.read().then(function (result) {
+          if (result.done) return;
+          buffer += decoder.decode(result.value, { stream: true });
+          // SSE 事件以空行（\n\n）分隔，最后一段可能不完整 -> 留在 buffer
+          var events = buffer.split("\n\n");
+          buffer = events.pop();
+          for (var i = 0; i < events.length; i++) {
+            if (events[i].trim()) handleEventBlock(events[i]);
+          }
+          return pump();
+        });
+      }
+
+      return pump();
+    }).catch(function () {
+      // 流式不可用或在收到任何内容前失败 -> 降级到普通 /api/chat
+      if (!receivedAny) {
+        if (ref && ref.row && ref.row.parentNode) {
+          ref.row.parentNode.removeChild(ref.row);
+        }
+        sendSingleMessageLegacy(text);
+        return;
+      }
+      // 已收到部分内容后断流：保留已渲染文本
+      saveHistory("ai", fullText, { charId: runtime.charId, charName: CHARS[runtime.charId] ? CHARS[runtime.charId].name : null });
+      unlockSend();
+    });
+  }
+
+  /* ---------- 单聊降级：普通一次性请求（/api/chat） ---------- */
+  function sendSingleMessageLegacy(text) {
     if (!window.fetch) {
-      runtime.sending = false;
-      if (btn) btn.disabled = false;
+      unlockSend();
       return;
     }
     fetch("/api/chat", {
@@ -412,7 +517,7 @@
       body: JSON.stringify({ message: text, char_id: runtime.charId })
     }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); }).then(function (data) {
       // 3. 完整显示回复
-      var replyText = data.reply || "\uff08\u4ed6\u6ca1\u6709\u56de\u5e94\u3002\uff09";
+      var replyText = data.reply || "\uff08\u4ed6\u6c89\u9ed8\u7740\uff0c\u6ca1\u6709\u56de\u7b54\uff09";
       addBubble("ai", replyText, {});
       saveHistory("ai", replyText, { charId: runtime.charId, charName: CHARS[runtime.charId] ? CHARS[runtime.charId].name : null });
       refreshState();
@@ -420,11 +525,7 @@
       var errText = "\uff08\u4fe1\u53f7\u4f3c\u4e4e\u65ad\u4e86\u2026\u2026\u7a0d\u540e\u518d\u8bd5\u3002\uff09";
       addBubble("ai", errText, {});
       saveHistory("ai", errText);
-    }).then(function () {
-      runtime.sending = false;
-      var b = $("sendBtn");
-      if (b) b.disabled = !($("chatInput") && $("chatInput").value.trim());
-    });
+    }).then(unlockSend);
   }
 
   /* ---------- 群聊串行发送：全部获取后，依次完整弹出，带随机间隔 ---------- */
@@ -649,15 +750,10 @@
 
     applyCharGlow(runtime.isGroup ? null : runtime.charId);
 
-    // 任务三：标题详情按钮 / 设置按钮
+    // 标题详情按钮：角色典籍页已冻结（移入 _archived/），统一隐藏
     var detailBtn = $("chatDetailBtn");
     if (detailBtn) {
-      if (runtime.isGroup) {
-        detailBtn.style.display = "none";
-      } else {
-        detailBtn.href = "character-profile.html?char=" + encodeURIComponent(runtime.charId);
-        detailBtn.style.display = "";
-      }
+      detailBtn.style.display = "none";
     }
 
     if (runtime.isGroup) {

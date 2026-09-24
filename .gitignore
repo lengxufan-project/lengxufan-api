@@ -21,3 +21,34 @@ data/*.json
 
 # 运行时数据（不提交）
 data/runtime/
+
+_LOCAL_TOOLS.md
+
+# SDK 构建产物（源码提交，产物不提交）
+sdk/dist/
+sdk/build/
+sdk/*.egg-info/
+sdk/__pycache__/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 运行时数据
+data/runtime/
+
+# 环境变量
+.env
+backend/.env
+
+# Godot 编辑器缓存和临时文件
+godot/.godot/
+godot/*.bak
+godot/*.tmp
+godot/scenes/*.bak
+godot/scenes/*.tmp
+
+# 通用备份和临时文件
+*.bak
+*.tmp
