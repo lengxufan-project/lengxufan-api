@@ -3,6 +3,8 @@
 > 生成时间：2026-09-02
 > 范围：仅限 `backend/` 目录
 > 说明：本文档帮助开发者快速理解后端结构和维护方式
+>
+> ⚠ 时效提示（2026-10-07 复核）：存在已确认偏差——`backend/cognition/` 为幻影章节（能力实际在 `backend/lengxufan_core/cognition/`）；`backend/tools/` 已迁至根目录 `tools/`；未收录 `routes/events_routes.py`（GET /api/events）与 `POST /api/chat/stream`（SSE 流式）。**与代码冲突时以代码为准**，详见 [DOCS_MAP.md](../DOCS_MAP.md) 第八节。
 
 ---
 
@@ -339,3 +341,15 @@ API Key 配置文件，支持两个位置（优先级从高到低）：
 | 修改 API 参数 | `config.yaml`（max_tokens、temperature 等） |
 | 新增 API 平台 | `api/model_registry.py` 添加新平台配置 |
 | 修改前端对应 API | 参考 `docs/API_CONTRACT.md` 和 `frontend/FRONTEND_MAP.md` |
+
+---
+
+## 相关文档（分层体系）
+
+| 关系 | 文档 |
+|---|---|
+| 文档体系总图（唯一入口） | [DOCS_MAP.md](../DOCS_MAP.md) |
+| 接口细节（权威） | [docs/API_CONTRACT.md](../docs/API_CONTRACT.md) |
+| 功能→文件完整映射 | [docs/PROJECT_GUIDE.md](../docs/PROJECT_GUIDE.md) |
+| 改动影响地图 | [PROJECT_MAP.md](../PROJECT_MAP.md) |
+| 前端对照 | [frontend/FRONTEND_MAP.md](../frontend/FRONTEND_MAP.md) · [frontend/FRONTEND_FILES.md](../frontend/FRONTEND_FILES.md) |

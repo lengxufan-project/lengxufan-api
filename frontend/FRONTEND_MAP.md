@@ -3,6 +3,8 @@
 > 生成时间：2026-09-02
 > 范围：仅限 `frontend/` 目录
 > 版本记录：v3.0 — 反映当前最新完整前端状态
+>
+> ⚠ 时效提示（2026-10-07 复核）：页面统计（27 HTML）为旧版；当前在线仅 4 个页面（index/chat/login/dev），23 个已归档至 `frontend/_archived/`。**当前文件级精确清单见 [frontend/FRONTEND_FILES.md](FRONTEND_FILES.md)**。本文档的结构、跳转关系、z-index、已知问题部分仍然有效。
 
 ---
 
@@ -680,3 +682,15 @@ dev.html
 ### 架构建议
 1. **移除冗余的旧版兼容代码**：`renderActiveCharacters()` 中的 `#sidebarCharacters` 兼容路径可择机清理
 2. **统一导航体系**：当前 rail + sb-panel + sidebar-nav 三套导航入口并存，长期可考虑简化为一套
+
+---
+
+## 相关文档（分层体系）
+
+| 关系 | 文档 |
+|---|---|
+| 文档体系总图（唯一入口） | [DOCS_MAP.md](../DOCS_MAP.md) |
+| 当前文件级精确清单 | [frontend/FRONTEND_FILES.md](FRONTEND_FILES.md) |
+| 脚本加载顺序 / 新增页面步骤 | [docs/PROJECT_GUIDE.md](../docs/PROJECT_GUIDE.md) |
+| 改动影响地图 | [PROJECT_MAP.md](../PROJECT_MAP.md) |
+| 后端对照 | [backend/BACKEND_MAP.md](../backend/BACKEND_MAP.md) |

@@ -207,3 +207,16 @@
 | `backend/lengxufan_core/dialogue_engine.py` 有 3 个 `.bak_*` 备份 | 仅历史备份，勿引用、勿提交 |
 | `tools/deploy/` 为空目录 | 部署自动化待建设 |
 | `data/source/` 六个子目录全为空 | 角色数据实际存于 `backend/characters/<id>/data/`，填充计划见 `data/DATA_MAP.md` |
+
+---
+
+## 相关文档（分层体系）
+
+| 关系 | 文档 |
+|---|---|
+| 文档体系总图（唯一入口） | [DOCS_MAP.md](DOCS_MAP.md) |
+| 快速启动 + 功能状态 | [README.md](README.md) |
+| 项目总览 | [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) |
+| 文件级定位（前端） | [frontend/FRONTEND_FILES.md](frontend/FRONTEND_FILES.md) |
+| 工具脚本地图 | [tools/TOOLS_MAP.md](tools/TOOLS_MAP.md) |
+| SDK 地图 | [sdk/SDK_MAP.md](sdk/SDK_MAP.md) |

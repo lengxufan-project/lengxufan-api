@@ -106,10 +106,15 @@ python backend/run.py --cli    # CLI 调试模式
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
+| **文档总图** | [DOCS_MAP.md](DOCS_MAP.md) | **分层文档体系唯一入口**：项目速览、按任务查文档、已知偏差 |
 | 后端地图 | [backend/BACKEND_MAP.md](backend/BACKEND_MAP.md) | 后端所有 Python 模块、API 接口、模块依赖、修改指南 |
 | 数据地图 | [data/DATA_MAP.md](data/DATA_MAP.md) | data/source 与 data/runtime 的区别、各目录作用、Git 提交规则 |
 | API 契约 | [docs/API_CONTRACT.md](docs/API_CONTRACT.md) | 所有 18 个 API 接口的请求参数、响应结构、示例数据 |
-| 前端地图 | [frontend/FRONTEND_MAP.md](frontend/FRONTEND_MAP.md) | 前端 27 个 HTML、45 个 CSS、57 个 JS 的说明与跳转关系 |
+| 前端地图 | [frontend/FRONTEND_MAP.md](frontend/FRONTEND_MAP.md) | 前端结构、跳转关系与已知问题（⚠ 页面统计为旧版；当前文件级清单见 [frontend/FRONTEND_FILES.md](frontend/FRONTEND_FILES.md)） |
+| 前端文件级索引 | [frontend/FRONTEND_FILES.md](frontend/FRONTEND_FILES.md) | 在线 4 页面 / 25 CSS / 35 JS 的精确清单与功能定位表 |
+| 工具脚本地图 | [tools/TOOLS_MAP.md](tools/TOOLS_MAP.md) | 18 个工具脚本的分类、用途与运行前提 |
+| Godot 客户端地图 | [godot/GODOT_MAP.md](godot/GODOT_MAP.md) | Godot 场景、脚本、素材与后端连接方式 |
+| SDK 地图 | [sdk/SDK_MAP.md](sdk/SDK_MAP.md) | 对外 SDK 包结构、与 backend 的边界 |
 | 架构决策 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | 关键架构决策及其原因 |
 | 构建指南 | [docs/BUILD.md](docs/BUILD.md) | 从零搭建项目 |
 | 新增角色 | [docs/ADD_NEW_CHARACTER.md](docs/ADD_NEW_CHARACTER.md) | 如何新增一个 AI NPC 角色 |

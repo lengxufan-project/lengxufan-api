@@ -26,6 +26,7 @@ lengxufan-flask-mvp/
 
 | 想看什么 → | 打开哪个文件 |
 |------------|--------------|
+| **文档体系总图（先看这个）** | [DOCS_MAP.md](DOCS_MAP.md) |
 | 后端代码结构 | [backend/BACKEND_MAP.md](backend/BACKEND_MAP.md) |
 | 前端页面与跳转 | [frontend/FRONTEND_MAP.md](frontend/FRONTEND_MAP.md) |
 | 数据与世界观 | [data/DATA_MAP.md](data/DATA_MAP.md) |
@@ -59,3 +60,14 @@ lengxufan-flask-mvp/
 遇到 API 调用问题查 docs/API_CONTRACT.md，架构设计问题查 docs/ARCHITECTURE.md。
 
 严格遵守边界：不跨界修改代码，前端不动后端 Python，后端不动前端 CSS/JS，保持清晰分离。
+
+---
+
+## 相关文档（分层体系）
+
+| 关系 | 文档 |
+|---|---|
+| **文档体系总图（唯一入口，推荐先看）** | [DOCS_MAP.md](DOCS_MAP.md) |
+| 怎么跑起来 / 功能状态表 | [README.md](README.md) |
+| 改动影响地图（12 个场景） | [PROJECT_MAP.md](PROJECT_MAP.md) |
+| 模块地图 | [backend/BACKEND_MAP.md](backend/BACKEND_MAP.md) · [frontend/FRONTEND_MAP.md](frontend/FRONTEND_MAP.md) · [data/DATA_MAP.md](data/DATA_MAP.md) · [tools/TOOLS_MAP.md](tools/TOOLS_MAP.md) · [godot/GODOT_MAP.md](godot/GODOT_MAP.md) · [sdk/SDK_MAP.md](sdk/SDK_MAP.md) |

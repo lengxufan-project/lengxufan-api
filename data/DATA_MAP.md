@@ -206,3 +206,14 @@ ChromaDB 向量数据库，用于语义搜索和记忆检索。当前使用 SQLi
 | `data/runtime/lengxufan.db` | 否 | SQLite 数据库 |
 
 **注意**：如果 `data/runtime/` 目录下需要保留某个占位文件以维持目录结构受 Git 跟踪，可以在目录内添加 `.gitkeep` 文件。当前 `.gitignore` 规则为 `data/runtime/`，意味着整个目录不会被 Git 跟踪。
+
+---
+
+## 相关文档（分层体系）
+
+| 关系 | 文档 |
+|---|---|
+| 文档体系总图（唯一入口） | [DOCS_MAP.md](../DOCS_MAP.md) |
+| 角色数据与新增角色 | [docs/ADD_NEW_CHARACTER.md](../docs/ADD_NEW_CHARACTER.md) |
+| 存档读写实现 | `backend/infra/persistence.py`（见 [backend/BACKEND_MAP.md](../backend/BACKEND_MAP.md)） |
+| 改动影响地图 | [PROJECT_MAP.md](../PROJECT_MAP.md) |
